@@ -1,0 +1,9 @@
+{
+  "/(dynamic)/blog/page": "app/(dynamic)/blog/page.js",
+  "/(dynamic)/portfolio/page": "app/(dynamic)/portfolio/page.js",
+  "/(static)/about/page": "app/(static)/about/page.js",
+  "/(static)/contact/page": "app/(static)/contact/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/page": "app/page.js"
+}

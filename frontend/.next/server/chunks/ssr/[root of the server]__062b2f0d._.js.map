@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 38, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/elements/imageProfile/button.module.css [app-ssr] (css module)"],"sourcesContent":["__turbopack_context__.v({\n  \"logout\": \"button-module__MfGIrq__logout\",\n});\n"],"names":[],"mappings":"AAAA;AACA;AACA"}},
+    {"offset": {"line": 47, "column": 0}, "map": {"version":3,"sources":["file:///home/walid/Desktop/social-network/Social-Network/frontend/src/elements/imageProfile/profile.jsx"],"sourcesContent":["\"use client\"\nimport Link from \"next/link\";\n// import Link from \"next/link\";\nimport styles from \"./button.module.css\";\n\nexport default function ImageProfile(){\n    return(\n        <button \n            className={styles.logout}\n            // href={\"/\"}\n            onClick={()=>{console.log(\"Logout\")}}    \n        >\n            <img\n                src=\"/images/avatar_profile.svg\" \n                alt=\"Profile\"\n                style={{width: \"40px\", height: \"40px\"}}\n            />\n        </button>\n    );\n}"],"names":[],"mappings":";;;;AACA;AACA,gCAAgC;AAChC;AAHA;;;;AAKe,SAAS;IACpB,qBACI,8OAAC;QACG,WAAW,qJAAA,CAAA,UAAM,CAAC,MAAM;QACxB,aAAa;QACb,SAAS;YAAK,QAAQ,GAAG,CAAC;QAAS;kBAEnC,cAAA,8OAAC;YACG,KAAI;YACJ,KAAI;YACJ,OAAO;gBAAC,OAAO;gBAAQ,QAAQ;YAAM;;;;;;;;;;;AAIrD","debugId":null}}]
+}

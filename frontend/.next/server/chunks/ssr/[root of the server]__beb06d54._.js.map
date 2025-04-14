@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 39, "column": 0}, "map": {"version":3,"sources":["file:///home/walid/Desktop/social-network/Social-Network/frontend/src/elements/buttonLogout/button.jsx"],"sourcesContent":["\"use client\"\n// import Link from \"next/link\";\nimport styles from \"./profile.module.css\";\n\nexport default function ButtonLogout(){\n    return(\n        <button \n            className={styles.logout}\n            // href={\"/\"}\n            onClick={()=>{console.log(\"Logout\")}}    \n        >\n            <img\n                src=\"/images/avatar_profile.svg\" \n                alt=\"Profile\"\n                style={{width: \"40px\", height: \"40px\"}}  //border: \"2px solid var(--color-primary)\", borderRadius: \"40px\"\n            />\n        </button>\n    );\n}"],"names":[],"mappings":";;;;;;;;;AAAA;;;AAIe,SAAS;IACpB,qBACI,8OAAC;QACG,WAAW,OAAO,MAAM;QACxB,aAAa;QACb,SAAS;YAAK,QAAQ,GAAG,CAAC;QAAS;kBAEnC,cAAA,8OAAC;YACG,KAAI;YACJ,KAAI;YACJ,OAAO;gBAAC,OAAO;gBAAQ,QAAQ;YAAM;;;;;;;;;;;AAIrD","debugId":null}}]
+}
