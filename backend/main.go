@@ -1,26 +1,22 @@
 package main
 
 import (
-	"encoding/json"
+	_ "github.com/golang-migrate/migrate/v4/database/sqlite3"
+
 	"net/http"
+	"social-network/controllers"
+	"social-network/db"
 	"social-network/models"
+
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
-	db := models.CreateTables()
-	defer db.Close()
-	http.HandleFunc("/", handleHome)
-	http.HandleFunc("/sayHi", sayHi)
+	models.Db = db.InitDB()
+	defer models.Db.Close()
+	http.HandleFunc("/login", controllers.Login)
+	http.HandleFunc("/register", controllers.Register)
+	http.HandleFunc("/addPost", controllers.AddPost)
+
 	http.ListenAndServe(":8080", nil)
-}
-
-func handleHome(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"message": "hello there"})
-}
-
-func sayHi(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"message": "hi"})
 }
