@@ -1,0 +1,59 @@
+.reactionContainer{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 50%;
+}
+
+.buttons{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    /*position: relative;*/
+}
+
+.buttons button{
+    cursor: pointer;
+}
+
+.buttons button span{
+    position: relative;
+    top: -2px;
+    /* left: 0; */
+}
+
+.form{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+/* .reactionContainer{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 50%;
+}
+
+.like{
+    display: flex;
+    justify-content: start;
+}
+
+.dislike{
+    display: flex;
+    justify-content: end;
+}
+
+.button{
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    position: relative;
+}
+
+.button span{
+    position: absolute;
+    top: -2px;
+} */

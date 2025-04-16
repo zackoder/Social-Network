@@ -1,15 +1,26 @@
+
 .container{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 50px;
+    height: 100px;
 }
 
-.links{
+.nav_start {
+    width: calc(100% / 3);
     display: flex;
-    gap: 10px;
     align-items: center;
+    justify-content: start;
 }
-
-
-
+.nav_middle {
+    width: calc(100% / 3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.nav_end {
+    width: calc(100% / 3);
+    display: flex;
+    align-items: center;
+    justify-content: end;
+}

@@ -1,6 +1,5 @@
-import Link from "next/link";
 import styles from "./navbar.module.css";
-import {links} from "./data";
+import Notification from "../notifications/notification";
 
 
 
@@ -11,14 +10,16 @@ import Logo from "@/elements/logo/logo";
 
 export default function Navbar(){
     return(
-        
         <div className={styles.container}>
-            <Logo />
-            <div className={styles.links}>
-                {links.map(link => <Link key={link.id} href={link.url} className={styles.link}>{link.title}</Link>)}
+            <div className={styles.nav_start}>
+                <Logo />
+            </div>
+            <div className={styles.nav_middle}>
+                <Notification />
+            </div>
+            <div className={styles.nav_end}>
                 <ButtonLogout />
             </div>
-            
         </div>
     )
 }

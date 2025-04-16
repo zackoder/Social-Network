@@ -1,0 +1,64 @@
+.container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 30px;
+}
+.header{
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.imageContainer{
+    width: 50px;
+    aspect-ratio: 1 / 1;
+    background-color: var(--color-primary);
+    border-radius: 50%;
+}
+.header h2{
+    margin-left: 10px;
+}
+.imageContainer .image{
+    object-fit: cover;
+}
+.content{
+    margin: 15px 20px;
+    line-height: 1.5em;
+    font-size: 17px;
+}
+.imagePost{
+    width: 95%;
+    min-height: 300px;
+    position: relative;
+    margin-bottom: 20px;
+}
+.imagePost .image{
+    object-fit: cover;
+    border-radius: 7px;
+}
+
+.reaction{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 70%;
+}
+
+
+.reaction .dislike{
+    display: flex;
+    align-items: center;
+}
+.dislike svg{
+    margin-top: 4px;
+}
+
+.reaction .comment{
+    display: flex;
+    align-items: center;
+}
+.reaction .comment span{
+    margin-bottom: 2px;
+}

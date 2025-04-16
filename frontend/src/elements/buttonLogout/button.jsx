@@ -8,6 +8,13 @@ export default function ButtonLogout(){
             className={styles.logout}
             // href={"/"}
             onClick={()=>{console.log("Logout")}}    
-        >Logout</button>
+        >
+            <img
+                src="/images/logout.png" 
+                alt="Logout"
+                title="Logout"
+                style={{width: "40px", height: "40px"}}  //border: "2px solid var(--color-primary)", borderRadius: "40px"
+            />
+        </button>
     );
 }
