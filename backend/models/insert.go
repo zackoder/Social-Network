@@ -13,3 +13,14 @@ func InsertUser(user utils.Regester) error {
 	}
 	return nil
 }
+
+func InsertPost(post utils.Post) error {
+	insetpostQuery := "INSERT INTO posts (post_privacy, title, content, user_id, imagePath, createdAt) VALUES (?,?,?,?,?,strftime('%s', 'now'))"
+	res, err := Db.Exec(insetpostQuery, post.Privacy, post.Title, post.Content, 1, post.Image)
+	if err != nil {
+		return err
+	}
+	lastId, _ := res.LastInsertId()
+	post.Id = int(lastId)
+	return nil
+}
