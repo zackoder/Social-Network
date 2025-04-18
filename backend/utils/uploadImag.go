@@ -11,9 +11,13 @@ import (
 func UploadImage(r *http.Request) (string, error) {
 	file, handler, err := r.FormFile("avatar")
 	if err != nil {
+		if file == nil {
+			return "", nil
+		}
 		fmt.Println(err)
+		return "", err
 	}
-
+	os.MkdirAll("uploads", os.ModePerm)
 	defer file.Close()
 	fileName := fmt.Sprintf("%d_%s", time.Now().Unix(), handler.Filename)
 	filePath := "./uploads/" + fileName
@@ -24,6 +28,9 @@ func UploadImage(r *http.Request) (string, error) {
 	}
 	defer out.Close()
 
-	io.Copy(out, file)
+	_, err = io.Copy(out, file)
+	if err != nil {
+		return "", err
+	}
 	return filePath, nil
 }
