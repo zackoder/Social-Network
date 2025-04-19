@@ -24,3 +24,14 @@ func QueryPosts(offset int) []utils.Post {
 	}
 	return posts
 }
+
+func GetPrivecy(followed string) (string, error) {
+	getPrivacy := "SELECT privacy FROM users WHERE id = ?"
+	var privacy string
+	err := Db.QueryRow(getPrivacy, followed).Scan(&privacy)
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+	return privacy, nil
+}
