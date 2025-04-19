@@ -39,6 +39,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		regesterreq.NickName = nil
 	}
 	fmt.Println(regesterreq.NickName)
+	
 	if utils.ValidatNames(regesterreq.FirstName, regesterreq.LastName, regesterreq.NickName) && utils.ValidEmail(regesterreq.Email) && regesterreq.Password == regesterreq.ConfermPassword && regesterreq.Age > 15 {
 		hashedPss := utils.Hashpass(regesterreq.Password)
 		if hashedPss == "" {

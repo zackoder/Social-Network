@@ -14,6 +14,7 @@ func AddPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	host := r.Host
 	postData := r.FormValue("postData")
 	filepath, err := utils.UploadImage(r)
 	if err != nil {
@@ -32,10 +33,14 @@ func AddPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if filepath != "" {
-		post.Image = filepath[1:]
+		post.Image = host + filepath[1:]
 	}
-	err = models.InsertPost(post)
-	fmt.Println(post)
+	post.Id, err = models.InsertPost(post)
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "internal server error\ninserting post"}, http.StatusInternalServerError)
+		return
+	}
+	utils.WriteJSON(w, post, 200)
 }
 
 func Posts(w http.ResponseWriter, r *http.Request) {

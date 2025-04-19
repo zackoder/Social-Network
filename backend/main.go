@@ -19,6 +19,8 @@ func main() {
 	http.HandleFunc("/addPost", controllers.AddPost)
 	http.HandleFunc("/uploads/", controllers.HandelPics)
 	http.HandleFunc("/api/posts", controllers.Posts)
+	http.HandleFunc("/followReq", controllers.HandleFollow)
+	http.HandleFunc("/updatePrivacy", controllers.UpdatePrivacy)
 
 	http.ListenAndServe(":8080", nil)
 }
