@@ -50,23 +50,25 @@ export default function LikeDislikeComment() {
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 rows={2}
-                style={{ width: '80%', padding: '5px', borderRadius: '4px', resize: 'none' }}
+                style={{ width: '90%', padding: '5px', borderRadius: '4px', resize: 'none' }}
             />
             <button
             type="submit"
             style={{
                 marginTop: '0px',
                 marginLeft: '5px',
-                padding: '6px 12px',
-                backgroundColor: '#0070f3',
+                width: '10%',
+                padding: '14px 12px',
+                backgroundColor: 'var(--color-primary)',  //0070f3
                 color: 'white',
+                fontWeight: 'bold',
                 border: 'none',
                 borderRadius: '4px',
                 cursor: 'pointer',
 
             }}
             >
-            Submit Comment
+            Send
             </button>
       </form>
 
