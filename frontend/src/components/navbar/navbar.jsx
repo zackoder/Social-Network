@@ -5,6 +5,7 @@ import Notification from "../notifications/notification";
 
 import ButtonLogout from "@/elements/buttonLogout/button";
 import Logo from "@/elements/logo/logo";
+import ButtonProfile from "@/elements/buttonProfile/buttonProfile";
 
 
 
@@ -18,6 +19,7 @@ export default function Navbar(){
                 <Notification />
             </div>
             <div className={styles.nav_end}>
+                <ButtonProfile />
                 <ButtonLogout />
             </div>
         </div>

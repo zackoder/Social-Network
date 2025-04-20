@@ -5,10 +5,18 @@
     flex-direction: column;
     margin-bottom: 30px;
 }
-.header{
+.header {
     display: flex;
     align-items: center;
+    justify-content: start;
     width: 100%;
+}
+
+.header .containerHeader{
+    display: flex;
+    align-items: center;
+    /* justify-content: start;
+    width: 100%; */
 }
 
 .imageContainer{

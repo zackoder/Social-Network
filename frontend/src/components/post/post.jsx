@@ -2,21 +2,28 @@ import LikeDislikeComment from "../likeDislikeComment/likeDislikeComment";
 import LikeDislike from "../likeDislike/LikeDislike";
 import styles from "./post.module.css"
 import Image from "next/image";
+import Link from "next/link";
 
-export default function Post(){
+export default function Post() {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <div className={styles.imageContainer}>
-                    {/* <Image
-                        className={styles.image}
-                        src=""
-                        alt=""
-                        fill={false}
-                    /> */}
+                <Link href="/profile/2">
+                <div className={styles.containerHeader}>
+                    <div className={styles.imageContainer}>
+                        {/* <Image
+                            className={styles.image}
+                            src=""
+                            alt=""
+                            fill={false}
+                        /> */}
+                    </div>
+                    <h2>Name</h2>
+
                 </div>
-                <h2>Name</h2>
+                </Link>
             </div>
+
             <div className={styles.content}>
                 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Totam minima ullam mollitia nesciunt? Cum quia dolorum corrupti ea, magnam voluptas.</p>
             </div>
