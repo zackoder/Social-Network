@@ -48,3 +48,7 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 	posts := models.QueryPosts(offset)
 	utils.WriteJSON(w, posts, 200)
 }
+func GetProfilePosts(w http.ResponseWriter, r * http.Request){
+	posts := models.GetProfilePost(1, 0)
+	utils.WriteJSON(w,posts,200)
+}

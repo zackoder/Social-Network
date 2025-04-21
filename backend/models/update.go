@@ -3,7 +3,7 @@ package models
 import "strconv"
 
 func UpdateProfile(id int) string {
-	privacy, _ := GetPrivecy(strconv.Itoa(id))
+	privacy, _ := GetProfilePrivecy(strconv.Itoa(id))
 	updateprofile := "UPDATE users SET privacy = ? WHERE id = ?"
 	if privacy == "public" {
 		Db.Exec(updateprofile, "privet", id)
