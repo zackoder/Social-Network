@@ -25,7 +25,7 @@ func InsertPost(post utils.Post) (int, error) {
 }
 
 func InserOrUpdate(follower, followed string) (string, error) {
-	privacy, err := GetPrivecy(followed)
+	privacy, err := GetProfilePrivecy(followed)
 	if err != nil {
 		return "", err
 	}
