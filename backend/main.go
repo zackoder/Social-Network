@@ -23,6 +23,7 @@ func main() {
 	http.HandleFunc("/followReq", controllers.HandleFollow)
 	http.HandleFunc("/updatePrivacy", controllers.UpdatePrivacy)
 	http.HandleFunc("GET /api/getProfilePosts",controllers.GetProfilePosts)
+	http.HandleFunc("POST /api/logout",controllers.LogoutHandler)
 
 	http.ListenAndServe(":8080", nil)
 }
