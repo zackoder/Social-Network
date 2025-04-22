@@ -1,5 +1,4 @@
 import LikeDislikeComment from "../likeDislikeComment/likeDislikeComment";
-import LikeDislike from "../likeDislike/LikeDislike";
 import styles from "./post.module.css"
 import Image from "next/image";
 import Link from "next/link";
@@ -22,7 +21,6 @@ export default async function Post() {
         <div className={styles.container}>
             {posts.map((post) => (
                 <div className={styles.post} key={post.id}>
-                {console.log("image", post.image)}
                     <div className={styles.header}>
                         <Link href="/profile/2">
                             <div className={styles.containerHeader}>
