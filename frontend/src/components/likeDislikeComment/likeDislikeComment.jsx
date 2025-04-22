@@ -58,7 +58,7 @@ export default function LikeDislikeComment() {
                 marginTop: '0px',
                 marginLeft: '5px',
                 width: '10%',
-                padding: '14px 12px',
+                padding: '14px 0',
                 backgroundColor: 'var(--color-primary)',  //0070f3
                 color: 'white',
                 fontWeight: 'bold',
