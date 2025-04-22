@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	_ "github.com/golang-migrate/migrate/v4/database/sqlite3"
 
 	"net/http"
@@ -22,5 +24,6 @@ func main() {
 	http.HandleFunc("/followReq", controllers.HandleFollow)
 	http.HandleFunc("/updatePrivacy", controllers.UpdatePrivacy)
 
+	fmt.Println("http://localhost:8080")
 	http.ListenAndServe(":8080", nil)
 }

@@ -33,18 +33,22 @@ func AddPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if filepath != "" {
-		post.Image = host + filepath[1:]
+		post.Image = filepath[1:]
 	}
 	post.Id, err = models.InsertPost(post)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "internal server error\ninserting post"}, http.StatusInternalServerError)
 		return
 	}
+	if filepath != "" {
+		post.Image = host + filepath[1:]
+	}
 	utils.WriteJSON(w, post, 200)
 }
 
 func Posts(w http.ResponseWriter, r *http.Request) {
+	host := r.Host
 	offset := 0
-	posts := models.QueryPosts(offset)
+	posts := models.QueryPosts(offset, host)
 	utils.WriteJSON(w, posts, 200)
 }
