@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"time"
 
 	"social-network/utils"
 )
@@ -37,12 +38,12 @@ func GetProfilePost(user_id, offset int) []utils.Post {
 		return nil
 	}
 	defer rows.Close()
-	for rows.Next(){
+	for rows.Next() {
 		var post utils.Post
-		
+
 		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster, &post.Image, &post.CreatedAt)
-		if err != nil{
-			fmt.Println("error scaning the rows",err)
+		if err != nil {
+			fmt.Println("error scaning the rows", err)
 		}
 		posts = append(posts, post)
 	}
@@ -63,3 +64,38 @@ func GetProfilePrivecy(followed string) (string, error) {
 	}
 	return privacy, nil
 }
+
+///////////////////////////login///////////////////////////////////////////
+
+func ValidCredential(userData *utils.User) error {
+	query := `SELECT id, password FROM users WHERE nickname = ? OR email = ?;`
+	err := Db.QueryRow(query, userData.Nickname, userData.Email).Scan(&userData.ID, &userData.Password)
+	if err != nil {
+		return err
+	}
+	return err
+}
+
+func GetActiveSession(userData *utils.User) (bool, error) {
+	var exists bool
+	currentTime := time.Now()
+	fmt.Println(currentTime)
+	query := `SELECT EXISTS(SELECT 1 FROM sessions WHERE user_id = ? );`
+	err := Db.QueryRow(query, userData.ID).Scan(&exists)
+	if err != nil {
+		return false, err
+	}
+	return exists, nil
+}
+
+
+func Get_session(ses string) (int, error) {
+	var sessionid int
+	query := `SELECT user_id FROM sessions WHERE token = ?`
+	err := Db.QueryRow(query, ses).Scan(&sessionid)
+	if err != nil {
+		return 0, err
+	}
+	return sessionid, nil
+}
+

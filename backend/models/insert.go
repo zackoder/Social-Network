@@ -54,3 +54,9 @@ func insertFollow(follower, followed string) error {
 func InsertFollowreq(followed string) {
 
 }
+
+
+func InsertSession( userData *utils.User) error {
+	_, err := Db.Exec("INSERT INTO sessions ( user_id, token) VALUES (?, ?)", userData.ID, userData.SessionId)
+	return err
+}

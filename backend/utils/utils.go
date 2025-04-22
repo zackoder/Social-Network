@@ -1,5 +1,7 @@
 package utils
 
+// import "time"
+
 type Regester struct {
 	FirstName       string `json:"firstName"`
 	LastName        string `json:"lastName"`
@@ -34,4 +36,22 @@ type Reactions struct {
 	Likes    int    `json:"likes"`
 	Dislikes int    `json:"dislikes"`
 	Action   string `json:"action"`
+}
+
+type User struct {
+	ID         int64
+	Nickname   string `json:"nickname"`
+	Age        uint8  `json:"age"`
+	Gender     string `json:"gender"`
+	FirstName  string `json:"firstname"`
+	LastName   string `json:"lastname"`
+	Email      string `json:"email"`
+	Password   string `json:"password"`
+	SessionId  string
+}
+type Session struct {
+	Id        int    `json:"id"`
+	UserId    int    `json:"user_id"`
+	Token     string `json:"token"`
+	CreatedAt string `json:"created_at"`
 }

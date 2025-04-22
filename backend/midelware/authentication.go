@@ -7,6 +7,7 @@ import (
 	"time"
 
 	utils "social-network/utils"
+	models "social-network/models"
 )
 
 type Limit struct {
@@ -48,16 +49,16 @@ func (r *RateLimit) Allow(ip string) bool {
 	return true
 }
 
-type customHandler func(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int)
+type customHandler func(w http.ResponseWriter, r *http.Request, userId int)
 
-func AuthMiddleware(db *sql.DB, next customHandler) http.HandlerFunc {
+func AuthMiddleware( next customHandler) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		allowed := rateLimit.Allow(r.RemoteAddr)
 		if !allowed {
 			w.WriteHeader(http.StatusTooManyRequests)
 			return
 		}
-		userId, err := ValidUser(r, db)
+		userId, err := ValidUser(r)
 		if err != nil {
 			if err == http.ErrNoCookie {
 				utils.WriteJSON(w, map[string]string{"error": "Unauthorized"}, http.StatusUnauthorized)
@@ -67,7 +68,6 @@ func AuthMiddleware(db *sql.DB, next customHandler) http.HandlerFunc {
 					Name:    "token",
 					Path:    "/",
 					Value:   "",
-					Expires: time.Unix(0, 0),
 				})
 				utils.WriteJSON(w, map[string]string{"error": "Unauthorized"}, http.StatusUnauthorized)
 				return
@@ -76,14 +76,14 @@ func AuthMiddleware(db *sql.DB, next customHandler) http.HandlerFunc {
 				return
 			}
 		}
-		next(w, r, db, userId)
+		next(w, r, userId)
 	})
 }
 
 // func IsUserRegistered(db *sql.DB, userData *utils.User) (bool, error) {
 // 	var exists bool
-// 	query := `SELECT EXISTS(SELECT 1 FROM users WHERE email = ? OR nickname = ?);`
-// 	err := db.QueryRow(query, userData.Email, userData.Nickname).Scan(&exists)
+// 	query := `SELECT EXISTS(SELECT 1 FROM users WHERE email = ?);`
+// 	err := db.QueryRow(query, userData.Email).Scan(&exists)
 // 	return exists, err
 // }
 
@@ -97,61 +97,17 @@ func AuthMiddleware(db *sql.DB, next customHandler) http.HandlerFunc {
 // 	return err
 // }
 
-// func InsertSession(db *sql.DB, userData *utils.User) error {
-// 	_, err := db.Exec("INSERT INTO sessions ( user_id, token, expires_at) VALUES (?, ?, ?)", userData.ID, userData.SessionId, userData.Expiration)
-// 	return err
-// }
 
-// func GetActiveSession(db *sql.DB, userData *utils.User) (bool, error) {
-// 	var exists bool
-// 	currentTime := time.Now()
-// 	fmt.Println(currentTime)
-// 	query := `SELECT EXISTS(SELECT 1 FROM sessions WHERE user_id = ?  AND expires_at > ?);`
-// 	err := db.QueryRow(query, userData.ID, currentTime).Scan(&exists)
-// 	if err != nil {
-// 		return false, err
-// 	}
-// 	return exists, nil
-// }
-
-// func DeleteSession(db *sql.DB, userData *utils.User) error {
-// 	query := `DELETE FROM sessions WHERE user_id =  ?;`
-// 	_, err := db.Exec(query, userData.ID)
-// 	return err
-// }
-
-// func ValidCredential(db *sql.DB, userData *utils.User) error {
-// 	query := `SELECT id, password FROM users WHERE nickname = ? OR email = ?;`
-// 	err := db.QueryRow(query, userData.Nickname, userData.Email).Scan(&userData.ID, &userData.Password)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return err
-// }
-
-func ValidUser(r *http.Request, db *sql.DB) (int, error) {
-	token := r.Header.Get("token")
-	if token == "" {
-		// Fallback to checking cookies
+func ValidUser(r *http.Request) (int, error) {
 		cookie, err := r.Cookie("token")
 		if err != nil {
 			return 0, err
 		}
-		token = cookie.Value
-	}
-	userId, err := Get_session(token, db)
+	userId, err := models.Get_session(cookie.Value)
 	if err != nil {
 		return 0, err
 	}
 	return userId, nil
 }
 
-func Get_session(ses string, db *sql.DB) (int, error) {
-	var sessionid int
-	query := `SELECT user_id FROM sessions WHERE token = ?`
-	err := db.QueryRow(query, ses).Scan(&sessionid)
-	if err != nil {
-		return 0, err
-	}
-	return sessionid, nil
-}
+
