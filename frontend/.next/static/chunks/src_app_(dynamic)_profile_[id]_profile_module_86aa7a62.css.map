@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["file:///home/walid/Desktop/social-network/Social-Network/frontend/src/app/%28dynamic%29/profile/%5Bid%5D/profile.module.css"],"sourcesContent":[".container{\n\n}\n\n.header{\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n}\n\n.info{\n    display: flex;\n    /* justify-content: space-between; */\n    align-items: center;\n    gap: 20px;\n}\n.info .boxImage{\n    width: 200px;\n    aspect-ratio: 1/1;\n    position: relative;\n}\n.info .image{\n    border-radius: 30px;\n}\n\n.info .name{}\n.info .name h3{\n    font-weight: bold;\n    font-size: 40px;\n}\n.info .name p{\n    max-width: 300px;\n    margin: 15px 0;\n}\n\n.followers{}"],"names":[],"mappings":"AAAA;;;AAIA;;;;;;AAMA;;;;;;AAMA;;;;;;AAKA;;;;AAIA;;;AACA;;;;;AAIA;;;;;AAKA","debugId":null}}]
-}

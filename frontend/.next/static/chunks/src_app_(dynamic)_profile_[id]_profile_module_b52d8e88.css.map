@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/app/(dynamic)/profile/[id]/profile.module.css"],"sourcesContent":[".container{\n\n}\n\n.header{\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    margin-bottom: 100px;\n}\n\n.info{\n    display: flex;\n    /* justify-content: space-between; */\n    align-items: center;\n    gap: 20px;\n}\n.info .boxImage{\n    width: 200px;\n    aspect-ratio: 1/1;\n    position: relative;\n}\n.info .image{\n    border-radius: 30px;\n}\n\n.info .name{}\n.info .name h3{\n    font-weight: bold;\n    font-size: 40px;\n}\n.info .name p{\n    max-width: 300px;\n    margin: 15px 0;\n}\n\n.follow{\n    display: flex;\n    justify-content: center;\n    align-items: end;\n    gap: 50px;\n    height: 160px;\n}\n.followers{\n    text-align: center;\n}\n.following{\n    text-align: center;\n}"],"names":[],"mappings":"AAAA;;;AAIA;;;;;;;AAOA;;;;;;AAMA;;;;;;AAKA;;;;AAIA;;;AACA;;;;;AAIA;;;;;AAKA;;;;;;;;AAOA;;;;AAGA"}}]
-}

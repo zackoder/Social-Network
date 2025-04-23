@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/components/likeDislike/LikeDislike.module.css"],"sourcesContent":[".reactionContainer{\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    width: 50%;\n}\n\n.like{\n    display: flex;\n    justify-content: start;\n}\n\n.dislike{\n    display: flex;\n    justify-content: end;\n}\n\n.button{\n    background-color: transparent;\n    border: none;\n    cursor: pointer;\n    position: relative;\n}\n\n.button span{\n    position: absolute;\n    top: -2px;\n}"],"names":[],"mappings":"AAAA;;;;;;;AAOA;;;;;AAKA;;;;;AAKA;;;;;;;AAOA"}}]
-}

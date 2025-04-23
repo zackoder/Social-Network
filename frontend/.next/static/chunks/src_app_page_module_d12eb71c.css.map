@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["file:///home/walid/Desktop/social-network/Social-Network/frontend/src/app/page.module.css"],"sourcesContent":[".container{\n  display: flex;\n  align-items: center;\n  gap: 100px;\n}\n\n.sidebar{\n  /* flex: 1; */\n  display: flex;\n  flex-direction: column;\n  gap: 20px;\n}\n\n.posts{\n  \n}"],"names":[],"mappings":"AAAA;;;;;;AAMA;;;;;;AAOA","debugId":null}}]
-}

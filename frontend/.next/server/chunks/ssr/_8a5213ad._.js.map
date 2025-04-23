@@ -1,9 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 6, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
-    {"offset": {"line": 23, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/elements/buttonFollow/buttonFollow.module.css [app-rsc] (css module)"],"sourcesContent":["__turbopack_context__.v({\n  \"button\": \"buttonFollow-module__IvAIoW__button\",\n});\n"],"names":[],"mappings":"AAAA;AACA;AACA"}},
-    {"offset": {"line": 32, "column": 0}, "map": {"version":3,"sources":["file:///home/walid/Desktop/social-network/Social-Network/frontend/src/elements/buttonFollow/buttonFollow.jsx"],"sourcesContent":["import styles from \"./buttonFollow.module.css\"\nimport { RiUserFollowFill } from \"react-icons/ri\";\n\nexport default function ButtonFollow(){\n    return (\n        <button className={styles.button}>\n            <RiUserFollowFill /> Follow\n        </button>\n    );\n}"],"names":[],"mappings":";;;;AAAA;AACA;;;;AAEe,SAAS;IACpB,qBACI,8OAAC;QAAO,WAAW,2JAAA,CAAA,UAAM,CAAC,MAAM;;0BAC5B,8OAAC,8IAAA,CAAA,mBAAgB;;;;;YAAG;;;;;;;AAGhC","debugId":null}},
-    {"offset": {"line": 63, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/app/(dynamic)/profile/[id]/profile.module.css [app-rsc] (css module)"],"sourcesContent":["__turbopack_context__.v({\n  \"boxImage\": \"profile-module__J0IyXW__boxImage\",\n  \"container\": \"profile-module__J0IyXW__container\",\n  \"follow\": \"profile-module__J0IyXW__follow\",\n  \"followers\": \"profile-module__J0IyXW__followers\",\n  \"following\": \"profile-module__J0IyXW__following\",\n  \"header\": \"profile-module__J0IyXW__header\",\n  \"image\": \"profile-module__J0IyXW__image\",\n  \"info\": \"profile-module__J0IyXW__info\",\n  \"name\": \"profile-module__J0IyXW__name\",\n});\n"],"names":[],"mappings":"AAAA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA"}}]
-}

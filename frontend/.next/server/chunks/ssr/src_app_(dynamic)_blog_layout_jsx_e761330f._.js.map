@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file:///home/walid/Desktop/social-network/Social-Network/frontend/src/app/%28dynamic%29/blog/layout.jsx"],"sourcesContent":["\nexport default function BlogLayout({children}){\n    return(\n        <div>\n            Blog Layout\n            {children}\n        </div>\n    )\n}"],"names":[],"mappings":";;;;;AACe,SAAS,WAAW,EAAC,QAAQ,EAAC;IACzC,qBACI,8OAAC;;YAAI;YAEA;;;;;;;AAGb","debugId":null}}]
-}

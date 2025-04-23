@@ -1,8 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 38, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/elements/buttonLogout/button.module.css [app-ssr] (css module)"],"sourcesContent":["__turbopack_context__.v({\n});\n"],"names":[],"mappings":"AAAA;AACA"}},
-    {"offset": {"line": 51, "column": 0}, "map": {"version":3,"sources":["file:///home/walid/Desktop/social-network/Social-Network/frontend/public/images/avatar-profile.svg.mjs%20%28structured%20image%20object%29"],"sourcesContent":["import src from \"IMAGE\";\nexport default { src, width: 640, height: 640, blurDataURL: null, blurWidth: 0, blurHeight: 0 }\n"],"names":[],"mappings":";;;AAAA;;uCACe;IAAE,KAAA,8HAAA,CAAA,UAAG;IAAE,OAAO;IAAK,QAAQ;IAAK,aAAa;IAAM,WAAW;IAAG,YAAY;AAAE","debugId":null}},
-    {"offset": {"line": 70, "column": 0}, "map": {"version":3,"sources":["file:///home/walid/Desktop/social-network/Social-Network/frontend/src/elements/buttonLogout/button.jsx"],"sourcesContent":["\"use client\"\nimport Link from \"next/link\";\n// import Link from \"next/link\";\nimport styles from \"./button.module.css\";\n\nimport image from \"/public/images/avatar-profile.svg\"\nexport default function ButtonLogout(){\n    return(\n        <button \n            className={styles.logout}\n            // href={\"/\"}\n            onClick={()=>{console.log(\"Logout\")}}    \n        >\n            <img src={image} alt=\"Profile\" />\n        </button>\n    );\n}"],"names":[],"mappings":";;;;AACA;AACA,gCAAgC;AAChC;AAEA;AALA;;;;;AAMe,SAAS;IACpB,qBACI,8OAAC;QACG,WAAW,qJAAA,CAAA,UAAM,CAAC,MAAM;QACxB,aAAa;QACb,SAAS;YAAK,QAAQ,GAAG,CAAC;QAAS;kBAEnC,cAAA,8OAAC;YAAI,KAAK,0SAAA,CAAA,UAAK;YAAE,KAAI;;;;;;;;;;;AAGjC","debugId":null}}]
-}
