@@ -3,16 +3,18 @@ import { use, useState } from "react";
 import "./createPost.modules.css"
 
 export default function CreatePost() {
+    
     let [privacy, setPrivacy] = useState("public")
     let [title, setTitle] = useState("")
     let [content, setContent] = useState("")
     let [image, setImage] = useState(null)
-    
+
     const postData = {
         privacy: privacy,
         title: title,
         content: content
     }
+    
     const host = process.env.NEXT_PUBLIC_HOST
 
     const handleSubmit = async (e) => {
