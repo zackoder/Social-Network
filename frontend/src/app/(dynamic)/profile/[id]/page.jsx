@@ -5,7 +5,7 @@ import Post from "@/components/post/post";
 
 export default function page(props){
     let idUser = props.params.id
-    
+    //`/api/${post.poster}?id=${post.poster}`
     return(
         <div className={styles.container}>
             <header className={styles.header}>

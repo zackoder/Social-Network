@@ -1,6 +1,6 @@
 import LikeDislikeComment from "../likeDislikeComment/likeDislikeComment";
 import styles from "./post.module.css"
-import Image from "next/image";
+// import Image from "next/image";
 import Link from "next/link";
 
 async function getData() {
@@ -22,7 +22,7 @@ export default async function Post() {
             {posts.map((post) => (
                 <div className={styles.post} key={post.id}>
                     <div className={styles.header}>
-                        <Link href="/profile/2">
+                        <Link href={"/profile?id=1&profile=zack"}>
                             <div className={styles.containerHeader}>
                                 <div className={styles.imageContainer}>
                                     {/* <Image
@@ -44,7 +44,7 @@ export default async function Post() {
                     </div>
                     <div className={styles.imagePost}>
                         {post.image ? (                            
-                            <Image
+                            <img
                                 className={styles.image}
                                 src={`http://${post.image}`}
                                 alt="post"

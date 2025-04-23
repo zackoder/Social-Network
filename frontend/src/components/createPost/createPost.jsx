@@ -7,6 +7,7 @@ export default function CreatePost() {
     let [title, setTitle] = useState("")
     let [content, setContent] = useState("")
     let [image, setImage] = useState(null)
+    
     const postData = {
         privacy: privacy,
         title: title,
