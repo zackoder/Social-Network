@@ -10,7 +10,10 @@ export default function Login() {
     email: "",
     password: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const host = process.env.NEXT_PUBLIC_HOST;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,11 +25,37 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError("");
+
     try {
-      console.log("Login attempt:", formData);
+      const response = await fetch(`${host}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+        credentials: "include", // Important for cookies
+      });
+
+      if (!response.ok) {
+        throw new Error("Invalid email or password");
+      }
+
+      const data = await response.json();
+
+      // Clear form
+      setFormData({
+        email: "",
+        password: "",
+      });
+
+      // Redirect to home page on successful login
       router.push("/");
     } catch (err) {
-      setError("Login failed. Please try again.");
+      setError(err.message || "Login failed. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -51,6 +80,8 @@ export default function Login() {
               value={formData.email}
               onChange={handleChange}
               required
+              placeholder="Enter your email"
+              disabled={isLoading}
             />
           </div>
           <div className="form-group">
@@ -62,10 +93,23 @@ export default function Login() {
               value={formData.password}
               onChange={handleChange}
               required
+              placeholder="Enter your password"
+              disabled={isLoading}
             />
           </div>
-          <button type="submit" className="login-button">
-            Login
+
+          <div className="login-options">
+            <div className="remember-me">
+              <input type="checkbox" id="remember" />
+              <label htmlFor="remember">Remember me</label>
+            </div>
+            <Link href="/forgot-password" className="forgot-password">
+              Forgot Password?
+            </Link>
+          </div>
+
+          <button type="submit" className="login-button" disabled={isLoading}>
+            {isLoading ? "Logging in..." : "Login"}
           </button>
         </form>
       </div>
