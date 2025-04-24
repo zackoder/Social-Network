@@ -25,11 +25,11 @@ func InsertPost(post utils.Post) (int, error) {
 }
 
 func InserOrUpdate(follower, followed string) (string, error) {
-	privacy, err := GetProfilePrivecy(followed)
+	privacy, err := IsPrivateProfile(followed)
 	if err != nil {
 		return "", err
 	}
-	if privacy != "public" {
+	if privacy {
 
 		if err := insertFollow(follower, followed); err != nil {
 			if err := deletfollow(follower, followed); err != nil {

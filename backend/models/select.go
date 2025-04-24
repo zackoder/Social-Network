@@ -54,17 +54,26 @@ func GetProfilePost(user_id, offset int) []utils.Post {
 	return posts
 }
 
-func GetProfilePrivecy(followed string) (string, error) {
-	getPrivacy := "SELECT privacy FROM users WHERE id = ?"
+func IsPrivateProfile(followed string) (bool, error) {
+	query := "SELECT privacy FROM users WHERE id = ?"
 	var privacy string
-	err := Db.QueryRow(getPrivacy, followed).Scan(&privacy)
+	err := Db.QueryRow(query, followed).Scan(&privacy)
 	if err != nil {
 		fmt.Println(err)
-		return "", err
+		return false, err
 	}
-	return privacy, nil
+	return privacy == "private", nil
 }
-
+func CheckPostPrivacy(post string) (string, error) {
+	query := "SELECT post_privacy FROM posts WHERE id = ?"
+		var privacy string
+	err := Db.QueryRow(query,post).Scan(&privacy)
+	if err != nil {
+		fmt.Println("is privet post",err)
+		return "",err
+	}
+	return privacy,nil
+}
 ///////////////////////////login///////////////////////////////////////////
 
 func ValidCredential(userData *utils.User) error {
