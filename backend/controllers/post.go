@@ -79,7 +79,7 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
 		if !profilPrivacy {
 			profileOwnerId,err := strconv.Atoi(profilOwnerId)
 			if err != nil {
-				fmt.Println("we cant convert ")
+				fmt.Println("we cant convert")
 				return
 			} 
 			userPostsForDisplay := models.GetProfilePost(profileOwnerId,0)
