@@ -24,6 +24,13 @@ func InsertPost(post utils.Post) (int, error) {
 	return int(lastId), nil
 }
 
+func InsertFriends(id int, friendes []string) {
+	insertFriend := "INSERT INTO friends (post_id, friend_id) VALUES(?,?)"
+	for _, friend := range friendes {
+		Db.Exec(insertFriend, id, friend)
+	}
+}
+
 func InserOrUpdate(follower, followed string) (string, error) {
 	privacy, err := IsPrivateProfile(followed)
 	if err != nil {
@@ -53,6 +60,28 @@ func insertFollow(follower, followed string) error {
 
 func InsertFollowreq(followed string) {
 
+}
+
+func InsertNewGroup(group *utils.NewGroup, user_id int) error {
+	insertGroup := "INSERT INTO groups (name, description, group_oner) VALUES (?,?,?)"
+	res, err := Db.Exec(insertGroup, group.Title, group.Content, user_id)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	lastId, _ := res.LastInsertId()
+	group.Id = int(lastId)
+	return nil
+}
+
+func InsertMumber(group_id, user_id int) error {
+	insertMumber := "INSERT INTO group_members (group_id, user_id) VALUES (?,?)"
+	if _, err := Db.Exec(insertMumber, group_id, user_id); err != nil {
+		fmt.Println(err)
+		return err
+	}
+	fmt.Println("user added")
+	return nil
 }
 
 

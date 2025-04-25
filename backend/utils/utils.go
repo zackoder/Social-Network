@@ -38,6 +38,12 @@ type Reactions struct {
 	Action   string `json:"action"`
 }
 
+type NewGroup struct {
+	Id      int    `json:"id"`
+	Title   string `json:"title"`
+	Content string `json:"content"`
+}
+
 type User struct {
 	ID         int64
 	Nickname   string `json:"nickname"`

@@ -25,6 +25,9 @@ func QueryPosts(offset int, host string) []utils.Post {
 		if post.Image != "" {
 			post.Image = host + post.Image
 		}
+		if post.Image != "" {
+			post.Image = host + post.Image
+		}
 		posts = append(posts, post)
 	}
 	return posts
