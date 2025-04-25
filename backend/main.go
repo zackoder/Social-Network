@@ -7,25 +7,35 @@ import (
 
 	"social-network/controllers"
 	"social-network/db"
+	"social-network/midleware"
 	"social-network/models"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
+
 func main() {
+mux := http.NewServeMux()
+
+	mux.Handle("/login",midleware.WithCORS(http.HandlerFunc(controllers.Login)))
+	mux.Handle("/register", midleware.WithCORS(http.HandlerFunc(controllers.Register)))
+	mux.Handle("POST /addPost", midleware.WithCORS(http.HandlerFunc(controllers.AddPost)))
+	mux.Handle("POST /followReq", midleware.WithCORS(http.HandlerFunc(controllers.HandleFollow)))
+	mux.Handle("POST /updatePrivacy", midleware.WithCORS(http.HandlerFunc(controllers.UpdatePrivacy)))
+	mux.Handle("POST /creategroup", midleware.WithCORS(http.HandlerFunc(controllers.CreateGroup)))
+	mux.Handle("POST /joinReq", midleware.WithCORS(http.HandlerFunc(controllers.JoinReq)))
+	
+
 	models.Db = db.InitDB()
 	defer models.Db.Close()
-	http.HandleFunc("/uploads/", controllers.HandelPics)
-	http.HandleFunc("/login", controllers.Login)
-	http.HandleFunc("/register", controllers.Register)
-	http.HandleFunc("/addPost", controllers.AddPost)
-	http.HandleFunc("/api/posts", controllers.Posts)
-	http.HandleFunc("/followReq", controllers.HandleFollow)
-	http.HandleFunc("/updatePrivacy", controllers.UpdatePrivacy)
-	 http.HandleFunc("/group/{GroupName}", controllers.Group)
-    http.HandleFunc("/creategroup", controllers.CreateGroup)
-    http.HandleFunc("/joinReq", controllers.JoinReq)
-    http.HandleFunc("/ws", controllers.Websocket)
+	mux.HandleFunc("GET /uploads/", controllers.HandelPics)
+	mux.HandleFunc("/api/posts", controllers.Posts)
+	mux.HandleFunc("GET /group/{GroupName}", controllers.Group)
+    mux.HandleFunc("/ws", controllers.Websocket)
 
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8080", mux)
 }
+
+
+
+

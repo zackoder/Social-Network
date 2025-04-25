@@ -13,6 +13,7 @@ func QueryPosts(offset int, host string) []utils.Post {
 
 	rows, err := Db.Query(queryPosts)
 	if err != nil {
+		fmt.Println("ana hnaa",err)
 		return nil
 	}
 	defer rows.Close()
@@ -84,7 +85,7 @@ func CheckPostPrivacy(post string) (string, error) {
 
 func ValidCredential(userData *utils.User) error {
 	query := `SELECT id, password FROM users WHERE nickname = ? OR email = ?;`
-	err := Db.QueryRow(query, userData.Nickname, userData.Email).Scan(&userData.ID, &userData.Password)
+	err := Db.QueryRow(query, userData.Email, userData.Email).Scan(&userData.ID, &userData.Password)
 	if err != nil {
 		return err
 	}
