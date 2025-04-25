@@ -65,7 +65,7 @@ export default function Login() {
         <h2>Login to Your Account</h2>
         <p className="login-subtitle">
           Don't have an account?{" "}
-          <Link href="/signup" className="login-link">
+          <Link href="/sign-up" className="login-link">
             Sign up here
           </Link>
         </p>
