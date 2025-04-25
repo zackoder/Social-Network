@@ -7,6 +7,7 @@ export default function Signup() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    confirmPassword: "",
     firstName: "",
     lastName: "",
     dateOfBirth: "",
@@ -40,7 +41,7 @@ export default function Signup() {
         submitData.append("avatar", avatar);
       }
 
-      const response = await fetch(`${host}/signup`, {
+      const response = await fetch(`${host}/register`, {
         method: "POST",
         body: submitData,
       });
@@ -51,10 +52,10 @@ export default function Signup() {
 
       const data = await response.json();
 
-
       setFormData({
         email: "",
         password: "",
+        confirmPassword: "",
         firstName: "",
         lastName: "",
         dateOfBirth: "",
@@ -85,34 +86,9 @@ export default function Signup() {
           </div>
         )}
         <form className="signup-form" onSubmit={handleSubmit}>
+          
           <div className="form-group">
-            <label htmlFor="email">Email*</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter your email"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password">Password*</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="firstName">First Name*</label>
+            <label htmlFor="firstName">First Name</label>
             <input
               id="firstName"
               name="firstName"
@@ -125,7 +101,7 @@ export default function Signup() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="lastName">Last Name*</label>
+            <label htmlFor="lastName">Last Name</label>
             <input
               id="lastName"
               name="lastName"
@@ -138,7 +114,19 @@ export default function Signup() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="dateOfBirth">Date of Birth*</label>
+            <label htmlFor="nickname">Nickname (Optional)</label>
+            <input
+              id="nickname"
+              name="nickname"
+              type="text"
+              value={formData.nickname}
+              onChange={handleChange}
+              placeholder="Enter your nickname"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="dateOfBirth">Date of Birth</label>
             <input
               id="dateOfBirth"
               name="dateOfBirth"
@@ -150,14 +138,41 @@ export default function Signup() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="nickname">Nickname (Optional)</label>
+            <label htmlFor="email">Email</label>
             <input
-              id="nickname"
-              name="nickname"
-              type="text"
-              value={formData.nickname}
+              id="email"
+              name="email"
+              type="email"
+              required
+              value={formData.email}
               onChange={handleChange}
-              placeholder="Enter your nickname"
+              placeholder="Enter your email"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter your password"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="password">Confirm Password</label>
+            <input
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              required
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder="Enter your password"
             />
           </div>
 
