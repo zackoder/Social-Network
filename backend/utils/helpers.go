@@ -1,9 +1,10 @@
 package utils
 
 import (
+	"strings"
+
 	"net/http"
 	"regexp"
-	"strings"
 
 	"github.com/gofrs/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -15,6 +16,16 @@ func Hashpass(password string) string {
 		return ""
 	}
 	return string(hashedPasswd)
+}
+
+func CheckExtension(FileExtension string) bool {
+	extensions := []string{".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp", ".ico", ".heif", ".apng"}
+	for _, extension := range extensions {
+		if strings.Contains(FileExtension, extension) {
+			return true
+		}
+	}
+	return false
 }
 
 func IsValidEmail(email *string) bool {

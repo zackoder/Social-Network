@@ -7,6 +7,10 @@ import (
 )
 
 func HandleFollow(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		utils.WriteJSON(w, map[string]string{"error": "Not allowed"}, http.StatusMethodNotAllowed)
+		return
+	}
 	follower := r.URL.Query().Get("follower")
 	followed := r.URL.Query().Get("followed")
 	privacy,err := models.IsPrivateProfile(followed) 

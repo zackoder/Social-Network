@@ -15,15 +15,16 @@ import (
 func main() {
 	models.Db = db.InitDB()
 	defer models.Db.Close()
+	// serving uploaded images
+	http.HandleFunc("/uploads/", controllers.HandelPics)
+
 	http.HandleFunc("/login", controllers.Login)
 	http.HandleFunc("/register", controllers.Register)
-	http.HandleFunc(" POST /addPost", controllers.AddPost)
+	http.HandleFunc("/addPost", controllers.AddPost)
 	http.HandleFunc("/uploads/", controllers.HandelPics)
 	http.HandleFunc("/api/posts", controllers.Posts)
 	http.HandleFunc("/followReq", controllers.HandleFollow)
 	http.HandleFunc("/updatePrivacy", controllers.UpdatePrivacy)
-	http.HandleFunc("GET /api/getProfilePosts/{userid}",controllers.GetProfilePosts)
-	http.HandleFunc("POST /api/logout",controllers.LogoutHandler)
 
 	http.ListenAndServe(":8080", nil)
 }
