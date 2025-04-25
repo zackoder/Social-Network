@@ -1,0 +1,11 @@
+.profile{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.imgProfile{}
+.imgProfile .image{}
+
+.name{}
