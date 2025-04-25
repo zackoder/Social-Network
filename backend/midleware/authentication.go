@@ -1,4 +1,4 @@
-package utils
+package midleware
 
 import (
 	"database/sql"
@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	utils "social-network/utils"
 	models "social-network/models"
+	utils "social-network/utils"
 )
 
 type Limit struct {
@@ -51,7 +51,7 @@ func (r *RateLimit) Allow(ip string) bool {
 
 type customHandler func(w http.ResponseWriter, r *http.Request, userId int)
 
-func AuthMiddleware( next customHandler) http.HandlerFunc {
+func AuthMiddleware(next customHandler) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		allowed := rateLimit.Allow(r.RemoteAddr)
 		if !allowed {
@@ -72,7 +72,7 @@ func AuthMiddleware( next customHandler) http.HandlerFunc {
 				utils.WriteJSON(w, map[string]string{"error": "Unauthorized"}, http.StatusUnauthorized)
 				return
 			} else {
-				utils.WriteJSON(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				utils.WriteJSON(w, map[string]string{"error": http.StatusText(http.StatusInternalServerError)}, http.StatusInternalServerError)
 				return
 			}
 		}
@@ -110,4 +110,19 @@ func ValidUser(r *http.Request) (int, error) {
 	return userId, nil
 }
 
+func WithCORS(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000") 
+        w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+        w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        w.Header().Set("Access-Control-Allow-Credentials", "true")
 
+        // Handle preflight
+        if r.Method == "OPTIONS" {
+            w.WriteHeader(http.StatusOK)
+            return
+        }
+
+        next.ServeHTTP(w, r)
+    })
+}

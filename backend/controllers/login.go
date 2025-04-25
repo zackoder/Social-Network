@@ -16,15 +16,17 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, "invalid input data", http.StatusBadRequest)
 		return
 	}
+	fmt.Println("test-------------------",userData.Email)
+	fmt.Println("test", userData.Password)
 
-	if len(userData.Nickname) < 4 || len(userData.Password) < 5 || len(userData.Nickname) > 30 || len(userData.Password) > 64 {
-		utils.WriteJSON(w, "invalid username/password/email", http.StatusBadRequest)
-		return
-	}
+	// if len(userData.Email) < 4 || len(userData.Password) < 5 || len(userData.Email) > 30 || len(userData.Password) > 64 {
+	// 	utils.WriteJSON(w, "invalid username/password/email", http.StatusBadRequest)
+	// 	return
+	// }
 
-	if utils.IsValidEmail(&userData.Nickname) {
-		userData.Email, userData.Nickname = userData.Nickname, userData.Email
-	}
+	// if utils.IsValidEmail(&userData.Email) {
+	// 	 userData.Email = userData.Email, userData.Email
+	// }
 
 	password := userData.Password
 	err := models.ValidCredential(&userData)

@@ -62,6 +62,7 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 	host := r.Host
 	offset := 0
 	posts := models.QueryPosts(offset, host)
+	fmt.Println(posts)
 	utils.WriteJSON(w, posts, 200)
 }
 
@@ -75,9 +76,8 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
 	
 	 
 	userId, err := models.Get_session(cookie.Value)
-	fmt.Println(userId)
 	if err != nil {
-	utils.WriteJSON(w,map[string]string{"err":"user id not found "}, http.StatusNotFound)
+	utils.WriteJSON(w,map[string]string{"error":"user id not found "}, http.StatusNotFound)
 		
 		return
 	}
@@ -88,7 +88,7 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
 	}else if profilOwnerId != useridstr{
 		profilPrivacy,err := models.IsPrivateProfile(profilOwnerId)
 		if err != nil{
-	utils.WriteJSON(w,map[string]string{"err":"internal server err"}, http.StatusInternalServerError)
+	utils.WriteJSON(w,map[string]string{"error":"not found"}, http.StatusNotFound)
 		}
 		if !profilPrivacy {
 			profileOwnerId,err := strconv.Atoi(profilOwnerId)
@@ -97,7 +97,7 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
 				return
 			} 
 			userPostsForDisplay := models.GetProfilePost(profileOwnerId,0)
-					utils.WriteJSON(w, userPostsForDisplay, 200)
+			utils.WriteJSON(w, userPostsForDisplay, 200)
 
 		}else if profilPrivacy {
 			// checkPostPrivacy,err := models.CheckPostPrivacy()

@@ -6,6 +6,8 @@ import Link from "next/link";
 async function getData() {
     const host = process.env.NEXT_PUBLIC_HOST;
     const response = await fetch(`${host}/api/posts`);
+    //const res = await response.json();
+    console.log("response ------", response.ok);
     if (!response.ok) {
         throw new Error('Failed to Fetch Data');
     }
