@@ -35,3 +35,9 @@ type Reactions struct {
 	Dislikes int    `json:"dislikes"`
 	Action   string `json:"action"`
 }
+
+type NewGroup struct {
+	Id      int    `json:"id"`
+	Title   string `json:"title"`
+	Content string `json:"content"`
+}
