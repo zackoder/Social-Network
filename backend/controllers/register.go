@@ -15,6 +15,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
+	// max image size 10Mb
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Too larg file"}, http.StatusRequestEntityTooLarge)
 		return
