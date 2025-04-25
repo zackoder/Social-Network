@@ -114,3 +114,22 @@ func Get_session(ses string) (int, error) {
 	return sessionid, nil
 }
 
+
+func GetClientGroups(user_id int) []int {
+    var groups []int
+    selectGroups := "SELECT group_id FROM group_members WHERE user_id = ?"
+    rows, err := Db.Query(selectGroups, user_id)
+    if err != nil {
+        fmt.Println(err)
+        return nil
+    }
+    defer rows.Close()
+    for rows.Next() {
+        var group_id int
+        if err := rows.Scan(&group_id); err != nil {
+            fmt.Println(err)
+        }
+        groups = append(groups, group_id)
+    }
+    return groups
+}
