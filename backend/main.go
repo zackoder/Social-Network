@@ -33,6 +33,7 @@ mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/getProfilePosts/{userid}",controllers.GetProfilePosts)
 	mux.HandleFunc("GET /api/posts", controllers.Posts)
 	mux.HandleFunc("GET /group/{GroupName}", controllers.Group)
+	mux.HandleFunc("GET /api/getfollowers",controllers.GetFollowers)
     mux.HandleFunc("/ws", controllers.Websocket)
 
 	http.ListenAndServe(":8080", mux)

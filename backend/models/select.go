@@ -37,7 +37,7 @@ func QueryPosts(offset int, host string) []utils.Post {
 	return posts
 }
 
-func GetProfilePost(user_id, offset int) []utils.Post {
+func GetProfilePost(user_id, offset int) ([]utils.Post,error) {
 	var posts []utils.Post
 	fmt.Printf("Querying posts for user_id=%d with offset=%d\n", user_id, offset)
 
@@ -45,7 +45,7 @@ func GetProfilePost(user_id, offset int) []utils.Post {
 	rows, err := Db.Query(query, user_id, offset)
 	if err != nil {
 		fmt.Println("Error querying posts:", err)
-		return nil
+		return nil,err
 	}
 	defer rows.Close()
 	for rows.Next() {
@@ -59,9 +59,9 @@ func GetProfilePost(user_id, offset int) []utils.Post {
 	}
 	if err = rows.Err(); err != nil {
 		fmt.Println("Error during rows iteration:", err)
-		return nil
+		return nil,err
 	}
-	return posts
+	return posts,err
 }
 
 func IsPrivateProfile(followed string) (bool, error) {
@@ -136,4 +136,87 @@ func GetClientGroups(user_id int) []int {
         groups = append(groups, group_id)
     }
     return groups
+}
+
+func IsFollower(profileOwnerID int, viewerID int) (bool, error) {
+	query := `SELECT COUNT(*) FROM followers WHERE followed_id = ? AND follower_id = ?`
+	var count int
+	err := Db.QueryRow(query, profileOwnerID, viewerID).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
+func GetFollowers(userID int) ([]int, error) {
+	query := `SELECT follower_id FROM followers WHERE followed_id = ?`
+	rows, err := Db.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	var followerIDs []int
+	for rows.Next() {
+		var followerID int
+		if err := rows.Scan(&followerID); err != nil {
+			return nil, err
+		}
+		followerIDs = append(followerIDs, followerID)
+	}
+	return followerIDs, nil
+}
+func GetPublicAndAlmostPrivatePosts(profileOwnerID int, viewerID int) ([]utils.Post, error) {
+	query := `SELECT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt
+			  FROM posts p
+			  JOIN users u ON p.user_id = u.id
+			  WHERE p.user_id = ? 
+			  AND (p.post_privacy = 'public' OR p.post_privacy = 'almostPrivate')
+			  ORDER BY p.createdAt DESC`
+
+	rows, err := Db.Query(query, profileOwnerID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var posts []utils.Post
+	for rows.Next() {
+		var post utils.Post
+		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
+	return posts, nil
+}
+
+func GetAllowedPosts(profileOwnerID int, viewerID int) ([]utils.Post, error) {
+	query := `
+	SELECT DISTINCT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt
+	FROM posts p
+	JOIN users u ON p.user_id = u.id
+	LEFT JOIN private_post_viewers ppv ON p.id = ppv.post_id
+	WHERE p.user_id = ?
+	AND (
+		p.post_privacy = 'public'
+		OR (p.post_privacy = 'almostPrivate')
+		OR (p.post_privacy = 'private' AND ppv.viewer_id = ?)
+	)
+	ORDER BY p.createdAt DESC
+	`
+
+	rows, err := Db.Query(query, profileOwnerID, viewerID)
+	if err != nil {
+		return nil, err
+	}
+	var posts []utils.Post
+	for rows.Next() {
+		var post utils.Post
+		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
+	return posts, nil
 }
