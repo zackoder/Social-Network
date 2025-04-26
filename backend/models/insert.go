@@ -89,3 +89,19 @@ func InsertSession( userData *utils.User) error {
 	_, err := Db.Exec("INSERT INTO sessions ( user_id, token) VALUES (?, ?)", userData.ID, userData.SessionId)
 	return err
 }
+
+func AddPrivateViewers(postID int, viewerIDs []int) error {
+	query := `INSERT INTO private_post_viewers (post_id, viewer_id) VALUES (?, ?)`
+
+	stmt, err := Db.Prepare(query)
+	if err != nil {
+		return err
+	}
+	for _, viewerID := range viewerIDs {
+		_, err := stmt.Exec(postID, viewerID)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
