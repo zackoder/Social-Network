@@ -11,18 +11,6 @@
       "static/chunks/main-app.js",
       "static/css/app/page.css",
       "static/chunks/app/page.js"
-    ],
-    "/(static)/login/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/(static)/login/page.css",
-      "static/chunks/app/(static)/login/page.js"
-    ],
-    "/(static)/sign-up/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/(static)/sign-up/page.css",
-      "static/chunks/app/(static)/sign-up/page.js"
     ]
   }
 }

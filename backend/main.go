@@ -24,12 +24,14 @@ mux := http.NewServeMux()
 	mux.Handle("POST /updatePrivacy", midleware.WithCORS(http.HandlerFunc(controllers.UpdatePrivacy)))
 	mux.Handle("POST /creategroup", midleware.WithCORS(http.HandlerFunc(controllers.CreateGroup)))
 	mux.Handle("POST /joinReq", midleware.WithCORS(http.HandlerFunc(controllers.JoinReq)))
-	
+	mux.Handle("POST /api/logout", midleware.WithCORS(http.HandlerFunc(controllers.LogoutHandler)))
 
+	
 	models.Db = db.InitDB()
 	defer models.Db.Close()
 	mux.HandleFunc("GET /uploads/", controllers.HandelPics)
-	mux.HandleFunc("/api/posts", controllers.Posts)
+	mux.HandleFunc("GET /api/getProfilePosts/{userid}",controllers.GetProfilePosts)
+	mux.HandleFunc("GET /api/posts", controllers.Posts)
 	mux.HandleFunc("GET /group/{GroupName}", controllers.Group)
     mux.HandleFunc("/ws", controllers.Websocket)
 

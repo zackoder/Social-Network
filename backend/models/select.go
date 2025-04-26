@@ -9,7 +9,10 @@ import (
 
 func QueryPosts(offset int, host string) []utils.Post {
 	var posts []utils.Post
-	queryPosts := `SELECT * FROM posts`
+	queryPosts := `SELECT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt
+	FROM posts p
+	JOIN users u ON p.user_id = u.id`
+
 
 	rows, err := Db.Query(queryPosts)
 	if err != nil {
@@ -19,7 +22,7 @@ func QueryPosts(offset int, host string) []utils.Post {
 	defer rows.Close()
 	for rows.Next() {
 		var post utils.Post
-		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster, &post.Image, &post.CreatedAt)
+		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Poster_name , &post.Image, &post.CreatedAt)
 		if err != nil {
 			fmt.Println("scaning error:", err)
 		}
@@ -48,7 +51,7 @@ func GetProfilePost(user_id, offset int) []utils.Post {
 	for rows.Next() {
 		var post utils.Post
 
-		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster, &post.Image, &post.CreatedAt)
+		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Image, &post.CreatedAt)
 		if err != nil {
 			fmt.Println("error scaning the rows", err)
 		}
