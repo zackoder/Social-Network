@@ -69,7 +69,8 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if the profile is private we use the func IsFollower to chekck the list of followers
+	// if the profile is private we use the func IsFollower to chekck the list of followers if the visiter is amog the follower 
+	// we show him the public posts + the olmost privet posts 
 	isFollower, err := models.IsFollower(profileOwnerID, viewerID)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Failed to check follower status"}, http.StatusInternalServerError)
@@ -81,7 +82,9 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	 // here we fetch privet posts only for people tha are allowed to see them
+	 // here we fetch privet posts only for people tha are allowed to see them by 
+	 // hecking the the user id across the privet post viewrs that stors the post 
+	 // with people allowed to see it 
 	posts, err := models.GetAllowedPosts(profileOwnerID, viewerID)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Failed to fetch posts"}, http.StatusInternalServerError)
