@@ -59,7 +59,7 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !profilePrivacy {
-		// if profile is public we show all posts exept the privet ones 
+		// if the  profile is public we show all posts exept the privet ones 
 		publicPosts, err := models.GetPublicAndAlmostPrivatePosts(profileOwnerID, viewerID)
 		if err != nil {
 			utils.WriteJSON(w, map[string]string{"error": "Failed to fetch posts"}, http.StatusInternalServerError)
