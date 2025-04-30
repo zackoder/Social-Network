@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"social-network/models"
 	"social-network/utils"
@@ -23,6 +24,7 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	profileOwnerIDStr := r.URL.Query().Get("id")
+	fmt.Println(profileOwnerIDStr)
 	if profileOwnerIDStr == "" {
 		utils.WriteJSON(w, map[string]string{"error": "Profile ID is missing"}, http.StatusBadRequest)
 		return
@@ -33,7 +35,7 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Session not found"}, http.StatusUnauthorized)
 		return
 	}
-
+	fmt.Println(viewerID)
 	// in casse u wanna see ur profile 
 	if strconv.Itoa(viewerID) == profileOwnerIDStr {
 		allPosts, err := models.GetProfilePost(viewerID, 0)  
@@ -59,7 +61,8 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !profilePrivacy {
-		// if the  profile is public we show all posts exept the privet ones 
+		// if the  profile is public we show all posts exept the privet ones and the almostPrivet posts 
+		// we check them one by one we fetch them in case the visiter is a follower .
 		publicPosts, err := models.GetPublicAndAlmostPrivatePosts(profileOwnerID, viewerID)
 		if err != nil {
 			utils.WriteJSON(w, map[string]string{"error": "Failed to fetch posts"}, http.StatusInternalServerError)
@@ -82,7 +85,7 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	 // here we fetch privet posts only for people tha are allowed to see them by 
+	 // here we fetch privet posts only for people that are allowed to see them by 
 	 // hecking the the user id across the privet post viewrs that stors the post 
 	 // with people allowed to see it 
 	posts, err := models.GetAllowedPosts(profileOwnerID, viewerID)
