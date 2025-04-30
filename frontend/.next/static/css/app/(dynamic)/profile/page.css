@@ -1,0 +1,229 @@
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[3]!./src/elements/buttonFollow/buttonFollow.module.css ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************/
+.buttonFollow_button__0ktKd{
+    background-color: var(--color-primary);
+    color: #333;
+    padding: 10px 30px;
+    outline: none;
+    border: 1px solid var(--color-primary);
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all .5s ease-in-out;
+}
+
+.buttonFollow_button__0ktKd:hover{
+    background-color: #06d69eaf;
+    color: #CCC;
+}
+/*!****************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[3]!./src/app/(dynamic)/profile/profile.module.css ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************/
+.profile_container__yHJqJ{
+
+}
+
+.profile_header__8cNaW{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 100px;
+}
+
+.profile_info__hYbRz{
+    display: flex;
+    /* justify-content: space-between; */
+    align-items: center;
+    gap: 20px;
+}
+.profile_info__hYbRz .profile_boxImage__3eDFK{
+    width: 200px;
+    aspect-ratio: 1/1;
+    position: relative;
+}
+.profile_info__hYbRz .profile_image__Kzou8{
+    border-radius: 30px;
+}
+
+.profile_info__hYbRz .profile_name__KLOuU{}
+.profile_info__hYbRz .profile_name__KLOuU h3{
+    font-weight: bold;
+    font-size: 40px;
+}
+.profile_info__hYbRz .profile_name__KLOuU p{
+    max-width: 300px;
+    margin: 15px 0;
+}
+
+.profile_follow__oKGPu{
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    gap: 50px;
+    height: 160px;
+}
+.profile_followers__bAxFA{
+    text-align: center;
+}
+.profile_following__fm_0r{
+    text-align: center;
+}
+/*!**************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./src/components/likeDislikeComment/likeDislikeComment.modules.css ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************************************/
+.reactionContainer{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 50%;
+}
+
+.buttons{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    /*position: relative;*/
+}
+
+.buttons button{
+    cursor: pointer;
+}
+
+.buttons button span{
+    position: relative;
+    top: -2px;
+    /* left: 0; */
+}
+
+.form{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+/* .reactionContainer{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 50%;
+}
+
+.like{
+    display: flex;
+    justify-content: start;
+}
+
+.dislike{
+    display: flex;
+    justify-content: end;
+}
+
+.button{
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    position: relative;
+}
+
+.button span{
+    position: absolute;
+    top: -2px;
+} */
+/*!*******************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[3]!./src/components/post/post.module.css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************/
+.post_container__jnjww{
+    /* border-left: 1px solid #333;
+    border-right: 1px solid #333; */
+    border: 2px solid #333;
+    padding: 20px;
+}
+
+.post_container__jnjww .post_post__k4L86{
+    display: flex;
+    /* justify-content: center;
+    align-items: center; */
+    flex-direction: column;
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #333;
+}
+.post_header__8UWoW {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    width: 100%;
+}
+
+.post_header__8UWoW .post_containerHeader___G0Cy{
+    display: flex;
+    align-items: center;
+    /* justify-content: start;
+    width: 100%; */
+}
+
+.post_imageContainer__1qrHN{
+    width: 50px;
+    aspect-ratio: 1 / 1;
+    background-color: var(--color-primary);
+    border-radius: 50%;
+}
+.post_header__8UWoW h2{
+    margin-left: 10px;
+}
+.post_imageContainer__1qrHN .post_image__LMMC_{
+    object-fit: cover;
+}
+.post_content__fu_Ia{
+    margin: 15px 20px;
+    line-height: 1.5em;
+    font-size: 17px;
+    /* align-items: start; */
+}
+.post_imagePost__oKWo2{
+    /* width: 95%; */
+    /* min-height: 300px; */
+    /* position: relative; */
+    /* margin-bottom: 20px;
+    margin-left: 20px; */
+    display: flex;
+    align-items: center;
+}
+.post_imagePost__oKWo2 .post_image__LMMC_{
+    object-fit: cover;
+    border-radius: 7px;
+    width: 95%;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.post_reaction___CoG4{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.post_reaction___CoG4 .post_dislike__bsNdZ{
+    display: flex;
+    align-items: center;
+}
+.post_dislike__bsNdZ svg{
+    margin-top: 4px;
+}
+
+.post_reaction___CoG4 .post_comment__j9lnu{
+    display: flex;
+    align-items: center;
+}
+.post_reaction___CoG4 .post_comment__j9lnu span{
+    margin-bottom: 2px;
+}
