@@ -110,7 +110,7 @@ func GetActiveSession(userData *utils.User) (bool, error) {
 
 func Get_session(ses string) (int, error) {
 	var sessionid int
-	query := `SELECT user_id FROM sessions WHERE token = ?`
+	query := `SELECT user_id FROM sessions WHERE token = ?;`
 	err := Db.QueryRow(query, ses).Scan(&sessionid)
 	if err != nil {
 		return 0, err
@@ -164,15 +164,27 @@ func GetFollowers(userID int) ([]int, error) {
 	}
 	return followerIDs, nil
 }
-func GetPublicAndAlmostPrivatePosts(profileOwnerID int, viewerID int) ([]utils.Post, error) {
-	query := `SELECT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt
-			  FROM posts p
-			  JOIN users u ON p.user_id = u.id
-			  WHERE p.user_id = ? 
-			  AND (p.post_privacy = 'public' OR p.post_privacy = 'almostPrivate')
-			  ORDER BY p.createdAt DESC`
+func GetPublicAndAlmostPrivatePosts(profileOwnerID, viewerID int) ([]utils.Post, error) {
+	query := `
+	SELECT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt
+	FROM posts p
+	JOIN users u ON p.user_id = u.id
+	WHERE p.user_id = ?
+	  AND (
+		p.post_privacy = 'public'
+		OR (
+			p.post_privacy = 'almostPrivate'
+			AND EXISTS (
+				SELECT 1 FROM followers f
+				WHERE f.followed_id = p.user_id AND f.follower_id = ?
+			)
+		)
+	)
+	ORDER BY p.createdAt DESC
+	LIMIT ? OFFSET ?
+	`
 
-	rows, err := Db.Query(query, profileOwnerID)
+	rows, err := Db.Query(query, profileOwnerID, viewerID, 10, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -181,13 +193,45 @@ func GetPublicAndAlmostPrivatePosts(profileOwnerID int, viewerID int) ([]utils.P
 	var posts []utils.Post
 	for rows.Next() {
 		var post utils.Post
-		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt)
+		var createdAt int64
+
+		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content,
+			&post.Poster_id, &post.Poster_name, &post.Image, &createdAt)
 		if err != nil {
 			return nil, err
 		}
+
+		post.CreatedAt = int(createdAt)
 		posts = append(posts, post)
 	}
+
 	return posts, nil
+}
+
+func GetRegistration(id string) (utils.Regester, error) {
+	query := `SELECT * FROM users WHERE id = ?`
+
+	var data utils.Regester
+	var Id int
+
+	err := Db.QueryRow(query, id).Scan(
+		&Id,             
+		&data.NickName,     
+		&data.FirstName, 
+		&data.LastName, 
+		&data.Age,              
+		&data.Gender,        
+		&data.Email,          
+		&data.Avatar,         
+		&data.Password,        
+		&data.About_Me,        
+		&data.Pravecy,        
+	)
+	if err != nil {
+		return data, err
+	}
+	 data.Password = ""
+	return data, nil
 }
 
 func GetAllowedPosts(profileOwnerID int, viewerID int) ([]utils.Post, error) {
