@@ -36,7 +36,7 @@ func InserOrUpdate(follower, followed string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if privacy {
+	if !privacy {
 
 		if err := insertFollow(follower, followed); err != nil {
 			if err := deletfollow(follower, followed); err != nil {
