@@ -84,8 +84,18 @@ func InsertMumber(group_id, user_id int) error {
 	return nil
 }
 
-
-func InsertSession( userData *utils.User) error {
+func InsertSession(userData *utils.User) error {
 	_, err := Db.Exec("INSERT INTO sessions ( user_id, token) VALUES (?, ?)", userData.ID, userData.SessionId)
+	return err
+}
+
+func InsertMsg(msg utils.Message) error {
+	query := "INSERT INTO messages (sender_id, reciever_id, content, imagePath) VALUES (?,?,?,?)"
+	_, err := Db.Exec(query, msg.Sender_id, msg.Reciever_id, msg.Content, msg.Filename)
+	if err != nil {
+		fmt.Println("inserting error:", err)
+	} else {
+		fmt.Println("the message was inserted")
+	}
 	return err
 }

@@ -42,12 +42,12 @@ func UploadImage(r *http.Request) (string, error) {
 	return filePath[1:], nil
 }
 
-func UploadMsgImg(pyload []byte) (Message, error, int) {
+func UploadMsgImg(pyload []byte) (Message, error) {
 	delimiter := []byte("::")
 	parts := bytes.SplitN(pyload, delimiter, 2)
 	var message Message
 	if len(parts) != 2 {
-		return message, fmt.Errorf("Send a valid data"), http.StatusForbidden
+		return message, fmt.Errorf("Send a valid data")
 	}
 
 	metaPart := parts[0]
@@ -56,12 +56,11 @@ func UploadMsgImg(pyload []byte) (Message, error, int) {
 	err := json.Unmarshal(metaPart, &message)
 	if err != nil {
 		fmt.Println("invalid meta data", err)
-		return message, fmt.Errorf("Check your data"), http.StatusForbidden
+		return message, fmt.Errorf("Check your data")
 	}
 
-	fmt.Println(message)
 	if !strings.Contains(message.Mime, "image/") {
-		return message, fmt.Errorf("invalid file type you can only send images"), http.StatusForbidden
+		return message, fmt.Errorf("invalid file type you can only send images")
 	}
 	os.MkdirAll("uploads", os.ModePerm)
 
@@ -69,8 +68,8 @@ func UploadMsgImg(pyload []byte) (Message, error, int) {
 
 	if err := os.WriteFile(message.Filename, filePart, 0644); err != nil {
 		fmt.Println("writing file error ", err)
-		return message, fmt.Errorf("internal sercer error"), http.StatusInternalServerError
+		return message, fmt.Errorf("internal sercer error")
 	}
-
-	return message, nil, 200
+	message.Filename = "/" + message.Filename
+	return message, nil
 }
