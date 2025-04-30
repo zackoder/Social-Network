@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"social-network/models"
 	"social-network/utils"
+	"strconv"
 
 	"github.com/gorilla/websocket"
 )
@@ -25,14 +26,16 @@ func Websocket(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
-	id := 10
+
+	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
+	fmt.Println(id)
 	client := utils.CreateClient(conn, Manager, id, "hello")
 	Manager.AddClient(client)
 	groups := models.GetClientGroups(id)
 	if len(groups) != 0 {
 		go Manager.StoreGroups(groups, id)
 	}
-	
+
 	fmt.Println("groups", groups)
 	defer conn.Close()
 	for {
@@ -43,16 +46,22 @@ func Websocket(w http.ResponseWriter, r *http.Request) {
 			}
 			break
 		}
-		imagPath := ""
+		var code int
+		var message utils.Message
 		if messageType == websocket.BinaryMessage {
-			imagPath = r.Host + "/" + utils.UploadMsgImg(pyload)
+			message, err, code = utils.UploadMsgImg(pyload)
+			if err != nil {
+				utils.WriteJSON(w, map[string]string{"error": err.Error()}, code)
+				return
+			}
+			message.Filename = r.Host + "/" + message.Filename
 		}
 		for _, clientConnectios := range Manager.UsersList {
 			for _, conn := range clientConnectios {
 				if messageType == websocket.TextMessage {
 					conn.Connection.WriteJSON(map[string]string{"msg": string(pyload)})
 				} else if messageType == websocket.BinaryMessage {
-					conn.Connection.WriteJSON(map[string]string{"image": imagPath})
+					conn.Connection.WriteJSON(message)
 				}
 			}
 		}

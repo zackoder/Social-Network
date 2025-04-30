@@ -2,29 +2,37 @@ package models
 
 import (
 	"fmt"
+	"net/http"
 	"time"
 
 	"social-network/utils"
 )
 
-func QueryPosts(offset int, host string) []utils.Post {
+func QueryPosts(offset int, r *http.Request) []utils.Post {
+	host := r.Host
 	var posts []utils.Post
-	queryPosts := `SELECT * FROM posts`
+	// cookie, _ := r.Cookie("token")
+	if 5 >= 4 {
+
+	}
+	// id := 5
+	queryPosts := `
+		SELECT p.id, p.title, p.content, p.imagePath, p.createdAt, p.user_id, p.post_privacy, u.first_name 
+		FROM posts p
+		JOIN users u ON u.id = p.user_id
+		`
 
 	rows, err := Db.Query(queryPosts)
 	if err != nil {
-		fmt.Println("ana hnaa",err)
+		fmt.Println("ana hnaa", err)
 		return nil
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var post utils.Post
-		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster, &post.Image, &post.CreatedAt)
+		err := rows.Scan(&post.Id, &post.Title, &post.Content, &post.Image, &post.CreatedAt, &post.Poster_id, &post.Privacy, &post.Poster_name)
 		if err != nil {
 			fmt.Println("scaning error:", err)
-		}
-		if post.Image != "" {
-			post.Image = host + post.Image
 		}
 		if post.Image != "" {
 			post.Image = host + post.Image
@@ -48,7 +56,7 @@ func GetProfilePost(user_id, offset int) []utils.Post {
 	for rows.Next() {
 		var post utils.Post
 
-		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster, &post.Image, &post.CreatedAt)
+		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Image, &post.CreatedAt)
 		if err != nil {
 			fmt.Println("error scaning the rows", err)
 		}
@@ -73,14 +81,15 @@ func IsPrivateProfile(followed string) (bool, error) {
 }
 func CheckPostPrivacy(post string) (string, error) {
 	query := "SELECT post_privacy FROM posts WHERE id = ?"
-		var privacy string
-	err := Db.QueryRow(query,post).Scan(&privacy)
+	var privacy string
+	err := Db.QueryRow(query, post).Scan(&privacy)
 	if err != nil {
-		fmt.Println("is privet post",err)
-		return "",err
+		fmt.Println("is privet post", err)
+		return "", err
 	}
-	return privacy,nil
+	return privacy, nil
 }
+
 ///////////////////////////login///////////////////////////////////////////
 
 func ValidCredential(userData *utils.User) error {
@@ -104,7 +113,6 @@ func GetActiveSession(userData *utils.User) (bool, error) {
 	return exists, nil
 }
 
-
 func Get_session(ses string) (int, error) {
 	var sessionid int
 	query := `SELECT user_id FROM sessions WHERE token = ?`
@@ -115,22 +123,21 @@ func Get_session(ses string) (int, error) {
 	return sessionid, nil
 }
 
-
 func GetClientGroups(user_id int) []int {
-    var groups []int
-    selectGroups := "SELECT group_id FROM group_members WHERE user_id = ?"
-    rows, err := Db.Query(selectGroups, user_id)
-    if err != nil {
-        fmt.Println(err)
-        return nil
-    }
-    defer rows.Close()
-    for rows.Next() {
-        var group_id int
-        if err := rows.Scan(&group_id); err != nil {
-            fmt.Println(err)
-        }
-        groups = append(groups, group_id)
-    }
-    return groups
+	var groups []int
+	selectGroups := "SELECT group_id FROM group_members WHERE user_id = ?"
+	rows, err := Db.Query(selectGroups, user_id)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var group_id int
+		if err := rows.Scan(&group_id); err != nil {
+			fmt.Println(err)
+		}
+		groups = append(groups, group_id)
+	}
+	return groups
 }
