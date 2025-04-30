@@ -59,9 +59,9 @@ func AddPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func Posts(w http.ResponseWriter, r *http.Request) {
-	host := r.Host
+	
 	offset := 0
-	posts := models.QueryPosts(offset, host)
+	posts := models.QueryPosts(offset, r)
 	fmt.Println(posts)
 	utils.WriteJSON(w, posts, 200)
 }

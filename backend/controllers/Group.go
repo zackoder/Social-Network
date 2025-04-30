@@ -37,7 +37,7 @@ func JoinReq(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "invalid group id"}, http.StatusNotFound)
 		return
 	}
-
+	
 	user_id, err := strconv.Atoi(r.URL.Query().Get("user_id"))
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "invalid user id"}, http.StatusNotFound)
