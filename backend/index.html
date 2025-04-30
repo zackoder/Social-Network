@@ -75,14 +75,8 @@
           try {
             data.content = form.children[0].value;
             const avatar = form.children[1].files[0];
-            console.log("data", data);
 
-            if (!data.combined && !avatar) return;
-
-            if (data.content) {
-              socket.send(JSON.stringify(data));
-              data.content = "";
-            }
+            if (!data.content && !avatar) return;
 
             if (avatar) {
               const reader = new FileReader();
@@ -116,6 +110,8 @@
               };
 
               reader.readAsArrayBuffer(avatar);
+            } else if (data.content) {
+              socket.send(JSON.stringify(data));
             }
           } catch (err) {
             console.error("Unexpected error in submit handler:", err);
@@ -124,7 +120,7 @@
       }
 
       socket.onmessage = (event) => {
-        console.log("Received:", event.data.json());
+        console.log("Received:", event.data.json);
       };
     </script>
   </body>

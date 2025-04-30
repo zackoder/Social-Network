@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"social-network/models"
@@ -46,24 +47,40 @@ func Websocket(w http.ResponseWriter, r *http.Request) {
 			}
 			break
 		}
-		var code int
+
 		var message utils.Message
+		var errormap = map[string]string{}
+		fmt.Println("message type", messageType)
 		if messageType == websocket.BinaryMessage {
-			message, err, code = utils.UploadMsgImg(pyload)
+			message, err = utils.UploadMsgImg(pyload)
 			if err != nil {
-				utils.WriteJSON(w, map[string]string{"error": err.Error()}, code)
-				return
+				errormap["error"] = err.Error()
 			}
-			message.Filename = r.Host + "/" + message.Filename
+			models.InsertMsg(message)
+		}
+		if messageType == websocket.TextMessage {
+			if err := json.Unmarshal(pyload, &message); err != nil {
+				errormap["error"] = "faild to pars your data"
+			}
+			models.InsertMsg(message)
 		}
 		for _, clientConnectios := range Manager.UsersList {
-			for _, conn := range clientConnectios {
-				if messageType == websocket.TextMessage {
-					conn.Connection.WriteJSON(map[string]string{"msg": string(pyload)})
+			fmt.Println("hello")
+			for _, claient := range clientConnectios {
+				if _, exist := errormap["error"]; exist {
+					if claient.Client_id == message.Sender_id {
+						claient.Connection.WriteJSON(errormap)
+					}
+				} else if messageType == websocket.TextMessage {
+					claient.Connection.WriteJSON(message)
 				} else if messageType == websocket.BinaryMessage {
-					conn.Connection.WriteJSON(message)
+					message.Filename = r.Host + message.Filename
+					claient.Connection.WriteJSON(message)
 				}
 			}
+		}
+		if _, exist := errormap["error"]; exist {
+			errormap = map[string]string{}
 		}
 	}
 }
