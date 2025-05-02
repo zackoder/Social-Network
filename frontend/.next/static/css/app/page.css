@@ -1,0 +1,445 @@
+/*!*******************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[3]!./src/app/page.module.css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************/
+.page_container__aoG4z{
+  display: flex;
+  /* align-items: center; */
+  gap: 50px;
+}
+
+.page_sidebar__J6ahr{
+  flex: 2 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  /* gap: 20px; */
+}
+
+.page_posts__9lDd9{
+  flex: 8 1;
+  display: flex;
+  flex-direction: column;
+  
+}
+/*!***************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[3]!./src/components/contacts/contacts.module.css ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************/
+.contacts_profile__0PB7F{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.contacts_imgProfile__2R9Oz{}
+.contacts_imgProfile__2R9Oz .contacts_image__jztem{}
+
+.contacts_name__iJFnD{}
+/*!*************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[3]!./src/components/chatbox/chatbox.module.css ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************/
+/* body {
+    position: relative;
+} */
+
+.chatbox_chatBox___adjD {
+    min-width: 400px;
+    padding: 20px;
+    position: fixed;
+    bottom: -20px;
+    right: 0;
+    display: none;
+}
+
+.chatbox_header__PRtN_ {
+    padding: 10px 20px;
+    background-color: #4d5983;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
+    position: relative;
+    border-bottom: 1px solid #111;
+}
+
+.chatbox_imgProfile__JYedc {
+    width: 50px;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    position: relative;
+}
+.chatbox_close__T5HcM{
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+.chatbox_infoProfile__V6mds {}
+
+/* ------------------------- */
+.chatbox_readmessages__okvdT {
+    padding: 15px 20px;
+    background-color: #505f88;
+    min-height: 300px;
+}
+.chatbox_readmessages__okvdT .chatbox_me__64_4g,
+.chatbox_readmessages__okvdT .chatbox_sender__NVgQu{
+    display: flex;
+    align-items: start;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.chatbox_readmessages__okvdT .chatbox_me__64_4g{
+    justify-content: end;
+}
+.chatbox_readmessages__okvdT .chatbox_sender__NVgQu{
+    justify-content: start;
+}
+.chatbox_profileImage__KtBRm{
+    width: 40px;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    position: relative;
+}
+.chatbox_readmessages__okvdT .chatbox_message__sVY3p p{
+    width: 100%;
+    padding: 10px;
+    border-radius: 25px;
+    color: #111;
+    font-size: 14px;
+}
+.chatbox_readmessages__okvdT .chatbox_message__sVY3p span{
+    font-size: 12px;
+    color: #ddd;
+}
+.chatbox_readmessages__okvdT .chatbox_me__64_4g .chatbox_message__sVY3p p{
+    background-color: #78e08f;
+}
+
+.chatbox_readmessages__okvdT .chatbox_sender__NVgQu .chatbox_message__sVY3p p{
+    background-color: #82ccdd;
+}
+
+/* ------------------------- */
+
+.chatbox_sendmessages__F5srn {
+    padding: 20px 10px;
+    background-color: #4d5983;
+}
+.chatbox_imogie__0zhY7{
+    max-width: 400px;
+    position: relative;
+    top: -5px;
+    padding-left: 45px;
+    margin-bottom: 5px;
+}
+.chatbox_elementsSend__lIgCJ{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 30px;
+    padding: 5px;
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+.chatbox_elementsSend__lIgCJ input{
+    height: 100%;
+    background-color: #36425d;
+}
+.chatbox_elementsSend__lIgCJ input[type="file"]{
+    width: 10%;
+}
+.chatbox_hiddenInput__XPF_i{
+    display: none;
+}
+.chatbox_elementsSend__lIgCJ input[type="text"]{
+    width: 80%;
+    outline: none;
+    border: none;
+    padding: 5px;
+    /* border-radius: 4px; */
+    /* border: 1px solid #36415d; */
+    background-color: #36415d;
+    display: inline-block;
+    height: 40px;
+}
+.chatbox_elementsSend__lIgCJ input[type="submit"]{
+    width: 10%;
+    height: 100%;
+}
+
+.chatbox_uploadLabel__WNEIu, .chatbox_labelSend__udPro{
+    width: 10%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* background-color: #36425d; */
+    height: 100%;
+    /* border-radius: 4px; */
+}
+
+.chatbox_labelSend__udPro{
+    height: 40px;
+    background-color: #36415d;
+    padding: 10px;
+    border: none;
+    border-left: 1px solid #111;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+
+.chatbox_iconUpload__CJPIV{
+    font-size: 25px;
+    color: var(--color-primary);
+    transition: color .2s ease-in-out;
+}
+.chatbox_iconUpload__CJPIV:hover{
+    color: var(--color-primary-hover);
+}
+
+.chatbox_iconSend__O5lPI{
+    font-size: 100px;
+    width: 2em;
+    color: var(--color-primary);
+    transition: color .2s ease-in-out;
+}
+
+/* .elementsSend input[type="submit"]:hover .labelSend .iconSend{ */
+.chatbox_iconSend__O5lPI:hover{
+    color: var(--color-primary-hover);
+}
+/*!**********************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./src/components/createPost/createPost.modules.css ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************************************/
+.postContainer{
+    margin-bottom: 50px;
+    border: 2px solid #222;
+    padding: 20px;
+    border-radius: 4px;
+}
+
+.identityProfile{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.imageProfile{
+    width: 50px;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    background-color: var(--color-primary);
+}
+
+.nameProfile{
+    margin-left: 10px;
+}
+.nameProfile h3{
+    margin-bottom: 5px;
+}
+.friends{
+    outline: none;
+}
+
+.title input{
+    font-size: 17px;
+    font-weight: 400px;
+    border: none;
+    outline: 0;
+    border-bottom: 1px solid #222;
+    padding: 10px;
+    background-color: #333;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    width: 90%;
+    margin-left: 5%;
+    /* display: flex;
+    justify-content: center; */
+}
+
+.uploadImage{
+    margin: 15px 5%;
+}
+
+.uploadImage input{
+    /* background-color: #333; */
+}
+
+.submit{
+    background-color: transparent;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 15px 50px;
+    margin-left: 5%;
+    cursor: pointer;
+    transition: all .5s ease-in-out;
+}
+
+.submit:hover{
+    background-color: #333;
+    color: #f1f1f1;
+}
+/*!**************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./src/components/likeDislikeComment/likeDislikeComment.modules.css ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************************************/
+.reactionContainer{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 50%;
+}
+
+.buttons{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    /*position: relative;*/
+}
+
+.buttons button{
+    cursor: pointer;
+}
+
+.buttons button span{
+    position: relative;
+    top: -2px;
+    /* left: 0; */
+}
+
+.form{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+/* .reactionContainer{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 50%;
+}
+
+.like{
+    display: flex;
+    justify-content: start;
+}
+
+.dislike{
+    display: flex;
+    justify-content: end;
+}
+
+.button{
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    position: relative;
+}
+
+.button span{
+    position: absolute;
+    top: -2px;
+} */
+/*!*******************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[3]!./src/components/post/post.module.css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************/
+.post_container__jnjww{
+    /* border-left: 1px solid #333;
+    border-right: 1px solid #333; */
+    border: 2px solid #333;
+    padding: 20px;
+}
+
+.post_container__jnjww .post_post__k4L86{
+    display: flex;
+    /* justify-content: center;
+    align-items: center; */
+    flex-direction: column;
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #333;
+}
+.post_header__8UWoW {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    width: 100%;
+}
+
+.post_header__8UWoW .post_containerHeader___G0Cy{
+    display: flex;
+    align-items: center;
+    /* justify-content: start;
+    width: 100%; */
+}
+
+.post_imageContainer__1qrHN{
+    width: 50px;
+    aspect-ratio: 1 / 1;
+    background-color: var(--color-primary);
+    border-radius: 50%;
+}
+.post_header__8UWoW h2{
+    margin-left: 10px;
+}
+.post_imageContainer__1qrHN .post_image__LMMC_{
+    object-fit: cover;
+}
+.post_content__fu_Ia{
+    margin: 15px 20px;
+    line-height: 1.5em;
+    font-size: 17px;
+    /* align-items: start; */
+}
+.post_imagePost__oKWo2{
+    /* width: 95%; */
+    /* min-height: 300px; */
+    /* position: relative; */
+    /* margin-bottom: 20px;
+    margin-left: 20px; */
+    display: flex;
+    align-items: center;
+}
+.post_imagePost__oKWo2 .post_image__LMMC_{
+    object-fit: cover;
+    border-radius: 7px;
+    width: 95%;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.post_reaction___CoG4{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.post_reaction___CoG4 .post_dislike__bsNdZ{
+    display: flex;
+    align-items: center;
+}
+.post_dislike__bsNdZ svg{
+    margin-top: 4px;
+}
+
+.post_reaction___CoG4 .post_comment__j9lnu{
+    display: flex;
+    align-items: center;
+}
+.post_reaction___CoG4 .post_comment__j9lnu span{
+    margin-bottom: 2px;
+}
