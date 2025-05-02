@@ -5,7 +5,7 @@ import Image from 'next/image';
 export default function Contacts() {
     return (
         <div className={styles.container}>
-            <Link href="/profile">
+            <Link href="">
                 <div className={styles.profile}>
                     <div className={styles.imgProfile}>
                         <Image

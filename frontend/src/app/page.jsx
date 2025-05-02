@@ -3,6 +3,7 @@ import styles from "./page.module.css";
 import Post from "@/components/post/post";
 import CreatePost from "@/components/createPost/createPost";
 import Contacts from "@/components/contacts/contacts";
+import ChatBox from "@/components/chatbox/chatbox";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <div className={styles.posts}>
         <CreatePost />
         <Post />
+        <ChatBox />
       </div>
     </div>
   );
