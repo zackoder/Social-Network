@@ -2,11 +2,17 @@ import Link from 'next/link';
 import styles from './contacts.module.css'
 import Image from 'next/image';
 
-export default function Contacts() {
+const dummyContact = {
+    id: 1,
+    name: 'Zack',
+    image: '/images/profile.png',
+};
+
+export default function Contacts({onContactClick}) {
     return (
         <div className={styles.container}>
-            <Link href="">
-                <div className={styles.profile}>
+            {/* <Link href=""> */}
+                <div className={styles.profile} onClick={() => onContactClick(dummyContact)}>
                     <div className={styles.imgProfile}>
                         <Image
                             src="/images/profile.png"
@@ -17,10 +23,10 @@ export default function Contacts() {
                         />
                     </div>
                     <div className={styles.name}>
-                        <h3>full Name</h3>
+                        <h3>{dummyContact.name}</h3>
                     </div>
                 </div>
-            </Link>
+            {/* </Link> */}
         </div>
     );
 }

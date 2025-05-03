@@ -8,13 +8,14 @@
     position: fixed;
     bottom: -20px;
     right: 0;
-    display: none;
+    /* display: none; */
 }
 
 .header {
     padding: 10px 20px;
-    background-color: #4d5983;
-    color: #fff;
+    /* background-color: #4d5983; */
+    background-color: #eee;
+    color: #000;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -36,6 +37,10 @@
     right: 20px;
     font-size: 30px;
     cursor: pointer;
+    transition: color .2s ease-in-out;
+}
+.close:hover{
+    color: #f00;
 }
 
 .infoProfile {}
@@ -43,7 +48,8 @@
 /* ------------------------- */
 .readmessages {
     padding: 15px 20px;
-    background-color: #505f88;
+    /* background-color: #505f88; */
+    background-color: #ddd;
     min-height: 300px;
 }
 .readmessages .me,
@@ -74,7 +80,7 @@
 }
 .readmessages .message span{
     font-size: 12px;
-    color: #ddd;
+    color: #111;
 }
 .readmessages .me .message p{
     background-color: #78e08f;
@@ -88,7 +94,8 @@
 
 .sendmessages {
     padding: 20px 10px;
-    background-color: #4d5983;
+    /* background-color: #4d5983; */
+    background-color: #eee;
 }
 .imogie{
     max-width: 400px;
@@ -109,7 +116,8 @@
 }
 .elementsSend input{
     height: 100%;
-    background-color: #36425d;
+    /* background-color: #36425d; */
+    /* background-color: var(--color-primary); */
 }
 .elementsSend input[type="file"]{
     width: 10%;
@@ -124,9 +132,13 @@
     padding: 5px;
     /* border-radius: 4px; */
     /* border: 1px solid #36415d; */
-    background-color: #36415d;
+    /* background-color: #36415d; */
+    background-color: #06d6a07d;
+    color: #111;
     display: inline-block;
     height: 40px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
 }
 .elementsSend input[type="submit"]{
     width: 10%;
@@ -146,10 +158,11 @@
 
 .labelSend{
     height: 40px;
-    background-color: #36415d;
+    /* background-color: #36415d; */
+    background-color: #06d6a07d;
     padding: 10px;
     border: none;
-    border-left: 1px solid #111;
+    /* border-left: 1px solid #111; */
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
 }
@@ -157,7 +170,11 @@
 
 .iconUpload{
     font-size: 25px;
-    color: var(--color-primary);
+    /* color: var(--color-primary); */
+    color: #01694e;
+    background-color: #06d6a07d;
+
+    /* color: #fff; */
     transition: color .2s ease-in-out;
 }
 .iconUpload:hover{
@@ -167,11 +184,15 @@
 .iconSend{
     font-size: 100px;
     width: 2em;
-    color: var(--color-primary);
+    /* color: var(--color-primary); */
+    color: #01694e;
     transition: color .2s ease-in-out;
 }
 
 /* .elementsSend input[type="submit"]:hover .labelSend .iconSend{ */
 .iconSend:hover{
-    color: var(--color-primary-hover);
+    /* color: var(--color-primary-hover); */
+    /* color: var(--color-primary-hover); */
+    color: #01694ec9;
+    
 }
