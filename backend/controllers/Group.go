@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"social-network/models"
 	"social-network/utils"
@@ -32,19 +33,28 @@ func CreateGroup(w http.ResponseWriter, r *http.Request) {
 }
 
 func JoinReq(w http.ResponseWriter, r *http.Request) {
-	group_id, err := strconv.Atoi(r.URL.Query().Get("group_id"))
+	var notification utils.Notification
+	var err error
+	notification.Target_id, err = strconv.Atoi(r.URL.Query().Get("group_id"))
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "invalid group id"}, http.StatusNotFound)
 		return
 	}
-	
-	user_id, err := strconv.Atoi(r.URL.Query().Get("user_id"))
+
+	notification.Sender_id, err = strconv.Atoi(r.URL.Query().Get("user_id"))
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "invalid user id"}, http.StatusNotFound)
 		return
 	}
 
-	if err := models.InsertMumber(group_id, user_id); err != nil {
+	notification.Message = "join group request"
+	err = models.InsertNotification(notification)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	if err := models.InsertMumber(notification.Target_id, notification.Sender_id); err != nil {
 		if strings.Contains(err.Error(), "UNIQUE") {
 			utils.WriteJSON(w, map[string]string{"error": "mumber alredy exists"}, http.StatusForbidden)
 		} else if strings.Contains(err.Error(), "FOREIGN KEY") {
@@ -54,5 +64,6 @@ func JoinReq(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	utils.WriteJSON(w, map[string]string{"successe": "mumber added"}, http.StatusOK)
+
+	utils.WriteJSON(w, notification, http.StatusOK)
 }

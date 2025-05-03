@@ -45,6 +45,14 @@ type NewGroup struct {
 	Content string `json:"content"`
 }
 
+type Notification struct {
+	Id        int    `json:"id"`
+	Message   string `json:"message"`
+	Sender_id int    `json:"sender"`
+	Target_id int    `json:"target"`
+	Type      string `json:"-"`
+}
+
 type User struct {
 	ID        int64
 	Nickname  string `json:"nickname"`
@@ -71,4 +79,8 @@ type Message struct {
 	Content     string `json:"content"`
 	Mime        string `json:"mime"`
 	Filename    string `json:"filename"`
+}
+
+type Err struct {
+	Error string `json:"error"`
 }

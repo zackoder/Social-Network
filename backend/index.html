@@ -2,7 +2,11 @@
 <html>
   <body>
     <h2>WebSocket Test</h2>
-
+    <style>
+      body {
+        background-color: gray;
+      }
+    </style>
     <textarea id="log" rows="10" cols="50" readonly></textarea><br />
 
     <form class="msgform">
@@ -20,9 +24,9 @@
     <script>
       async function creategroups() {
         try {
-          for (let i = 0; i < 11; i++) {
+          for (let i = 0; i < 10; i++) {
             let res = await fetch("/creategroup", {
-              method: "POST", // <-- move method here
+              method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
@@ -56,14 +60,14 @@
 
       const data1 = {
         type: "message",
-        sender_id: 1,
-        reciever_id: 3,
+        sender_id: parseInt(searchparams.id),
+        reciever_id: parseInt(searchparams.reciever_id),
       };
 
       const data2 = {
         type: "message",
-        sender_id: 5,
-        group_id: 1,
+        sender_id: parseInt(searchparams.id),
+        group_id: parseInt(searchparams.group_id),
       };
 
       sendmessage(form, data1);
@@ -120,7 +124,7 @@
       }
 
       socket.onmessage = (event) => {
-        console.log("Received:", event.data.json);
+        console.log("Received:", JSON.parse(event.data));
       };
     </script>
   </body>
