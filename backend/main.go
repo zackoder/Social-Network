@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	_ "github.com/golang-migrate/migrate/v4/database/sqlite3"
@@ -36,7 +37,7 @@ mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/getfollowers",controllers.GetFollowers)
 	mux.HandleFunc("GET /api/registrationData",controllers.GetRegistrationData)
     mux.HandleFunc("/ws", controllers.Websocket)
-
+	fmt.Println("Server is running on port 8080")
 	http.ListenAndServe(":8080", mux)
 }
 

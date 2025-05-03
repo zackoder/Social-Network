@@ -10,9 +10,29 @@
     letter-spacing: 1px;
     cursor: pointer;
     transition: all .5s ease-in-out;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .button:hover{
     background-color: #06d69eaf;
     color: #CCC;
+}
+
+.button.following {
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #ccc;
+}
+
+.button.following:hover {
+    background-color: #ffebee;
+    color: #f44336;
+    border-color: #f44336;
+}
+
+.button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
 }

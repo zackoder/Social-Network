@@ -12,20 +12,22 @@
       "static/css/app/page.css",
       "static/chunks/app/page.js"
     ],
-    "/(dynamic)/blog/layout": [
+    "/(dynamic)/profile/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(dynamic)/blog/layout.js"
+      "static/css/app/(dynamic)/profile/page.css",
+      "static/chunks/app/(dynamic)/profile/page.js"
     ],
-    "/(dynamic)/blog/page": [
+    "/(static)/contact/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(dynamic)/blog/page.js"
+      "static/chunks/app/(static)/contact/page.js"
     ],
-    "/(dynamic)/blog/[post]/page": [
+    "/(dynamic)/profile/[id]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(dynamic)/blog/[post]/page.js"
+      "static/css/app/(dynamic)/profile/[id]/page.css",
+      "static/chunks/app/(dynamic)/profile/[id]/page.js"
     ],
     "/_not-found/page": [
       "static/chunks/webpack.js",
