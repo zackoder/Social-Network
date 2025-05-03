@@ -26,7 +26,6 @@ func UploadImage(r *http.Request) (string, error) {
 	if !CheckExtension(fileName) {
 		return "", fmt.Errorf("invalid file type")
 	}
-	fmt.Println(handler)
 	filePath := "./uploads/" + fileName
 
 	out, err := os.Create(filePath)

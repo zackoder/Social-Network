@@ -77,8 +77,10 @@ func IsPrivateProfile(followed string) (bool, error) {
 		fmt.Println(err)
 		return false, err
 	}
-	return privacy == "private", nil
+	fmt.Println(privacy)
+	return privacy == "privet", nil
 }
+
 func CheckPostPrivacy(post string) (string, error) {
 	query := "SELECT post_privacy FROM posts WHERE id = ?"
 	var privacy string
@@ -140,4 +142,11 @@ func GetClientGroups(user_id int) []int {
 		groups = append(groups, group_id)
 	}
 	return groups
+}
+
+func FriendsChecker(Sender_id, Reciever_id int) (bool, error) {
+	query := "SELECT EXISTs(SELECT 1 FROM followers WHERE follower_id = ? AND followed_id = ? OR follower_id = ? AND followed_id = ?)"
+	var friends bool
+	err := Db.QueryRow(query, Sender_id, Reciever_id, Reciever_id, Sender_id).Scan(&friends)
+	return friends, err
 }

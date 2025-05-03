@@ -56,31 +56,89 @@ func Websocket(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				errormap["error"] = err.Error()
 			}
-			models.InsertMsg(message)
+			continue
 		}
 		if messageType == websocket.TextMessage {
 			if err := json.Unmarshal(pyload, &message); err != nil {
 				errormap["error"] = "faild to pars your data"
+				fmt.Println(err)
 			}
-			models.InsertMsg(message)
 		}
-		for _, clientConnectios := range Manager.UsersList {
-			fmt.Println("hello")
-			for _, claient := range clientConnectios {
-				if _, exist := errormap["error"]; exist {
-					if claient.Client_id == message.Sender_id {
-						claient.Connection.WriteJSON(errormap)
-					}
-				} else if messageType == websocket.TextMessage {
-					claient.Connection.WriteJSON(message)
+		fmt.Println(message)
+
+		if _, exist := errormap["error"]; exist {
+			for _, claient := range Manager.UsersList[client.Client_id] {
+				claient.Connection.WriteJSON(errormap)
+			}
+			continue
+		}
+		fmt.Println(Manager.Groups[message.Group_id])
+		fmt.Println("sender id", message.Sender_id)
+		if message.Reciever_id != 0 {
+			BrodcatstPrivetMSG(message, messageType, r.Host)
+
+		} else if message.Group_id != 0 {
+			BrodcatstgroupMSG(message, messageType, r.Host)
+		}
+	}
+}
+
+func BrodcatstPrivetMSG(message utils.Message, messageType int, host string) {
+	friends, err := models.FriendsChecker(message.Sender_id, message.Reciever_id)
+	var ERR utils.Err
+	if err != nil {
+		fmt.Println("error", err)
+		return
+	}
+
+	if !friends {
+		ERR.Error = "you need to follow the reciever first"
+		BrodcastError(ERR, message.Sender_id)
+		return
+	}
+
+	if recieverConnectios, exists := Manager.UsersList[message.Reciever_id]; exists {
+		for _, reciever := range recieverConnectios {
+			if messageType == websocket.TextMessage {
+				reciever.Connection.WriteJSON(message)
+			} else if messageType == websocket.BinaryMessage {
+				message.Filename = host + message.Filename
+				reciever.Connection.WriteJSON(message)
+			}
+		}
+	}
+	models.InsertMsg(message)
+}
+
+func BrodcastError(err utils.Err, reciever_id int) {
+	if senderConnectios, exists := Manager.UsersList[reciever_id]; exists {
+		for _, sender := range senderConnectios {
+			sender.Connection.WriteJSON(err)
+		}
+	}
+}
+
+func BrodcatstgroupMSG(message utils.Message, messageType int, host string) {
+	fmt.Println(Manager.Groups[message.Group_id])
+	for _, reciever := range Manager.Groups[message.Group_id] {
+		if recieverConnectios, exists := Manager.UsersList[reciever]; exists {
+			for _, reciever := range recieverConnectios {
+				if messageType == websocket.TextMessage {
+					reciever.Connection.WriteJSON(message)
 				} else if messageType == websocket.BinaryMessage {
-					message.Filename = r.Host + message.Filename
-					claient.Connection.WriteJSON(message)
+					message.Filename = host + message.Filename
+					reciever.Connection.WriteJSON(message)
 				}
 			}
 		}
-		if _, exist := errormap["error"]; exist {
-			errormap = map[string]string{}
+	}
+	models.InsertGroupMSG(message)
+}
+
+func BrodcastNoti(noti utils.Notification) {
+	if target, online := Manager.UsersList[noti.Target_id]; online {
+		for _, targetConnection := range target {
+			targetConnection.Connection.WriteJSON(noti)
 		}
 	}
 }
