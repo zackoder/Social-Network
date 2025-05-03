@@ -3,7 +3,7 @@ import Image from "next/image";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { IoIosSend } from "react-icons/io";
 
-export default function ChatBox() {
+export default function ChatBox({contact, onClickClose}) {
     return (
         <div className={styles.chatBox}>
             <div className={styles.header}>
@@ -16,10 +16,10 @@ export default function ChatBox() {
                     />
                 </div>
                 <div className={styles.infoProfile}>
-                    <h3>full name</h3>
+                    <h3>{contact.name}</h3>
                     <p>Lorem ipsum dolor sit amet.</p>
                 </div>
-                <div className={styles.close}>x</div>
+                <div className={styles.close} onClick={onClickClose}>x</div>
             </div>
             <div className={styles.readmessages}>
                 <div className={styles.me}>
@@ -57,12 +57,15 @@ export default function ChatBox() {
                         😁​😅​🤣​😂​🙂​🙃​🫠​😉​🥰​😍​🤩​☺️​🥲​😛​😜​🤗​🤭​🤫​🤔​🫡​🫥​😒​🙄​🙂‍↔️​🙂‍↕️​🥵​🤯​🥳​😎​😎​🤓​🥺​🥹​😥​😱​😭​👋​👌​🤞​👉​👇​👍​👏
                     </div>
                     <div className={styles.elementsSend}>
+                        
+
+                        <input type="text" name="message" placeholder="Type your message..." id="" />
+
                         <input type="file" name="uploadImage" id="uploadImage" className={styles.hiddenInput} />
                         <label htmlFor="uploadImage" className={styles.uploadLabel}>
                             <FaCloudUploadAlt className={styles.iconUpload} />
                         </label>
 
-                        <input type="text" name="message" placeholder="Type your message..." id="" />
                         <input type="submit" name="submit" className={styles.hiddenInput} id="submit" />
                         <label htmlFor="submit" className={styles.labelSend}>
                             <IoIosSend className={styles.iconSend} />
