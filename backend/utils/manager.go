@@ -79,9 +79,20 @@ func CreateClient(conn *websocket.Conn, m *Manager, id int, token string) *Clien
 func (m *Manager) StoreGroups(groups []int, user_id int) {
 	for _, group_id := range groups {
 		if group, exists := m.Groups[group_id]; exists {
-			m.Groups[group_id] = append(group, user_id)
+			if !m.CheckuserExistenc(user_id, group_id) {
+				m.Groups[group_id] = append(group, user_id)
+			}
 		} else {
 			m.Groups[group_id] = append(m.Groups[group_id], user_id)
 		}
 	}
+}
+
+func (m *Manager) CheckuserExistenc(user_id, group_id int) bool {
+	for _, client := range m.Groups[group_id] {
+		if client == user_id {
+			return true
+		}
+	}
+	return false
 }
