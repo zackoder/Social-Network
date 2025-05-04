@@ -58,6 +58,12 @@ func UploadMsgImg(pyload []byte) (Message, error) {
 		return message, fmt.Errorf("Check your data")
 	}
 
+	// file to visulize the pyload
+	// if err := os.WriteFile("test.txt", pyload, 0644); err != nil {
+	// 	fmt.Println("writing file error ", err)
+	// 	return message, fmt.Errorf("internal sercer error")
+	// }
+
 	if !strings.Contains(message.Mime, "image/") {
 		return message, fmt.Errorf("invalid file type you can only send images")
 	}

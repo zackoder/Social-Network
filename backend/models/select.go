@@ -145,8 +145,15 @@ func GetClientGroups(user_id int) []int {
 }
 
 func FriendsChecker(Sender_id, Reciever_id int) (bool, error) {
-	query := "SELECT EXISTs(SELECT 1 FROM followers WHERE follower_id = ? AND followed_id = ? OR follower_id = ? AND followed_id = ?)"
+	query := "SELECT EXISTS(SELECT 1 FROM followers WHERE follower_id = ? AND followed_id = ? OR follower_id = ? AND followed_id = ?)"
 	var friends bool
 	err := Db.QueryRow(query, Sender_id, Reciever_id, Reciever_id, Sender_id).Scan(&friends)
 	return friends, err
+}
+
+func CheckSender(group_id, sender_id int) bool {
+	query := "SELECT EXISTS(SELECT 1 FROM group_members WHERE group_id = ? AND user_id = ?)"
+	var exists bool
+	Db.QueryRow(query, group_id, sender_id).Scan(&exists)
+	return exists
 }

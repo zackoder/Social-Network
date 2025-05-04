@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/gorilla/websocket"
@@ -36,6 +37,8 @@ type Client struct {
 }
 
 func (m *Manager) GetClient(id int) []*Client {
+	m.RLock()
+	defer m.RUnlock()
 	client, ok := m.UsersList[id]
 	if !ok {
 		return nil
@@ -44,11 +47,15 @@ func (m *Manager) GetClient(id int) []*Client {
 }
 
 func (m *Manager) CheckGroupMubers(id int) bool {
+	m.RLock()
+	m.RUnlock()
 	_, exists := m.UsersList[id]
 	return exists
 }
 
 func (m *Manager) AddClient(client *Client) {
+	m.Lock()
+	m.Unlock()
 	if c, ok := m.UsersList[client.Client_id]; !ok {
 		m.UsersList[client.Client_id] = append(m.UsersList[client.Client_id], client)
 	} else {
@@ -57,6 +64,8 @@ func (m *Manager) AddClient(client *Client) {
 }
 
 func (m *Manager) AddGroup(group_id, user_id int) {
+	m.Lock()
+	defer m.Unlock()
 	client := m.GetClient(user_id)
 	if client != nil {
 		if group, ok := m.Groups[group_id]; !ok {
@@ -77,6 +86,8 @@ func CreateClient(conn *websocket.Conn, m *Manager, id int, token string) *Clien
 }
 
 func (m *Manager) StoreGroups(groups []int, user_id int) {
+	m.Lock()
+	defer m.Unlock()
 	for _, group_id := range groups {
 		if group, exists := m.Groups[group_id]; exists {
 			if !m.CheckuserExistenc(user_id, group_id) {
@@ -89,10 +100,30 @@ func (m *Manager) StoreGroups(groups []int, user_id int) {
 }
 
 func (m *Manager) CheckuserExistenc(user_id, group_id int) bool {
+	m.RLock()
+	defer m.RUnlock()
 	for _, client := range m.Groups[group_id] {
 		if client == user_id {
 			return true
 		}
 	}
 	return false
+}
+
+func (m *Manager) RemoveClient(client *Client) {
+	m.Lock()
+	defer m.Unlock()
+
+	clients := m.UsersList[client.Client_id]
+	for i, c := range clients {
+		if c == client {
+			m.UsersList[client.Client_id] = append(clients[:i], clients[i+1:]...)
+			break
+		}
+	}
+	fmt.Println(len(m.UsersList[client.Client_id]))
+	// If no clients left, delete entry
+	if len(m.UsersList[client.Client_id]) == 0 {
+		delete(m.UsersList, client.Client_id)
+	}
 }

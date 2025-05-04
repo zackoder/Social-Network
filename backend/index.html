@@ -20,7 +20,7 @@
       <input type="file" />
       <button type="submit">Send</button>
     </form>
-
+    <button class="closeconn">close</button>
     <script>
       async function creategroups() {
         try {
@@ -52,11 +52,16 @@
 
       console.log(searchparams);
 
-      const socket = new WebSocket(
+      let socket = new WebSocket(
         `ws://localhost:8080/ws?id=${searchparams.id}`
       );
+      const closebutton = document.querySelector(".closeconn");
       const form = document.querySelector(".msgform");
       const groupform = document.querySelector(".groupform");
+
+      closebutton.addEventListener("click", (e) => {
+        socket.close();
+      });
 
       const data1 = {
         type: "message",
@@ -125,6 +130,11 @@
 
       socket.onmessage = (event) => {
         console.log("Received:", JSON.parse(event.data));
+      };
+      socket.onclose = (e) => {
+        console.log("socket closed from the front");
+
+        socket = null;
       };
     </script>
   </body>

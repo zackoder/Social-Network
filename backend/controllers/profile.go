@@ -40,7 +40,7 @@ func HandleFollow(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"resp": "followed seccessfoly"}, 200)
 	} else {
 		utils.WriteJSON(w, map[string]string{"resp": "follow request sent"}, 200)
-		BrodcastNoti(noti)
+		BroadcastNotification(noti)
 		models.InsertNotification(noti)
 	}
 }
