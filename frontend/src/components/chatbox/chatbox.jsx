@@ -1,9 +1,30 @@
+'use client'
+
 import styles from "./chatbox.module.css"
 import Image from "next/image";
+import { useState } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { IoIosSend } from "react-icons/io";
 
-export default function ChatBox({contact, onClickClose}) {
+export default function ChatBox({ contact, onClickClose }) {
+    const [message, setMessage] = useState('');
+    const [showEmojis, setShowEmojis] = useState(false);
+    const emojis = ['😁', '😅', '​🤣', '😂', '🙂', '🙃', '🫠', '😉', '🥰', '😍', '​🤩', '☺️', '​🥲', '😛', '​😜', '🤗', '🤭', '🤫', '🤔', '🫡', '​🫥', '​😒', '🙄', '🙂‍↔️', '​🙂‍↕️', '🥵', '🤯', '🥳', '😎', '​😎', '🤓', '🥺', '​🥹', '😥​', '😱​', '😭​', '👋​', '👌​', '🤞​', '👉​', '👇​', '👍​', '👏'];
+
+    const handleEmojiClick = (emoji) => {
+        setMessage((prev) => prev + emoji);
+    };
+
+    const handleChange = (e) => {
+        setMessage(e.target.value);
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log("send Message:", message);
+        setMessage('');
+    };
+
     return (
         <div className={styles.chatBox}>
             <div className={styles.header}>
@@ -52,14 +73,31 @@ export default function ChatBox({contact, onClickClose}) {
                 </div>
             </div>
             <div className={styles.sendmessages}>
-                <form action="">
-                    <div className={styles.imogie}>
-                        😁​😅​🤣​😂​🙂​🙃​🫠​😉​🥰​😍​🤩​☺️​🥲​😛​😜​🤗​🤭​🤫​🤔​🫡​🫥​😒​🙄​🙂‍↔️​🙂‍↕️​🥵​🤯​🥳​😎​😎​🤓​🥺​🥹​😥​😱​😭​👋​👌​🤞​👉​👇​👍​👏
-                    </div>
+                <form onSubmit={handleSubmit}>
+                    {/* Emoji picket */}
+                    {showEmojis && (
+                        <div className={styles.emojiPicker}>
+                            {emojis.map((emoji, index) => (
+                                <button
+                                    key={index}
+                                    type="button"
+                                    className={styles.emojiButton}
+                                    onClick={() => handleEmojiClick(emoji)}
+                                >
+                                    {emoji}
+                                </button>
+                            ))};
+                        </div>
+                    )};
                     <div className={styles.elementsSend}>
-                        
-
-                        <input type="text" name="message" placeholder="Type your message..." id="" />
+                        <button
+                            type="button"
+                            className={styles.emojiButton}
+                            onClick={() => setShowEmojis(!showEmojis)}
+                        >
+                            😀
+                        </button>
+                        <input type="text" name="message" placeholder="Type your message..." value={message} onChange={handleChange} id="" />
 
                         <input type="file" name="uploadImage" id="uploadImage" className={styles.hiddenInput} />
                         <label htmlFor="uploadImage" className={styles.uploadLabel}>
