@@ -97,12 +97,31 @@
     /* background-color: #4d5983; */
     background-color: #eee;
 }
-.imogie{
-    max-width: 400px;
-    position: relative;
-    top: -5px;
-    padding-left: 45px;
-    margin-bottom: 5px;
+
+.emojiPicker {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0.2rem;
+    border: 1px solid #ccc;
+    background: white;
+    border-radius: 8px;
+    margin-top: 0.2rem;
+    max-width: 500px;
+    gap: 2px;
+}
+
+.emogiButton {
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+.emojiButton{
+    background-color: transparent;
+    border: none;
+    font-size: 25px;
+    margin-right: 5px;
+    cursor: pointer;
 }
 .elementsSend{
     display: flex;
@@ -114,14 +133,7 @@
     border-bottom-right-radius: 8px;
     border-bottom-left-radius: 8px;
 }
-.elementsSend input{
-    height: 100%;
-    /* background-color: #36425d; */
-    /* background-color: var(--color-primary); */
-}
-.elementsSend input[type="file"]{
-    width: 10%;
-}
+
 .hiddenInput{
     display: none;
 }
@@ -130,9 +142,6 @@
     outline: none;
     border: none;
     padding: 5px;
-    /* border-radius: 4px; */
-    /* border: 1px solid #36415d; */
-    /* background-color: #36415d; */
     background-color: #06d6a07d;
     color: #111;
     display: inline-block;
@@ -140,9 +149,11 @@
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
 }
+.elementsSend input[type="file"]{
+    width: 10%;
+}
 .elementsSend input[type="submit"]{
     width: 10%;
-    height: 100%;
 }
 
 .uploadLabel, .labelSend{
@@ -151,18 +162,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    /* background-color: #36425d; */
-    height: 100%;
-    /* border-radius: 4px; */
+    height: 40px;
+    padding: 10px;
+    background-color: #06d6a07d;
+    color: #01694e;
+
+    border: none;
 }
 
 .labelSend{
-    height: 40px;
-    /* background-color: #36415d; */
-    background-color: #06d6a07d;
-    padding: 10px;
-    border: none;
-    /* border-left: 1px solid #111; */
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
 }
@@ -170,29 +178,19 @@
 
 .iconUpload{
     font-size: 25px;
-    /* color: var(--color-primary); */
-    color: #01694e;
-    background-color: #06d6a07d;
-
-    /* color: #fff; */
     transition: color .2s ease-in-out;
 }
 .iconUpload:hover{
-    color: var(--color-primary-hover);
+    color: #01694ec9;
 }
 
 .iconSend{
     font-size: 100px;
     width: 2em;
-    /* color: var(--color-primary); */
     color: #01694e;
     transition: color .2s ease-in-out;
 }
 
-/* .elementsSend input[type="submit"]:hover .labelSend .iconSend{ */
 .iconSend:hover{
-    /* color: var(--color-primary-hover); */
-    /* color: var(--color-primary-hover); */
     color: #01694ec9;
-    
 }
