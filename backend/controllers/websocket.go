@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"social-network/models"
 	"social-network/utils"
@@ -16,129 +17,126 @@ var Manager = utils.NewManager()
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
+	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
 func Websocket(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		fmt.Println(err)
+		log.Println("WebSocket upgrade failed:", err)
 		return
 	}
+	defer conn.Close()
 
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
-	fmt.Println(id)
-	client := utils.CreateClient(conn, Manager, id, "hello")
+	client := utils.CreateClient(conn, Manager, id, "online")
 	Manager.AddClient(client)
-	groups := models.GetClientGroups(id)
-	if len(groups) != 0 {
+	defer Manager.RemoveClient(client)
+
+	if groups := models.GetClientGroups(id); len(groups) > 0 {
 		go Manager.StoreGroups(groups, id)
 	}
 
-	fmt.Println("groups", groups)
-	defer conn.Close()
 	for {
-		messageType, pyload, err := conn.ReadMessage()
+		msgType, payload, err := conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				fmt.Println(err)
+				log.Println("WebSocket closed unexpectedly:", err)
 			}
 			break
 		}
-
-		var message utils.Message
-		var errormap = map[string]string{}
-		fmt.Println("message type", messageType)
-		if messageType == websocket.BinaryMessage {
-			message, err = utils.UploadMsgImg(pyload)
-			if err != nil {
-				errormap["error"] = err.Error()
-			}
-			continue
-		}
-		if messageType == websocket.TextMessage {
-			if err := json.Unmarshal(pyload, &message); err != nil {
-				errormap["error"] = "faild to pars your data"
-				fmt.Println(err)
-			}
-		}
-		fmt.Println(message)
-
-		if _, exist := errormap["error"]; exist {
-			for _, claient := range Manager.UsersList[client.Client_id] {
-				claient.Connection.WriteJSON(errormap)
-			}
-			continue
-		}
-		fmt.Println(Manager.Groups[message.Group_id])
-		fmt.Println("sender id", message.Sender_id)
-		if message.Reciever_id != 0 {
-			BrodcatstPrivetMSG(message, messageType, r.Host)
-
-		} else if message.Group_id != 0 {
-			BrodcatstgroupMSG(message, messageType, r.Host)
-		}
+		handleMessage(msgType, payload, r.Host)
 	}
 }
 
-func BrodcatstPrivetMSG(message utils.Message, messageType int, host string) {
-	friends, err := models.FriendsChecker(message.Sender_id, message.Reciever_id)
-	var ERR utils.Err
-	if err != nil {
-		fmt.Println("error", err)
+func handleMessage(msgType int, payload []byte, host string) {
+	var err error
+	var msg utils.Message
+	var errMsg utils.Err
+
+	switch msgType {
+	case websocket.BinaryMessage:
+		msg, err = utils.UploadMsgImg(payload)
+		if err != nil {
+			errMsg.Error = err.Error()
+			broadcastError(errMsg, msg.Sender_id)
+			return
+		}
+	case websocket.TextMessage:
+		if err := json.Unmarshal(payload, &msg); err != nil {
+			errMsg.Error = "failed to parse your data"
+			broadcastError(errMsg, msg.Sender_id)
+			log.Println("JSON Unmarshal error:", err)
+			return
+		}
+	default:
 		return
 	}
 
-	if !friends {
-		ERR.Error = "you need to follow the reciever first"
-		BrodcastError(ERR, message.Sender_id)
+	if msg.Reciever_id != 0 {
+		broadcastPrivateMessage(msg, host)
+	} else if msg.Group_id != 0 {
+		if err := broadcastGroupMessage(msg, host); err != nil {
+			errMsg.Error = err.Error()
+			broadcastError(errMsg, msg.Sender_id)
+		}
+	}
+}
+
+func broadcastPrivateMessage(msg utils.Message, host string) {
+	errMsg := utils.Err{}
+
+	if ok, err := models.FriendsChecker(msg.Sender_id, msg.Reciever_id); err != nil || !ok {
+		errMsg.Error = "you need to follow the receiver first"
+		broadcastError(errMsg, msg.Sender_id)
 		return
 	}
 
-	if recieverConnectios, exists := Manager.UsersList[message.Reciever_id]; exists {
-		for _, reciever := range recieverConnectios {
-			if messageType == websocket.TextMessage {
-				reciever.Connection.WriteJSON(message)
-			} else if messageType == websocket.BinaryMessage {
-				message.Filename = host + message.Filename
-				reciever.Connection.WriteJSON(message)
+	models.InsertMsg(msg)
+	if msg.Filename != "" {
+		msg.Filename = host + msg.Filename
+	}
+	broadcastMessage(msg.Reciever_id, msg)
+	broadcastMessage(msg.Sender_id, msg)
+}
+
+func broadcastGroupMessage(msg utils.Message, host string) error {
+	if !models.CheckSender(msg.Group_id, msg.Sender_id) {
+		return fmt.Errorf("you need to be a group member first")
+	}
+	for _, receiverID := range Manager.Groups[msg.Group_id] {
+		broadcastMessage(receiverID, msg)
+	}
+	models.InsertGroupMSG(msg)
+	return nil
+}
+
+func broadcastMessage(receiverID int, msg utils.Message) {
+	if connections, exists := Manager.UsersList[receiverID]; exists {
+		for _, conn := range connections {
+			if err := conn.Connection.WriteJSON(msg); err != nil {
+				log.Println("WriteJSON failed:", err)
 			}
 		}
 	}
-	models.InsertMsg(message)
 }
 
-func BrodcastError(err utils.Err, reciever_id int) {
-	if senderConnectios, exists := Manager.UsersList[reciever_id]; exists {
-		for _, sender := range senderConnectios {
-			sender.Connection.WriteJSON(err)
-		}
-	}
-}
-
-func BrodcatstgroupMSG(message utils.Message, messageType int, host string) {
-	fmt.Println(Manager.Groups[message.Group_id])
-	for _, reciever := range Manager.Groups[message.Group_id] {
-		if recieverConnectios, exists := Manager.UsersList[reciever]; exists {
-			for _, reciever := range recieverConnectios {
-				if messageType == websocket.TextMessage {
-					reciever.Connection.WriteJSON(message)
-				} else if messageType == websocket.BinaryMessage {
-					message.Filename = host + message.Filename
-					reciever.Connection.WriteJSON(message)
-				}
+func broadcastError(errMsg utils.Err, receiverID int) {
+	if connections, exists := Manager.UsersList[receiverID]; exists {
+		for _, conn := range connections {
+			if err := conn.Connection.WriteJSON(errMsg); err != nil {
+				log.Println("Error broadcast failed:", err)
 			}
 		}
 	}
-	models.InsertGroupMSG(message)
 }
 
-func BrodcastNoti(noti utils.Notification) {
-	if target, online := Manager.UsersList[noti.Target_id]; online {
-		for _, targetConnection := range target {
-			targetConnection.Connection.WriteJSON(noti)
+func BroadcastNotification(noti utils.Notification) {
+	if targets, online := Manager.UsersList[noti.Target_id]; online {
+		for _, conn := range targets {
+			if err := conn.Connection.WriteJSON(noti); err != nil {
+				log.Println("Notification broadcast failed:", err)
+			}
 		}
 	}
 }
