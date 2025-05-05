@@ -125,5 +125,16 @@ func (m *Manager) RemoveClient(client *Client) {
 	// If no clients left, delete entry
 	if len(m.UsersList[client.Client_id]) == 0 {
 		delete(m.UsersList, client.Client_id)
+		m.RemoveClientFromGroups(client.Client_id)
+	}
+}
+
+func (m *Manager) RemoveClientFromGroups(id int) {
+	for _, group := range m.Groups {
+		for index, client_id := range group {
+			if client_id == id {
+				group = append(group[:index], group[index+1:]...)
+			}
+		}
 	}
 }

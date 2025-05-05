@@ -31,7 +31,7 @@ func InsertFriends(id int, friendes []string) {
 	}
 }
 
-func InsertFollow(follower, followed string) (error) {
+func InsertFollow(follower, followed string) error {
 	inserQuery := "INSERT INTO followers (follower_id, followed_id) VALUES (?,?)"
 	_, err := Db.Exec(inserQuery, follower, followed)
 	return err
@@ -88,6 +88,6 @@ func InsertGroupMSG(msg utils.Message) error {
 
 func InsertNotification(noti utils.Notification) error {
 	query := "INSERT INTO notifications (user_id, target_id, actor_id, message) VALUES (?,?,?,?)"
-	_, err := Db.Exec(query, noti.Sender_id, noti.Target_id, noti.Sender_id, noti.Message)
+	_, err := Db.Exec(query, noti.Sender_id, noti.Target_id, noti.Actor_id, noti.Message)
 	return err
 }

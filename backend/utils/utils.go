@@ -49,6 +49,7 @@ type Notification struct {
 	Id        int    `json:"id"`
 	Message   string `json:"message"`
 	Sender_id int    `json:"sender"`
+	Actor_id  int    `json:"actor_id"`
 	Target_id int    `json:"target"`
 	Type      string `json:"-"`
 }
