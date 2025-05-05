@@ -1,5 +1,7 @@
 package utils
 
+import "time"
+
 // import "time"
 
 type Regester struct {
@@ -31,6 +33,7 @@ type Post struct {
 	Friendes    []string  `json:"friends"`
 	CreatedAt   int       `json:"createdAt"`
 	Reactions   Reactions `json:"reaction"`
+	Groupe_id   int       `json:"groupe_id"`
 }
 
 type Reactions struct {
@@ -83,4 +86,20 @@ type Message struct {
 
 type Err struct {
 	Error string `json:"error"`
+}
+
+type GroupInvitation struct {
+	GroupID   int `json:"groupe_id"`
+	InvitedBy int `json:"invited_By"`
+	UserId    int `json:"invited"`
+	CreatedAt time.Time
+}
+type Groupe struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	CreatorId   int    `json:"cretorid"`
+}
+type Groupe_member struct {
+	User_id   int `json:"user_id"`
+	Groupe_id int `json:"groupe_id"`
 }

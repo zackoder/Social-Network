@@ -89,7 +89,7 @@ func (m *Manager) StoreGroups(groups []int, user_id int) {
 	m.Lock()
 	defer m.Unlock()
 	for _, group_id := range groups {
-		if group, exists := m.Groups[group_id]; exists {
+		if group, exists := m.Groups[group_id]; exists { // groups[int(group_id)][(members)]int ex : "groups[1][1,2,3,4,5] {1:[1,2,3,4,5],2: [1,2,3,4],3: [6]}"
 			if !m.CheckuserExistenc(user_id, group_id) {
 				m.Groups[group_id] = append(group, user_id)
 			}

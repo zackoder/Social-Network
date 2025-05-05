@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
+
 	"social-network/models"
 	"social-network/utils"
-	"strconv"
 
 	"github.com/gorilla/websocket"
 )
@@ -87,6 +89,9 @@ func broadcastPrivateMessage(msg utils.Message, host string) {
 	errMsg := utils.Err{}
 
 	if ok, err := models.FriendsChecker(msg.Sender_id, msg.Reciever_id); err != nil || !ok {
+		if err := os.Remove("."+msg.Filename); err != nil {
+			fmt.Println(err)
+		}
 		errMsg.Error = "you need to follow the receiver first"
 		broadcastError(errMsg, msg.Sender_id)
 		return
