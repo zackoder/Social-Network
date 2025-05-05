@@ -41,6 +41,7 @@ func HandleFollow(w http.ResponseWriter, r *http.Request) {
 	} else {
 		utils.WriteJSON(w, map[string]string{"resp": "follow request sent"}, 200)
 		BroadcastNotification(noti)
+		noti.Actor_id = noti.Sender_id
 		models.InsertNotification(noti)
 	}
 }

@@ -45,11 +45,12 @@ func Websocket(w http.ResponseWriter, r *http.Request) {
 			}
 			break
 		}
-		handleMessage(msgType, payload, r.Host)
+		fmt.Println(string(payload))
+		handleMessage(msgType, payload, r.Host, client)
 	}
 }
 
-func handleMessage(msgType int, payload []byte, host string) {
+func handleMessage(msgType int, payload []byte, host string, client *utils.Client) {
 	var err error
 	var msg utils.Message
 	var errMsg utils.Err
@@ -59,13 +60,13 @@ func handleMessage(msgType int, payload []byte, host string) {
 		msg, err = utils.UploadMsgImg(payload)
 		if err != nil {
 			errMsg.Error = err.Error()
-			broadcastError(errMsg, msg.Sender_id)
+			broadcastError(errMsg, client.Client_id)
 			return
 		}
 	case websocket.TextMessage:
 		if err := json.Unmarshal(payload, &msg); err != nil {
 			errMsg.Error = "failed to parse your data"
-			broadcastError(errMsg, msg.Sender_id)
+			broadcastError(errMsg, client.Client_id)
 			log.Println("JSON Unmarshal error:", err)
 			return
 		}
