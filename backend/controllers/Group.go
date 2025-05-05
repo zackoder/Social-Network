@@ -48,6 +48,7 @@ func JoinReq(w http.ResponseWriter, r *http.Request) {
 	}
 
 	notification.Message = "join group request"
+	notification.Actor_id = 5
 	err = models.InsertNotification(notification)
 	if err != nil {
 		fmt.Println(err)
@@ -66,4 +67,8 @@ func JoinReq(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.WriteJSON(w, notification, http.StatusOK)
+}
+
+func Event(noti utils.Notification) {
+	
 }
