@@ -7,6 +7,8 @@ async function getData() {
     const host = process.env.NEXT_PUBLIC_HOST;
     console.log("host", host)
     const response = await fetch(`${host}/api/posts`);
+    //const res = await response.json();
+    console.log("response ------", response.ok);
     if (!response.ok) {
         throw new Error('Failed to Fetch Data');
     }
