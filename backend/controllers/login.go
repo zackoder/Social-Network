@@ -16,13 +16,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, "invalid input data", http.StatusBadRequest)
 		return
 	}
-	fmt.Println("test-------------------",userData.Email)
-	fmt.Println("test", userData.Password)
 
-	// if len(userData.Email) < 4 || len(userData.Password) < 5 || len(userData.Email) > 30 || len(userData.Password) > 64 {
-	// 	utils.WriteJSON(w, "invalid username/password/email", http.StatusBadRequest)
-	// 	return
-	// }
+	if len(userData.Email) < 5 || len(userData.Password) < 250 || len(userData.Email) > 10 || len(userData.Password) < 64 {
+		utils.WriteJSON(w, map[string]string{"error": "invalid username/password/email"}, http.StatusBadRequest)
+		return
+	}
 
 	// if utils.IsValidEmail(&userData.Email) {
 	// 	 userData.Email = userData.Email, userData.Email
@@ -32,11 +30,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	err := models.ValidCredential(&userData)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			utils.WriteJSON(w, "Incorect Username or password", http.StatusUnauthorized)
+			utils.WriteJSON(w, map[string]string{"error": "Incorect Username or password"}, http.StatusUnauthorized)
 			return
 		}
 		fmt.Println(err)
-		utils.WriteJSON(w, "internaInternal Server Error1", http.StatusInternalServerError)
+		utils.WriteJSON(w, map[string]string{"error": "internaInternal Server Error1"}, http.StatusInternalServerError)
 		return
 	}
 
@@ -46,7 +44,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 	ok, err := models.GetActiveSession(&userData)
 	if err != nil {
-		utils.WriteJSON(w, "internaInternal Server Error2", http.StatusInternalServerError)
+		utils.WriteJSON(w, map[string]string{"error": "internaInternal Server Error"}, http.StatusInternalServerError)
 		return
 	}
 	fmt.Println(ok)
@@ -54,7 +52,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		err = models.DeleteSession(&userData)
 		if err != nil {
 			fmt.Println(err)
-			utils.WriteJSON(w, "internaInternal Server Error3", http.StatusInternalServerError)
+			utils.WriteJSON(w, map[string]string{"error": "internaInternal Server Error"}, http.StatusInternalServerError)
 			return
 		}
 	}
@@ -62,14 +60,14 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	userData.SessionId, err = utils.GenerateSessionID()
 	if err != nil {
 		fmt.Println(err)
-		utils.WriteJSON(w, "internaInternal Server Error4", http.StatusInternalServerError)
+		utils.WriteJSON(w, map[string]string{"error": "internaInternal Server Error"}, http.StatusInternalServerError)
 		return
 	}
 
 	err = models.InsertSession(&userData)
 	if err != nil {
 		fmt.Println(err)
-		utils.WriteJSON(w, "internaInternal Server Erro5", http.StatusInternalServerError)
+		utils.WriteJSON(w, map[string]string{"error": "internaInternal Server Error"}, http.StatusInternalServerError)
 		return
 	}
 

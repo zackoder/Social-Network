@@ -13,16 +13,15 @@ func QueryPosts(offset int, host string) []utils.Post {
 	FROM posts p
 	JOIN users u ON p.user_id = u.id`
 
-
 	rows, err := Db.Query(queryPosts)
 	if err != nil {
-		fmt.Println("ana hnaa",err)
+		fmt.Println("ana hnaa", err)
 		return nil
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var post utils.Post
-		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Poster_name , &post.Image, &post.CreatedAt)
+		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt)
 		if err != nil {
 			fmt.Println("scaning error:", err)
 		}
@@ -37,7 +36,7 @@ func QueryPosts(offset int, host string) []utils.Post {
 	return posts
 }
 
-func GetProfilePost(user_id, offset int) ([]utils.Post,error) {
+func GetProfilePost(user_id, offset int) ([]utils.Post, error) {
 	var posts []utils.Post
 	fmt.Printf("Querying posts for user_id=%d with offset=%d\n", user_id, offset)
 
@@ -45,7 +44,7 @@ func GetProfilePost(user_id, offset int) ([]utils.Post,error) {
 	rows, err := Db.Query(query, user_id, offset)
 	if err != nil {
 		fmt.Println("Error querying posts:", err)
-		return nil,err
+		return nil, err
 	}
 	defer rows.Close()
 	for rows.Next() {
@@ -59,9 +58,9 @@ func GetProfilePost(user_id, offset int) ([]utils.Post,error) {
 	}
 	if err = rows.Err(); err != nil {
 		fmt.Println("Error during rows iteration:", err)
-		return nil,err
+		return nil, err
 	}
-	return posts,err
+	return posts, err
 }
 
 func IsPrivateProfile(followed string) (bool, error) {
@@ -74,16 +73,18 @@ func IsPrivateProfile(followed string) (bool, error) {
 	}
 	return privacy == "private", nil
 }
+
 func CheckPostPrivacy(post string) (string, error) {
 	query := "SELECT post_privacy FROM posts WHERE id = ?"
-		var privacy string
-	err := Db.QueryRow(query,post).Scan(&privacy)
+	var privacy string
+	err := Db.QueryRow(query, post).Scan(&privacy)
 	if err != nil {
-		fmt.Println("is privet post",err)
-		return "",err
+		fmt.Println("is privet post", err)
+		return "", err
 	}
-	return privacy,nil
+	return privacy, nil
 }
+
 ///////////////////////////login///////////////////////////////////////////
 
 func ValidCredential(userData *utils.User) error {
@@ -107,7 +108,6 @@ func GetActiveSession(userData *utils.User) (bool, error) {
 	return exists, nil
 }
 
-
 func Get_session(ses string) (int, error) {
 	var sessionid int
 	query := `SELECT user_id FROM sessions WHERE token = ?;`
@@ -118,24 +118,23 @@ func Get_session(ses string) (int, error) {
 	return sessionid, nil
 }
 
-
 func GetClientGroups(user_id int) []int {
-    var groups []int
-    selectGroups := "SELECT group_id FROM group_members WHERE user_id = ?"
-    rows, err := Db.Query(selectGroups, user_id)
-    if err != nil {
-        fmt.Println(err)
-        return nil
-    }
-    defer rows.Close()
-    for rows.Next() {
-        var group_id int
-        if err := rows.Scan(&group_id); err != nil {
-            fmt.Println(err)
-        }
-        groups = append(groups, group_id)
-    }
-    return groups
+	var groups []int
+	selectGroups := "SELECT group_id FROM group_members WHERE user_id = ?"
+	rows, err := Db.Query(selectGroups, user_id)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var group_id int
+		if err := rows.Scan(&group_id); err != nil {
+			fmt.Println(err)
+		}
+		groups = append(groups, group_id)
+	}
+	return groups
 }
 
 func IsFollower(profileOwnerID int, viewerID int) (bool, error) {
@@ -164,6 +163,7 @@ func GetFollowers(userID int) ([]int, error) {
 	}
 	return followerIDs, nil
 }
+
 func GetPublicAndAlmostPrivatePosts(profileOwnerID, viewerID int) ([]utils.Post, error) {
 	query := `
 	SELECT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt
@@ -215,22 +215,22 @@ func GetRegistration(id string) (utils.Regester, error) {
 	var Id int
 
 	err := Db.QueryRow(query, id).Scan(
-		&Id,             
-		&data.NickName,     
-		&data.FirstName, 
-		&data.LastName, 
-		&data.Age,              
-		&data.Gender,        
-		&data.Email,          
-		&data.Avatar,         
-		&data.Password,        
-		&data.About_Me,        
-		&data.Pravecy,        
+		&Id,
+		&data.NickName,
+		&data.FirstName,
+		&data.LastName,
+		&data.Age,
+		&data.Gender,
+		&data.Email,
+		&data.Avatar,
+		&data.Password,
+		&data.About_Me,
+		&data.Pravecy,
 	)
 	if err != nil {
 		return data, err
 	}
-	 data.Password = ""
+	data.Password = ""
 	return data, nil
 }
 
@@ -263,4 +263,29 @@ func GetAllowedPosts(profileOwnerID int, viewerID int) ([]utils.Post, error) {
 		posts = append(posts, post)
 	}
 	return posts, nil
+}
+
+func GetReactionsCount(postID int) (map[string]int, error) {
+	query := `
+		SELECT reaction_type, COUNT(*) as count	FROM reactionsWHERE post_id = ?
+		GROUP BY reaction_type
+	`
+
+	rows, err := Db.Query(query, postID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	summary := make(map[string]int)
+
+	for rows.Next() {
+		var reactionType string
+		var count int
+		if err := rows.Scan(&reactionType, &count); err != nil {
+			return nil, err
+		}
+		summary[reactionType] = count
+	}
+	return summary, nil
 }
