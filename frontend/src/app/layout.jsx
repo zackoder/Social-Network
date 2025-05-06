@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 import {Montserrat} from "next/font/google";
+import WebsocketInitializer from "@/components/websocket/websocketInitializer";
 
 const bodyFont = Montserrat({
   subsets: ['latin'],
@@ -32,6 +33,8 @@ export default function RootLayout({ children }) {
       {/* <body className={`${geistSans.variable} ${geistMono.variable}`}> */}
       <body className={`${bodyFont.className}`}>
         <div className="container">
+          {/* <Websocket /> */}
+          <WebsocketInitializer />
           <Navbar/>
           {children}
           <Footer/>

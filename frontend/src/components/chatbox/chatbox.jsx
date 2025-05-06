@@ -5,6 +5,8 @@ import Image from "next/image";
 import { useState } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { IoIosSend } from "react-icons/io";
+// import { socket } from "../websocket/websocket.js";
+import { socket } from "../websocket/websocket";
 
 export default function ChatBox({ contact, onClickClose }) {
     const [message, setMessage] = useState('');
@@ -19,10 +21,14 @@ export default function ChatBox({ contact, onClickClose }) {
         setMessage(e.target.value);
     };
 
-    const handleSubmit = (e) => {
+
+    const handleSubmit = (e) => {        
         e.preventDefault();
         console.log("send Message:", message);
-        setMessage('');
+        socket.send(JSON.stringify({type : "msg" , content: message}))
+        // socket.send(JSON.stringify({type : "msg" , content: message}))
+
+        setMessage("");
     };
 
     return (

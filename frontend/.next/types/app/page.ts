@@ -1,4 +1,4 @@
-// File: /home/wzouguag/Desktop/Social-Network/frontend/src/app/page.jsx
+// File: /home/walid/Desktop/social-network/Social-Network/frontend/src/app/page.jsx
 import * as entry from '../../../src/app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
