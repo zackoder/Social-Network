@@ -1,7 +1,9 @@
 package models
 
 import (
+	"database/sql"
 	"fmt"
+
 	"social-network/utils"
 )
 
@@ -59,7 +61,6 @@ func insertFollow(follower, followed string) error {
 }
 
 func InsertFollowreq(followed string) {
-
 }
 
 func InsertNewGroup(group *utils.NewGroup, user_id int) error {
@@ -84,8 +85,7 @@ func InsertMumber(group_id, user_id int) error {
 	return nil
 }
 
-
-func InsertSession( userData *utils.User) error {
+func InsertSession(userData *utils.User) error {
 	_, err := Db.Exec("INSERT INTO sessions ( user_id, token) VALUES (?, ?)", userData.ID, userData.SessionId)
 	return err
 }
@@ -104,4 +104,34 @@ func AddPrivateViewers(postID int, viewerIDs []int) error {
 		}
 	}
 	return nil
+}
+
+// reactions functions
+
+func AddOrUpdateReaction(userID, postID int, reactionType string) error {
+	var existingID int
+	checkQuery := "SELECT id FROM reactions WHERE user_id = ? AND post_id = ?"
+	err := Db.QueryRow(checkQuery, userID, postID).Scan(&existingID)
+
+	if err != nil && err != sql.ErrNoRows {
+		return err
+	}
+
+	if err == sql.ErrNoRows {
+		insertQuery := `
+			INSERT INTO reactions (user_id, post_id, reaction_type)
+			VALUES (?, ?, ?)
+		`
+		_, err := Db.Exec(insertQuery, userID, postID, reactionType)
+		return err
+	} else {
+		// Reaction exists → update it
+		updateQuery := `
+			UPDATE reactions
+			SET reaction_type = ?, date = CURRENT_TIMESTAMP
+			WHERE id = ?
+		`
+		_, err := Db.Exec(updateQuery, reactionType, existingID)
+		return err
+	}
 }
