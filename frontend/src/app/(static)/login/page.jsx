@@ -37,7 +37,7 @@ export default function Login() {
         body: JSON.stringify(formData),
         credentials: "include", // Important for cookies
       });
-
+      
       if (!response.ok) {
         throw new Error("Invalid email or password");
       }
