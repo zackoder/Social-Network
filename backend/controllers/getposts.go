@@ -29,6 +29,7 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Profile ID is missing"}, http.StatusBadRequest)
 		return
 	}
+	
 
 	viewerID, err := models.Get_session(cookie.Value)
 	if err != nil {
