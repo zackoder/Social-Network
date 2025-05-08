@@ -265,27 +265,27 @@ func GetAllowedPosts(profileOwnerID int, viewerID int) ([]utils.Post, error) {
 	return posts, nil
 }
 
-func GetReactionsCount(postID int) (map[string]int, error) {
-	query := `
-		SELECT reaction_type, COUNT(*) as count	FROM reactionsWHERE post_id = ?
-		GROUP BY reaction_type
-	`
+// func GetReactionsCount(postID int) (map[string]int, error) {
+// 	query := `
+// 		SELECT reaction_type, COUNT(*) as count	FROM reactionsWHERE post_id = ?
+// 		GROUP BY reaction_type
+// 	`
 
-	rows, err := Db.Query(query, postID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
+// 	rows, err := Db.Query(query, postID)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer rows.Close()
 
-	summary := make(map[string]int)
+// 	summary := make(map[string]int)
 
-	for rows.Next() {
-		var reactionType string
-		var count int
-		if err := rows.Scan(&reactionType, &count); err != nil {
-			return nil, err
-		}
-		summary[reactionType] = count
-	}
-	return summary, nil
-}
+// 	for rows.Next() {
+// 		var reactionType string
+// 		var count int
+// 		if err := rows.Scan(&reactionType, &count); err != nil {
+// 			return nil, err
+// 		}
+// 		summary[reactionType] = count
+// 	}
+// 	return summary, nil
+// }
