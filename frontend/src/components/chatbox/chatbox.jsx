@@ -8,6 +8,16 @@ import { IoIosSend } from "react-icons/io";
 // import { socket } from "../websocket/websocket.js";
 import { socket } from "../websocket/websocket";
 
+// const Msg = {
+//     "sender_id": 1,
+//     "reciever_id": ,
+//     "type": ,
+//     "group_id": ,
+//     "content": ,
+//     "mime": ,
+//     "filename": ,
+// }
+
 export default function ChatBox({ contact, onClickClose }) {
     const [message, setMessage] = useState('');
     const [showEmojis, setShowEmojis] = useState(false);
@@ -22,10 +32,18 @@ export default function ChatBox({ contact, onClickClose }) {
     };
 
 
-    const handleSubmit = (e) => {        
+    const handleSubmit = (e) => {
         e.preventDefault();
+        const Msg = {
+            "sender_id": 1,
+            "reciever_id": 2,
+            "type": "message",
+            "content": message,
+            // "mime": ,
+            // "filename": ,
+        }
         console.log("send Message:", message);
-        socket.send(JSON.stringify({type : "msg" , content: message}))
+        socket.send(JSON.stringify(Msg))
         // socket.send(JSON.stringify({type : "msg" , content: message}))
 
         setMessage("");
