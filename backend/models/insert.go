@@ -113,3 +113,8 @@ Quirie := "INSERT INTO events (group_id,title,description,event_time,created_by)
 _,err := Db.Exec(Quirie,event.GroupID,event.Title,event.Description,event.EventTime,event.CreatedBy)
 return err 
 }
+func InsserResponceInDatabase(responce utils.EventResponse)error {
+	Quirie := "INSERT INTO event_responses (user_id,event_id,response) VALUES (?,?,?)"
+_,err := Db.Exec(Quirie,responce.UserID,responce.EventID,responce.Response)
+return err 
+}
