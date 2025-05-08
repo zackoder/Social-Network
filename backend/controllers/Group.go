@@ -187,7 +187,6 @@ func CreatEvent(w http.ResponseWriter, r *http.Request) {
 
   w.WriteHeader(http.StatusCreated)
   json.NewEncoder(w).Encode(map[string]string{"message": "The event cried out successfully"})
-  return 
 }
 func EventRrspponce(w http.ResponseWriter, r *http.Request){
 	if r.Method != http.MethodPost {
@@ -213,5 +212,4 @@ func EventRrspponce(w http.ResponseWriter, r *http.Request){
 
   w.WriteHeader(http.StatusCreated)
   json.NewEncoder(w).Encode(map[string]string{"message": "The answer was successfully added"})
-  return 
 }
