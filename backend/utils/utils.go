@@ -114,5 +114,6 @@ type Event struct {
 type EventResponse struct {
     UserID  int `json:"user_id"`
     EventID int `json:"event_id"`
+	GroupeId int `json:"groupe_id"`
     Response string  `json:"responce"`
 }
