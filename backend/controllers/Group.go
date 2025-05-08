@@ -158,9 +158,34 @@ func Get_all_post(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, Posts_groupe, http.StatusOK)
 }
 
-func Creat_Event(w http.ResponseWriter, r *http.Request) {
+func CreatEvent(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)
 		return
-	}
+    }
+	var event utils.Event
+	if err:= json.NewDecoder(r.Body).Decode(&event);err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest"}, http.StatusBadRequest)
+		return
+    }
+ 
+  if !utils.ValidatNames(event.Title)|| !utils.ValidatNames(event.Description) ||
+  len(event.Title)>25 || len(event.Description)>100 {
+	utils.WriteJSON(w, map[string]string{"error": "Status BadRequest"}, http.StatusBadRequest)
+	return
+   }
+  if !models.IsMember(event.GroupID,event.CreatedBy){
+	utils.WriteJSON(w, map[string]string{"error": "Access denied: you must be a member of the group to creat event."}, 403)
+	return
+   }
+   err := models.InsserEventInDatabase(event)
+   if err != nil {
+	utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
+	return
+   }
+
+
+  w.WriteHeader(http.StatusCreated)
+  json.NewEncoder(w).Encode(map[string]string{"message": "The event cried out successfully"})
+  return 
 }
