@@ -108,3 +108,8 @@ func InsserMemmberInGroupe(Groupe_id, User_id int) error {
 	_, err := Db.Exec(Quirie, Groupe_id, User_id)
 	return err
 }
+func InsserEventInDatabase(event utils.Event)error{
+Quirie := "INSERT INTO events (group_id,title,description,event_time,created_by) VALUES (?,?,?,?)"
+_,err := Db.Exec(Quirie,event.GroupID,event.Title,event.Description,event.EventTime,event.CreatedBy)
+return err 
+}

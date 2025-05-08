@@ -34,6 +34,7 @@ func main() {
 	mux.Handle("POST /creategroup", midleware.WithCORS(http.HandlerFunc(controllers.Creat_groupe)))
 	http.HandleFunc("/JouindGroupe", controllers.Jouind_Groupe)
 	http.HandleFunc("/GetPostsFromGroupe",controllers.Get_all_post)
+	mux.Handle("CreatEvent",controllers.CreatEvent)
 
 	http.HandleFunc("/GetPostsFromGroupe", controllers.Get_all_post)
 	mux.HandleFunc("GET /uploads/", controllers.HandelPics)

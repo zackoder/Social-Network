@@ -103,3 +103,16 @@ type Groupe_member struct {
 	User_id   int `json:"user_id"`
 	Groupe_id int `json:"groupe_id"`
 }
+type Event struct {
+    GroupID     int `json:"groupe_id"`
+    Title       string `json:"title"`
+    Description string `json:"description"`
+    EventTime   time.Time `json:"event_time"`
+    CreatedBy   int `json:"created_by"`
+}
+
+type EventResponse struct {
+    UserID  int `json:"user_id"`
+    EventID int `json:"event_id"`
+    Response string  `json:"responce"`
+}
