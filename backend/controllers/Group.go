@@ -189,3 +189,29 @@ func CreatEvent(w http.ResponseWriter, r *http.Request) {
   json.NewEncoder(w).Encode(map[string]string{"message": "The event cried out successfully"})
   return 
 }
+func EventRrspponce(w http.ResponseWriter, r *http.Request){
+	if r.Method != http.MethodPost {
+		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)
+		return
+    }
+	var responce utils.EventResponse
+	if err:= json.NewDecoder(r.Body).Decode(&responce);err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest"}, http.StatusBadRequest)
+		return
+    }
+
+  if !models.IsMember(responce.GroupeId,responce.UserID){
+	utils.WriteJSON(w, map[string]string{"error": "Access denied: you must be a member of the group to creat event."}, 403)
+	return
+   }
+   err := models.InsserResponceInDatabase(responce)
+   if err != nil {
+	utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
+	return
+   }
+
+
+  w.WriteHeader(http.StatusCreated)
+  json.NewEncoder(w).Encode(map[string]string{"message": "The answer was successfully added"})
+  return 
+}
