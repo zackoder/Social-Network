@@ -1,3 +1,6 @@
 {
-  "/(dynamic)/profile/page": "app/(dynamic)/profile/page.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/page": "app/page.js",
+  "/(dynamic)/profile/page": "app/(dynamic)/profile/page.js",
+  "/(static)/sign-up/page": "app/(static)/sign-up/page.js"
 }
