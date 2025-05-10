@@ -1,2 +1,0 @@
-ALTER TABLE users
-ADD COLUMN privacy TEXT DEFAULT 'public';
