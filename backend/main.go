@@ -35,6 +35,6 @@ func main() {
 	mux.HandleFunc("GET /api/getfollowers", controllers.GetFollowers)
 	mux.HandleFunc("GET /api/registrationData", controllers.GetRegistrationData)
 	mux.HandleFunc("/ws", controllers.Websocket)
-	fmt.Println("Server is running on port 8080")
+	fmt.Println("localhost:8080")
 	http.ListenAndServe(":8080", midleware.WithCORS(mux))
 }
