@@ -10,7 +10,7 @@ export default function Signup() {
     confirmPassword: "",
     firstName: "",
     lastName: "",
-    dateOfBirth: "",
+    age: "",
     nickname: "",
     aboutMe: "",
   });
@@ -21,56 +21,58 @@ export default function Signup() {
   const host = process.env.NEXT_PUBLIC_HOST;
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    let { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      setIsLoading(true);
-      setError("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
-      try {
-        const submitData = new FormData();
-        console.log(formData);
-        
-        submitData.append("userData", JSON.stringify(formData));
+    try {
+      const submitData = new FormData();
 
-        if (avatar) {
-          submitData.append("avatar", avatar);
-        }
+      formData.age = +new Date(formData.age);
+      console.log(formData);
 
-        const response = await fetch(`${host}/register`, {
-          method: "POST",
-          body: submitData,
-        });
+      submitData.append("userData", JSON.stringify(formData));
 
-        if (!response.ok) {
-          throw new Error("Registration failed");
-        }
-
-        const data = await response.json();
-
-        setFormData({
-          email: "",
-          password: "",
-          confirmPassword: "",
-          firstName: "",
-          lastName: "",
-          dateOfBirth: "",
-          nickname: "",
-          aboutMe: "",
-        });
-        setAvatar(null);
-      } catch (err) {
-        setError(err.message || "Failed to register. Please try again.");
-      } finally {
-        setIsLoading(false);
+      if (avatar) {
+        submitData.append("avatar", avatar);
       }
-    };
+
+      const response = await fetch(`${host}/register`, {
+        method: "POST",
+        body: submitData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Registration failed");
+      }
+
+      const data = await response.json();
+
+      setFormData({
+        email: "",
+        password: "",
+        confirmPassword: "",
+        firstName: "",
+        lastName: "",
+        age: "",
+        nickname: "",
+        aboutMe: "",
+      });
+      setAvatar(null);
+    } catch (err) {
+      setError(err.message || "Failed to register. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="signup-container">
@@ -88,7 +90,6 @@ export default function Signup() {
           </div>
         )}
         <form className="signup-form" onSubmit={handleSubmit}>
-          
           <div className="form-group">
             <label htmlFor="firstName">First Name</label>
             <input
@@ -128,13 +129,13 @@ export default function Signup() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="dateOfBirth">Date of Birth</label>
+            <label htmlFor="age">Date of Birth</label>
             <input
-              id="dateOfBirth"
-              name="dateOfBirth"
+              id="age"
+              name="age"
               type="date"
               required
-              value={formData.dateOfBirth}
+              value={formData.age}
               onChange={handleChange}
             />
           </div>
