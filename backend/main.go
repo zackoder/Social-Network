@@ -16,7 +16,6 @@ import (
 func main() {
 	mux := http.NewServeMux()
 	
-	http.ListenAndServe(":8080", mux)
 	mux.Handle("/login", midleware.WithCORS(http.HandlerFunc(controllers.Login)))
 	mux.Handle("/register", midleware.WithCORS(http.HandlerFunc(controllers.Register)))
 	mux.Handle("POST /addPost", midleware.WithCORS(http.HandlerFunc(controllers.AddPost)))
@@ -35,5 +34,6 @@ func main() {
 	mux.HandleFunc("GET /api/getfollowers", controllers.GetFollowers)
 	mux.HandleFunc("GET /api/registrationData", controllers.GetRegistrationData)
 	mux.HandleFunc("/ws", controllers.Websocket)
-
+	
+	http.ListenAndServe(":8080", mux)
 }
