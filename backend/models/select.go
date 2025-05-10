@@ -265,6 +265,30 @@ func GetAllowedPosts(profileOwnerID int, viewerID int) ([]utils.Post, error) {
 	return posts, nil
 }
 
+
+func GetAllUsers(userId int) (utils.Regester, error) {
+	var users utils.Regester
+	query := `     
+	SELECT u.first_name, u.last_name, u.avatar
+	FROM users u
+	LEFT JOIN messages m
+		ON (u.id = m.sender_id OR u.id = m.reciever_id)
+		AND (m.sender_id = ? OR m.reciever_id = ?)
+	WHERE u.id <> ?
+	GROUP BY u.nickname
+	ORDER BY
+		MAX(m.creation_date) DESC,
+		u.nickname ASC;
+	`
+	err := Db.QueryRow(query, userId).Scan(
+		&users.FirstName,
+		&users.LastName,
+	)
+	if err != nil {
+		return users, err
+	}
+	return users, nil
+}
 // func GetReactionsCount(postID int) (map[string]int, error) {
 // 	query := `
 // 		SELECT reaction_type, COUNT(*) as count	FROM reactionsWHERE post_id = ?
