@@ -2,20 +2,20 @@ export let socket;
 export let websocketConnection = null;
 
 export function Websocket() {
-    
+
     if (websocketConnection) {
         return websocketConnection;
     }
-    websocketConnection = new Promise((resolve, reject) => {   
+    websocketConnection = new Promise((resolve, reject) => {
         // Create WebSocket connection.
-        socket = new WebSocket("ws://localhost:8080/ws");
+        socket = new WebSocket("ws://localhost:8080/ws?id=1");
 
         // Connection opened
         socket.addEventListener("open", (event) => {
             // socket.send("Hello Server!");
             console.log("Websocket Connected");
             resolve(socket);
-            
+
         });
 
         //Websocket Closed
@@ -32,9 +32,13 @@ export function Websocket() {
         });
 
         // Listen for messages
-        socket.addEventListener("message", (event) => {
-            console.log("Message from server ", event.data);
-        });        
+        // socket.addEventListener("message", (event) => {
+        //     console.log("Message from server ", event.data);
+        //     let data = JSON.parse(event.data)
+        //     if (data.reciever_id){
+                
+        //     }
+        // });
     });
     return websocketConnection;
 
