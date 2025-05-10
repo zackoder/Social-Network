@@ -56,6 +56,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 			utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
 			return
 		}
+		
 		regesterreq.Password = hashedPss
 
 		if err := models.InsertUser(regesterreq); err != nil {
