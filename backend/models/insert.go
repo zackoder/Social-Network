@@ -6,6 +6,7 @@ import (
 )
 
 func InsertUser(user utils.Regester) error {
+	fmt.Println("\n\n\nstart inserting\n\n\n")
 	insertuserquery := "INSERT INTO users (first_name, last_name, nickname, email, age, gender, password, avatar, AboutMe)  VALUES(?,?,?,?,?,?,?,?,?)"
 	if _, err := Db.Exec(insertuserquery, user.FirstName, user.LastName, user.NickName, user.Email, user.Age, user.Gender, user.Password, user.Avatar, user.About_Me); err != nil {
 		fmt.Println(err)
@@ -84,8 +85,7 @@ func InsertMumber(group_id, user_id int) error {
 	return nil
 }
 
-
-func InsertSession( userData *utils.User) error {
+func InsertSession(userData *utils.User) error {
 	_, err := Db.Exec("INSERT INTO sessions ( user_id, token) VALUES (?, ?)", userData.ID, userData.SessionId)
 	return err
 }
