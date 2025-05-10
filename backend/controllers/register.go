@@ -11,6 +11,7 @@ import (
 )
 
 func Register(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("HELLO")
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
@@ -20,15 +21,19 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Too larg file"}, http.StatusRequestEntityTooLarge)
 		return
 	}
+
+	//fmt.Println("form data", r.Form["userData"])
 	
 	userData := r.FormValue("userData")
 	filePath, err := utils.UploadImage(r)
+	fmt.Println(filePath)
 	if err != nil {
-		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusMethodNotAllowed)
-		return
+		if err.Error() != "nothing" {
+			fmt.Println(err)
+			utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusMethodNotAllowed)
+			return
+		}
 	}
-
-
 
 	var regesterreq utils.Regester
 	if err := json.Unmarshal([]byte(userData), &regesterreq); err != nil {
@@ -36,6 +41,8 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
+	fmt.Println("afin asi lmhdi")
+	fmt.Println(regesterreq,"5555")
 
 	regesterreq.Avatar = filePath
 	if regesterreq.NickName == "" {

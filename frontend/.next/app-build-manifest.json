@@ -17,22 +17,6 @@
       "static/chunks/main-app.js",
       "static/css/app/(dynamic)/profile/page.css",
       "static/chunks/app/(dynamic)/profile/page.js"
-    ],
-    "/(static)/contact/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(static)/contact/page.js"
-    ],
-    "/(dynamic)/profile/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/(dynamic)/profile/[id]/page.css",
-      "static/chunks/app/(dynamic)/profile/[id]/page.js"
-    ],
-    "/_not-found/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
     ]
   }
 }

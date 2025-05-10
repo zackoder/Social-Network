@@ -15,7 +15,6 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, posts, 200)
 }
 
-
 func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("token")
 	if err != nil {
@@ -36,9 +35,9 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Println(viewerID)
-	// in casse u wanna see ur profile 
+	// in casse u wanna see ur profile
 	if strconv.Itoa(viewerID) == profileOwnerIDStr {
-		allPosts, err := models.GetProfilePost(viewerID, 0)  
+		allPosts, err := models.GetProfilePost(viewerID, 0)
 		if err != nil {
 			utils.WriteJSON(w, map[string]string{"error": "Failed to fetch posts"}, http.StatusInternalServerError)
 			return
@@ -61,7 +60,7 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !profilePrivacy {
-		// if the  profile is public we show all posts exept the privet ones and the almostPrivet posts 
+		// if the  profile is public we show all posts exept the privet ones and the almostPrivet posts
 		// we check them one by one we fetch them in case the visiter is a follower .
 		publicPosts, err := models.GetPublicAndAlmostPrivatePosts(profileOwnerID, viewerID)
 		if err != nil {
@@ -72,8 +71,8 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if the profile is private we use the func IsFollower to chekck the list of followers if the visiter is amog the follower 
-	// we show him the public posts + the olmost privet posts 
+	// if the profile is private we use the func IsFollower to chekck the list of followers if the visiter is amog the follower
+	// we show him the public posts + the olmost privet posts
 	isFollower, err := models.IsFollower(profileOwnerID, viewerID)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Failed to check follower status"}, http.StatusInternalServerError)
@@ -85,9 +84,9 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	 // here we fetch privet posts only for people that are allowed to see them by 
-	 // hecking the the user id across the privet post viewrs that stors the post 
-	 // with people allowed to see it 
+	// here we fetch privet posts only for people that are allowed to see them by
+	// hecking the the user id across the privet post viewrs that stors the post
+	// with people allowed to see it
 	posts, err := models.GetAllowedPosts(profileOwnerID, viewerID)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Failed to fetch posts"}, http.StatusInternalServerError)

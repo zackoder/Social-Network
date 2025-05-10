@@ -28,47 +28,49 @@ export default function Signup() {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      setIsLoading(true);
+      setError("");
 
-    try {
-      const submitData = new FormData();
-      submitData.append("userData", JSON.stringify(formData));
+      try {
+        const submitData = new FormData();
+        console.log(formData);
+        
+        submitData.append("userData", JSON.stringify(formData));
 
-      if (avatar) {
-        submitData.append("avatar", avatar);
+        if (avatar) {
+          submitData.append("avatar", avatar);
+        }
+
+        const response = await fetch(`${host}/register`, {
+          method: "POST",
+          body: submitData,
+        });
+
+        if (!response.ok) {
+          throw new Error("Registration failed");
+        }
+
+        const data = await response.json();
+
+        setFormData({
+          email: "",
+          password: "",
+          confirmPassword: "",
+          firstName: "",
+          lastName: "",
+          dateOfBirth: "",
+          nickname: "",
+          aboutMe: "",
+        });
+        setAvatar(null);
+      } catch (err) {
+        setError(err.message || "Failed to register. Please try again.");
+      } finally {
+        setIsLoading(false);
       }
-
-      const response = await fetch(`${host}/register`, {
-        method: "POST",
-        body: submitData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Registration failed");
-      }
-
-      const data = await response.json();
-
-      setFormData({
-        email: "",
-        password: "",
-        confirmPassword: "",
-        firstName: "",
-        lastName: "",
-        dateOfBirth: "",
-        nickname: "",
-        aboutMe: "",
-      });
-      setAvatar(null);
-    } catch (err) {
-      setError(err.message || "Failed to register. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
 
   return (
     <div className="signup-container">
