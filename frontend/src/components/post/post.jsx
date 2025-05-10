@@ -24,7 +24,7 @@ export default async function Post() {
             {posts.map((post) => (
                 <div className={styles.post} key={post.id}>
                     <div className={styles.header}>
-                        <Link href={"/profile?id=1&profile=zack"}>
+                        <Link href={`/profile?id=${post.poster}&profile=${post.name}`}>
                             <div className={styles.containerHeader}>
                                 <div className={styles.imageContainer}>
                                     {/* <Image
@@ -34,8 +34,7 @@ export default async function Post() {
                                 fill={false}
                             /> */}
                                 </div>
-                                <h2>Name</h2>
-
+                                <h2>{post.name}</h2>
                             </div>
                         </Link>
                     </div>

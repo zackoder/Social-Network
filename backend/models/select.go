@@ -8,6 +8,7 @@ import (
 )
 
 func QueryPosts(offset int, host string) []utils.Post {
+	fmt.Println("kantesti f mok")
 	var posts []utils.Post
 	queryPosts := `SELECT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt
 	FROM posts p
@@ -38,6 +39,7 @@ func QueryPosts(offset int, host string) []utils.Post {
 }
 
 func GetProfilePost(user_id, offset int) ([]utils.Post,error) {
+	fmt.Println("kantesti f mok")
 	var posts []utils.Post
 	fmt.Printf("Querying posts for user_id=%d with offset=%d\n", user_id, offset)
 
@@ -61,6 +63,7 @@ func GetProfilePost(user_id, offset int) ([]utils.Post,error) {
 		fmt.Println("Error during rows iteration:", err)
 		return nil,err
 	}
+	fmt.Println(posts)
 	return posts,err
 }
 

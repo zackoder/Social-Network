@@ -14,11 +14,10 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-
 func main() {
-mux := http.NewServeMux()
+	mux := http.NewServeMux()
 
-	mux.Handle("/login",midleware.WithCORS(http.HandlerFunc(controllers.Login)))
+	mux.Handle("/login", midleware.WithCORS(http.HandlerFunc(controllers.Login)))
 	mux.Handle("/register", midleware.WithCORS(http.HandlerFunc(controllers.Register)))
 	mux.Handle("POST /addPost", midleware.WithCORS(http.HandlerFunc(controllers.AddPost)))
 	mux.Handle("POST /followReq", midleware.WithCORS(http.HandlerFunc(controllers.HandleFollow)))
@@ -27,20 +26,15 @@ mux := http.NewServeMux()
 	mux.Handle("POST /joinReq", midleware.WithCORS(http.HandlerFunc(controllers.JoinReq)))
 	mux.Handle("POST /api/logout", midleware.WithCORS(http.HandlerFunc(controllers.LogoutHandler)))
 
-	
 	models.Db = db.InitDB()
 	defer models.Db.Close()
 	mux.HandleFunc("GET /uploads/", controllers.HandelPics)
-	mux.HandleFunc("GET /api/getProfilePosts",controllers.GetProfilePosts)
+	mux.HandleFunc("GET /api/getProfilePosts", controllers.GetProfilePosts)
 	mux.HandleFunc("GET /api/posts", controllers.Posts)
 	mux.HandleFunc("GET /group/{GroupName}", controllers.Group)
-	mux.HandleFunc("GET /api/getfollowers",controllers.GetFollowers)
-	mux.HandleFunc("GET /api/registrationData",controllers.GetRegistrationData)
-    mux.HandleFunc("/ws", controllers.Websocket)
+	mux.HandleFunc("GET /api/getfollowers", controllers.GetFollowers)
+	mux.HandleFunc("GET /api/registrationData", controllers.GetRegistrationData)
+	mux.HandleFunc("/ws", controllers.Websocket)
 	fmt.Println("Server is running on port 8080")
-	http.ListenAndServe(":8080", mux)
+	http.ListenAndServe(":8080", midleware.WithCORS(mux))
 }
-
-
-
-
