@@ -36,7 +36,7 @@ func main() {
 
 	mux.HandleFunc("GET /uploads/", controllers.HandelPics)
 	mux.HandleFunc("/api/posts", controllers.Posts)
-	mux.HandleFunc("GET /group/{GroupName}", controllers.Group)
+	mux.HandleFunc("GET /group", controllers.Group)
 	mux.HandleFunc("/ws", controllers.Websocket)
 
 	http.ListenAndServe(":8080", mux)
