@@ -15,13 +15,17 @@ func AddPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var err error
+	filepath := ""
 	host := r.Host
 	postData := r.FormValue("postData")
-	filepath, err := utils.UploadImage(r)
-	if err != nil {
-		utils.WriteJSON(w, map[string]string{"error": err.Error()}, http.StatusInternalServerError)
-		fmt.Println("Upload Image error:", err)
-		return
+	if _, exists := r.Form["avatar"]; exists {
+		filepath, err = utils.UploadImage(r)
+		if err != nil {
+			utils.WriteJSON(w, map[string]string{"error": err.Error()}, http.StatusInternalServerError)
+			fmt.Println("Upload Image error:", err)
+			return
+		}
 	}
 
 	var post utils.Post
@@ -56,6 +60,3 @@ func AddPost(w http.ResponseWriter, r *http.Request) {
 	}
 	utils.WriteJSON(w, post, 200)
 }
-
-
-	 

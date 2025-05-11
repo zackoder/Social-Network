@@ -8,6 +8,11 @@ import Image from "next/image";
 import Post from "@/components/post/post";
 import { FaLock, FaLockOpen } from "react-icons/fa";
 
+// Create a non-async wrapper for Post
+function PostWrapper({ post }) {
+  return <Post post={post} />;
+}
+
 export default function ProfilePage() {
   const searchParams = useSearchParams();
   const profileId = searchParams.get("id");
@@ -22,6 +27,7 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("posts");
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState({ title: "", data: [] });
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (profileId) {
@@ -43,9 +49,15 @@ export default function ProfilePage() {
         }
       );
       let dataxx = await profileResponse.json();
-      console.log(dataxx);
+      if (!profileResponse.ok) {
+        throw new Error("failed to load data");
+      }
+
       if (profileResponse.ok) {
-        const profileData = await profileResponse.json();
+        console.log(profileResponse);
+
+        const profileData = dataxx;
+        console.log(dataxx);
         setProfile(profileData);
         setIsPrivate(profileData.privacy === "private");
         setIsOwnProfile(profileData.isOwnProfile);
@@ -94,10 +106,10 @@ export default function ProfilePage() {
         const followingData = await followingResponse.json();
         setFollowing(followingData);
       } else {
-        console.error("Failed to fetch following");
+        setError("Failed to fetch following");
       }
     } catch (error) {
-      console.error("Error fetching profile data:", error);
+      setError(error.message || "Error fetching profile data");
     } finally {
       setIsLoading(false);
     }
@@ -123,7 +135,7 @@ export default function ProfilePage() {
         console.error("Failed to update privacy settings");
       }
     } catch (error) {
-      console.error("Error updating privacy settings:", error);
+      console.error("Error updating privacy settings", error);
     }
   };
 
@@ -158,7 +170,7 @@ export default function ProfilePage() {
           <div className={styles.boxImage}>
             <Image
               className={styles.image}
-              src={profile.avatar || "/profile/profile.png"}
+              src={"/profile/profile.png"}
               alt={`${profile.firstName} ${profile.lastName}`}
               fill={true}
             />
@@ -224,7 +236,7 @@ export default function ProfilePage() {
         {activeTab === "posts" && (
           <div>
             {posts.length > 0 ? (
-              posts.map((post) => <Post key={post.id} post={post} />)
+              posts.map((post) => <PostWrapper key={post.id} post={post} />)
             ) : (
               <div className={styles.noContent}>No posts to display</div>
             )}
