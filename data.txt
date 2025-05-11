@@ -14,3 +14,10 @@ post data {
     "title":"hello there",
     "content":"test1"
 }
+
+{
+    "privacy":"private",
+    "title":"hello there",
+    "friends":[1,2,3,4,5,6,7],
+    "content":"test1"
+}

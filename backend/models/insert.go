@@ -16,15 +16,16 @@ func InsertUser(user utils.Regester) error {
 
 func InsertPost(post utils.Post) (int, error) {
 	insetpostQuery := "INSERT INTO posts (post_privacy, title, content, user_id, imagePath, createdAt) VALUES (?,?,?,?,?,strftime('%s', 'now'))"
-	res, err := Db.Exec(insetpostQuery, post.Privacy, post.Title, post.Content, 1, post.Image)
+	res, err := Db.Exec(insetpostQuery, post.Privacy, post.Title, post.Content, post.Poster_id, post.Image)
 	if err != nil {
+		fmt.Println(err)
 		return 0, err
 	}
 	lastId, _ := res.LastInsertId()
 	return int(lastId), nil
 }
 
-func InsertFriends(id int, friendes []string) {
+func InsertFriends(id int, friendes []int) {
 	insertFriend := "INSERT INTO friends (post_id, friend_id) VALUES(?,?)"
 	for _, friend := range friendes {
 		Db.Exec(insertFriend, id, friend)

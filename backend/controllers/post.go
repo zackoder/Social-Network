@@ -15,8 +15,11 @@ func AddPost(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
-
 	host := r.Host
+	// if _, exists := r.Form["postData"]; !exists {
+
+	// 	return
+	// }
 	postData := r.FormValue("postData")
 	filepath, err := utils.UploadImage(r)
 	if err != nil {
@@ -34,10 +37,13 @@ func AddPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	post.Poster_id, _ = strconv.Atoi(r.URL.Query().Get("id"))
+	fmt.Println("post", r.URL.Query().Get("id"))
+
 	if filepath != "" {
 		post.Image = filepath
 	}
-
+	fmt.Println(post.Poster_id)
 	post.Id, err = models.InsertPost(post)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "internal server error\ninserting post"}, http.StatusInternalServerError)
@@ -45,14 +51,14 @@ func AddPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(post.Friendes) != 0 {
-		models.InsertFriends(2, post.Friendes)
-		post.Friendes = []string{}
+		models.InsertFriends(post.Id, post.Friendes)
+		post.Friendes = []int{}
 	}
 
 	if filepath != "" {
 		post.Image = host + filepath
 	}
-	
+
 	utils.WriteJSON(w, post, 200)
 }
 
