@@ -16,12 +16,24 @@ post data {
 }
 
 {
-    "aboutMe": ""​,
-    "age": 978307200000​,
-    "confirmPassword": "Zack123@gmail.com",
-    "​email": "Zack123@gmail.com",
-    "​firstName": "Zack123@gmail.com",
-    "​lastName": "Zack123@gmail.com",
-    "​nickname": "Zack123@gmail.com",
-    "​password": "Zack123@gmail.com"
+  "aboutMe": "",
+  "age": 24,
+  "confirmPassword": "Zack123",
+  "email": "Zack1@gmail.com",
+  "firstName": "Zack",
+  "lastName": "Smith",
+  "nickname": "Zackie",
+  "password": "Zack123"
 }
+
+{
+  "aboutMe": "",
+  "age": 24,
+  "confirmPassword": "zikobes@gmial.com",
+  "email": "Zack0@gmail.com",
+  "firstName": "zikobes@gmial.com",
+  "lastName": "zikobes@gmial.com",
+  "nickname": "zikobes@gmial.com",
+  "password": "zikobes@gmial.com"
+}
+

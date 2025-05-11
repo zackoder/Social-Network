@@ -36,8 +36,8 @@ export default function ProfilePage() {
       console.log(
         `${process.env.NEXT_PUBLIC_HOST}/api/getProfilePosts?id=${profileId}`
       );
-      /*const profileResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_HOST}/api/profile?id=${profileId}`,
+      const profileResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_HOST}/api/registrationData?id=${profileId}`,
         {
           credentials: "include",
         }
@@ -52,7 +52,6 @@ export default function ProfilePage() {
       } else {
         console.error("Failed to fetch profile data");
       }
-*/
       // Fetch posts
       const postsResponse = await fetch(
         `${process.env.NEXT_PUBLIC_HOST}/api/getProfilePosts?id=${profileId}`,
@@ -85,7 +84,7 @@ export default function ProfilePage() {
 
       // Fetch following
       const followingResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_HOST}/api/following?id=${profileId}`,
+        `${process.env.NEXT_PUBLIC_HOST}/api/followers?id=${profileId}`,
         {
           credentials: "include",
         }
