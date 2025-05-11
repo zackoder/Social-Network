@@ -77,7 +77,10 @@
     padding: 15px 20px;
     /* background-color: #505f88; */
     background-color: #ddd;
-    min-height: 300px;
+    min-height: 400px;
+    max-height: 400px;
+    overflow: scroll;
+    overflow-x: hidden;
 }
 .chatbox_readmessages__okvdT .chatbox_me__64_4g,
 .chatbox_readmessages__okvdT .chatbox_sender__NVgQu{
