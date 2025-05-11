@@ -51,7 +51,10 @@
     padding: 15px 20px;
     /* background-color: #505f88; */
     background-color: #ddd;
-    min-height: 300px;
+    min-height: 400px;
+    max-height: 400px;
+    overflow: scroll;
+    overflow-x: hidden;
 }
 .readmessages .me,
 .readmessages .sender{
