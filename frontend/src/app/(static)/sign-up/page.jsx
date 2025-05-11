@@ -20,6 +20,26 @@ export default function Signup() {
 
   const host = process.env.NEXT_PUBLIC_HOST;
 
+  // Email regex for basic validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const validate = () => {
+    if (formData.firstName.length > 10)
+      return "First name must be under 10 characters.";
+    if (formData.lastName.length > 10)
+      return "Last name must be under 10 characters.";
+    if (formData.nickname && formData.nickname.length > 10)
+      return "Nickname must be under 10 characters.";
+    if (!emailRegex.test(formData.email))
+      return "Please enter a valid email address.";
+    if (!formData.age) return "Please enter your date of birth.";
+    if (new Date(formData.age) > new Date())
+      return "Date of birth cannot be in the future.";
+    if (formData.aboutMe.length > 130)
+      return "About Me must be under 130 characters.";
+    return "";
+  };
+
   const handleChange = (e) => {
     let { name, value } = e.target;
     setFormData((prev) => ({
@@ -30,32 +50,34 @@ export default function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
     setError("");
-
+    const validationError = validate();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+    setIsLoading(true);
+    let data;
     try {
       const submitData = new FormData();
-
-      formData.age = +new Date(formData.age);
-      console.log(formData);
-
-      submitData.append("userData", JSON.stringify(formData));
-
+      const dataToSend = {
+        ...formData,
+        age: formData.age ? +new Date(formData.age) : "",
+      };
+      submitData.append("userData", JSON.stringify(dataToSend));
       if (avatar) {
         submitData.append("avatar", avatar);
       }
-
       const response = await fetch(`${host}/register`, {
         method: "POST",
         body: submitData,
       });
-
+      data = await response.json();
       if (!response.ok) {
-        throw new Error("Registration failed");
+        setError(data.error || "Failed to register. Please try again.");
+        setIsLoading(false);
+        return;
       }
-
-      const data = await response.json();
-
       setFormData({
         email: "",
         password: "",
@@ -67,8 +89,8 @@ export default function Signup() {
         aboutMe: "",
       });
       setAvatar(null);
-    } catch (err) {
-      setError(err.message || "Failed to register. Please try again.");
+    } catch {
+      setError(data?.error || "Failed to register. Please try again.");
     } finally {
       setIsLoading(false);
     }
