@@ -39,5 +39,13 @@ func main() {
 	mux.HandleFunc("GET /group", controllers.Group)
 	mux.HandleFunc("/ws", controllers.Websocket)
 
+	// Comment handlers
+	mux.Handle("POST /addComment", midleware.WithCORS(http.HandlerFunc(controllers.AddComment)))
+	mux.Handle("GET /getComments", midleware.WithCORS(http.HandlerFunc(controllers.GetComments)))
+
+	// Reaction handlers
+	mux.Handle("POST /addReaction", midleware.WithCORS(http.HandlerFunc(controllers.AddReaction)))
+	mux.Handle("GET /getReactions", midleware.WithCORS(http.HandlerFunc(controllers.GetReactions)))
+
 	http.ListenAndServe(":8080", mux)
 }
