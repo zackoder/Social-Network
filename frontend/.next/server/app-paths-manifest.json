@@ -1,6 +1,4 @@
 {
-  "/(static)/sign-up/page": "app/(static)/sign-up/page.js",
-  "/(static)/login/page": "app/(static)/login/page.js",
   "/page": "app/page.js",
-  "/(dynamic)/profile/page": "app/(dynamic)/profile/page.js"
+  "/(static)/login/page": "app/(static)/login/page.js"
 }
