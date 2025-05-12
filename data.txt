@@ -1,0 +1,16 @@
+registration info {
+    "firstName":"zack",
+    "lastName":"bess",
+    "nickName":"bb",
+    "age":26,
+    "gender":"male",
+    "email":"zakariabess@gmail.com",
+    "password":"zack12345",
+    "confermPassword":"zack12345",
+    "AboutMe":"my name is zack, and i'm from morocoo"
+ }
+post data {
+    "privacy":"public",
+    "title":"hello there",
+    "content":"test1"
+}
