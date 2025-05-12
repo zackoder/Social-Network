@@ -19,12 +19,12 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Session not found"}, http.StatusUnauthorized)
 		return
 	}
-	users, err := models.GetAllUsers(userID)
+	users, err := models.GetUserFriends(userID)
 	if err != nil {
 		fmt.Println("can't fetch users")
 		return
 	}
-	fmt.Println(users)
+	utils.WriteJSON(w, users,http.StatusAccepted)
 }
 
 

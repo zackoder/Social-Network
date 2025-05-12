@@ -79,7 +79,7 @@ func CheckPostPrivacy(post string) (string, error) {
 	var privacy string
 	err := Db.QueryRow(query, post).Scan(&privacy)
 	if err != nil {
-		fmt.Println("is privet post", err)
+		fmt.Println("is private post", err)
 		return "", err
 	}
 	return privacy, nil
@@ -164,48 +164,79 @@ func GetFollowers(userID int) ([]int, error) {
 	return followerIDs, nil
 }
 
-func GetPublicAndAlmostPrivatePosts(profileOwnerID, viewerID int) ([]utils.Post, error) {
+// func GetPublicAndAlmostPrivatePosts(profileOwnerID, viewerID int) ([]utils.Post, error) {
+// 	query := `
+// 	SELECT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt
+// 	FROM posts p
+// 	JOIN users u ON p.user_id = u.id
+// 	WHERE p.user_id = ?
+// 	AND (
+// 		p.post_privacy = 'public'
+// 		OR (
+// 			p.post_privacy = 'almostPrivate'
+// 			AND EXISTS (
+// 				SELECT 1 FROM followers f
+// 				WHERE f.followed_id = p.user_id AND f.follower_id = ?
+// 			)
+// 		)
+// 	)
+// 	ORDER BY p.createdAt DESC
+// 	LIMIT ? OFFSET ?
+// 	`
+
+// 	rows, err := Db.Query(query, profileOwnerID, viewerID, 10, 0)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer rows.Close()
+
+// 	var posts []utils.Post
+// 	for rows.Next() {
+// 		var post utils.Post
+// 		// var createdAt int64
+// 		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content,
+// 			&post.Poster_id, &post.Poster_name, &post.Image , &post.CreatedAt)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+// 		// post.CreatedAt = int(createdAt)
+// 		posts = append(posts, post)
+// 	}
+// 	return posts, nil
+// }
+
+func GetPuclicPosts(userID int) ([]utils.Post, error) {
+	var publicPosts []utils.Post
 	query := `
 	SELECT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt
-	FROM posts p
-	JOIN users u ON p.user_id = u.id
-	WHERE p.user_id = ?
-	  AND (
-		p.post_privacy = 'public'
-		OR (
-			p.post_privacy = 'almostPrivate'
-			AND EXISTS (
-				SELECT 1 FROM followers f
-				WHERE f.followed_id = p.user_id AND f.follower_id = ?
-			)
+		FROM posts p
+		JOIN users u ON p.user_id = u.id
+		WHERE p.user_id = ?
+		AND (
+			p.post_privacy = 'public' 
 		)
-	)
-	ORDER BY p.createdAt DESC
-	LIMIT ? OFFSET ?
+		ORDER BY p.createdAt 
+		LIMIT ? OFFSET ?
 	`
 
-	rows, err := Db.Query(query, profileOwnerID, viewerID, 10, 0)
+	rows, err := Db.Query(query, userID,10,0)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-
-	var posts []utils.Post
 	for rows.Next() {
 		var post utils.Post
-		var createdAt int64
-
+		// var createdAt int64
 		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content,
-			&post.Poster_id, &post.Poster_name, &post.Image, &createdAt)
+			&post.Poster_id, &post.Poster_name, &post.Image , &post.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
 
-		post.CreatedAt = int(createdAt)
-		posts = append(posts, post)
+		publicPosts = append(publicPosts, post)
 	}
 
-	return posts, nil
+	return publicPosts, nil
 }
 
 func GetRegistration(id string) (utils.Regester, error) {
@@ -239,12 +270,12 @@ func GetAllowedPosts(profileOwnerID int, viewerID int) ([]utils.Post, error) {
 	SELECT DISTINCT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt
 	FROM posts p
 	JOIN users u ON p.user_id = u.id
-	LEFT JOIN private_post_viewers ppv ON p.id = ppv.post_id
+	LEFT JOIN friends ppv ON p.id = ppv.post_id
 	WHERE p.user_id = ?
 	AND (
 		p.post_privacy = 'public'
 		OR (p.post_privacy = 'almostPrivate')
-		OR (p.post_privacy = 'private' AND ppv.viewer_id = ?)
+		OR (p.post_privacy = 'private' AND ppv.friend_id = ?)
 	)
 	ORDER BY p.createdAt DESC
 	`
@@ -258,6 +289,7 @@ func GetAllowedPosts(profileOwnerID int, viewerID int) ([]utils.Post, error) {
 		var post utils.Post
 		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt)
 		if err != nil {
+			fmt.Println("here im ", err)
 			return nil, err
 		}
 		posts = append(posts, post)
@@ -265,30 +297,50 @@ func GetAllowedPosts(profileOwnerID int, viewerID int) ([]utils.Post, error) {
 	return posts, nil
 }
 
+func GetUserFriends(userId int) ([]utils.Regester, error) {
+	var users []utils.Regester
 
-func GetAllUsers(userId int) (utils.Regester, error) {
-	var users utils.Regester
-	query := `     
-	SELECT u.first_name, u.last_name, u.avatar
+	query := `
+	SELECT DISTINCT u.first_name, u.last_name, u.avatar
 	FROM users u
+	INNER JOIN (
+		SELECT followed_id AS friend_id FROM followers WHERE follower_id = ?
+		UNION
+		SELECT follower_id AS friend_id FROM followers WHERE followed_id = ?
+	) f ON u.id = f.friend_id
 	LEFT JOIN messages m
 		ON (u.id = m.sender_id OR u.id = m.reciever_id)
 		AND (m.sender_id = ? OR m.reciever_id = ?)
 	WHERE u.id <> ?
-	GROUP BY u.nickname
+	GROUP BY u.id
 	ORDER BY
 		MAX(m.creation_date) DESC,
-		u.nickname ASC;
+		u.first_name ASC;
 	`
-	err := Db.QueryRow(query, userId).Scan(
-		&users.FirstName,
-		&users.LastName,
-	)
+
+	rows, err := Db.Query(query, userId, userId, userId, userId, userId)
 	if err != nil {
-		return users, err
+		fmt.Println("DB query error:", err)
+		return nil, err
 	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var u utils.Regester
+		err := rows.Scan(&u.FirstName, &u.LastName, &u.Avatar)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, u)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return users, nil
 }
+
 // func GetReactionsCount(postID int) (map[string]int, error) {
 // 	query := `
 // 		SELECT reaction_type, COUNT(*) as count	FROM reactionsWHERE post_id = ?
