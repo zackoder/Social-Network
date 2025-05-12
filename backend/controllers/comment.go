@@ -2,11 +2,34 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"social-network/models"
 	"social-network/utils"
 	"strconv"
 )
+
+// UserProfileInfo holds user avatar and name information
+type UserProfileInfo struct {
+	Avatar   string
+	UserName string
+}
+
+// GetUserAvatarAndUserName retrieves the avatar URL and full name for a user by ID
+func GetUserAvatarAndUserName(userId int) *UserProfileInfo {
+	user, err := models.GetUserById(userId)
+	if err != nil {
+		return &UserProfileInfo{
+			Avatar:   "",
+			UserName: "Anonymous",
+		}
+	}
+
+	return &UserProfileInfo{
+		Avatar:   user.Avatar,
+		UserName: user.FirstName + " " + user.LastName,
+	}
+}
 
 // AddComment handles adding a new comment to a post
 func AddComment(w http.ResponseWriter, r *http.Request) {
@@ -14,7 +37,20 @@ func AddComment(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Method not allowed"}, http.StatusMethodNotAllowed)
 		return
 	}
+	// Parse the form data
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "Failed to parse form data"}, http.StatusBadRequest)
+		return
+	}
 
+	postData := r.FormValue("commentData")
+	// Get the file path for the uploaded image
+	filepath, err := utils.UploadImage(r)
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": err.Error()}, http.StatusInternalServerError)
+		fmt.Println("Upload Image error:", err)
+		return
+	}
 	// Get user session to identify the commenter
 	cookie, err := r.Cookie("token")
 	if err != nil {
@@ -30,9 +66,12 @@ func AddComment(w http.ResponseWriter, r *http.Request) {
 
 	// Parse the comment data
 	var comment utils.Comment
-	if err := json.NewDecoder(r.Body).Decode(&comment); err != nil {
+	if err := json.Unmarshal([]byte(postData), &comment); err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Invalid request data"}, http.StatusBadRequest)
 		return
+	}
+	if filepath != "" {
+		comment.ImagePath = filepath
 	}
 
 	// Set the user ID from the session
@@ -45,6 +84,17 @@ func AddComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check if user has access to interact with this post based on privacy settings
+	canAccess, err := models.CanUserAccessPost(userId, comment.PostId)
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "Error checking post access: " + err.Error()}, http.StatusInternalServerError)
+		return
+	}
+	if !canAccess {
+		utils.WriteJSON(w, map[string]string{"error": "You don't have permission to comment on this post"}, http.StatusForbidden)
+		return
+	}
+
 	// Insert the comment into the database
 	commentID, err := models.InsertComment(&comment)
 	if err != nil {
@@ -52,6 +102,9 @@ func AddComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if filepath != "" {
+		comment.ImagePath = r.Host + filepath
+	}
 	// Set the generated ID and return the comment
 	comment.Id = commentID
 
@@ -59,6 +112,19 @@ func AddComment(w http.ResponseWriter, r *http.Request) {
 	user, err := models.GetUserById(userId)
 	if err == nil {
 		comment.UserName = user.FirstName + " " + user.LastName
+	}
+
+	// Set the date and default values
+	comment.Date = utils.GetCurrentDate()
+
+	comment.UserAvatar = GetUserAvatarAndUserName(userId).Avatar
+	comment.UserName = GetUserAvatarAndUserName(userId).UserName
+
+	if comment.UserAvatar == "" {
+		comment.UserAvatar = "https://example.com/default-avatar.png" // Default avatar URL
+	}
+	if comment.UserName == "" {
+		comment.UserName = "Anonymous" // Default name if not found
 	}
 
 	utils.WriteJSON(w, comment, http.StatusOK)

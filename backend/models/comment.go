@@ -72,11 +72,11 @@ func GetCommentsByPostId(postId int) ([]utils.Comment, error) {
 }
 
 // DeleteComment removes a comment from the database
-func DeleteComment(commentId int) error {
-	query := "DELETE FROM comments WHERE id = ?"
-	_, err := Db.Exec(query, commentId)
-	return err
-}
+// func DeleteComment(commentId int) error {
+// 	query := "DELETE FROM comments WHERE id = ?"
+// 	_, err := Db.Exec(query, commentId)
+// 	return err
+// }
 
 // CanModifyComment checks if a user has permission to modify or delete a comment
 // func CanModifyComment(userId, commentId int) (bool, error) {
