@@ -1,57 +1,68 @@
-'use client'
+'use client';
 
-import styles from "./chatbox.module.css"
-import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
-import { FaCloudUploadAlt } from "react-icons/fa";
-import { IoIosSend } from "react-icons/io";
-// import { socket } from "../websocket/websocket.js";
-import { socket } from "../websocket/websocket";
-
-// const Msg = {
-//     "sender_id": 1,
-//     "reciever_id": ,
-//     "type": ,
-//     "group_id": ,
-//     "content": ,
-//     "mime": ,
-//     "filename": ,
-// }
+import styles from './chatbox.module.css';
+import Image from 'next/image';
+import { useEffect, useRef, useState } from 'react';
+import { FaCloudUploadAlt } from 'react-icons/fa';
+import { IoIosSend } from 'react-icons/io';
+import { socket } from '../websocket/websocket';
 
 export default function ChatBox({ contact, onClickClose }) {
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
-    const [image, SetImage] = useState(null);
+    const [image, setImage] = useState(null);
     const [showEmojis, setShowEmojis] = useState(false);
-    const emojis = ['😁', '😅', '​🤣', '😂', '🙂', '🙃', '🫠', '😉', '🥰', '😍', '​🤩', '☺️', '​🥲', '😛', '​😜', '🤗', '🤭', '🤫', '🤔', '🫡', '​🫥', '​😒', '🙄', '🙂‍↔️', '​🙂‍↕️', '🥵', '🤯', '🥳', '😎', '​😎', '🤓', '🥺', '​🥹', '😥​', '😱​', '😭​', '👋​', '👌​', '🤞​', '👉​', '👇​', '👍​', '👏'];
-    const addMessage = useRef()
-    const handleEmojiClick = (emoji) => {
-        setMessage((prev) => prev + emoji);
-    };
+    const bottomRef = useRef(null);
 
-    const handleChange = (e) => {
-        setMessage(e.target.value);
-    };
+    const emojis = ['😁', '😅', '🤣', '😂', '🙂', '🙃', '🫠', '😉', '🥰', '😍', '🤩', '☺️', '🥲', '😛', '😜', '🤗', '🤭', '🤫', '🤔', '🫡', '🫥', '😒', '🙄', '🙂‍↔️', '🙂‍↕️', '🥵', '🤯', '🥳', '😎', '🤓', '🥺', '🥹', '😥', '😱', '😭', '👋', '👌', '🤞', '👉', '👇', '👍', '👏'];
+
+    const handleEmojiClick = (emoji) => setMessage(prev => prev + emoji);
+
+    const handleChange = (e) => setMessage(e.target.value);
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
-        if (file) {
-            SetImage(file);
-        }
-    }
+        if (file) setImage(file);
+    };
+
+    useEffect(() => {
+        setMessages([])
+    }, [contact.id])
 
     useEffect(() => {
         const handleMessage = (event) => {
-            const data = JSON.parse(event.data);
-            setMessages(prev => [...prev, data]);
+            try {
+                const data = typeof event.data === 'string'
+                    ? JSON.parse(event.data)
+                    : parseBinaryMessage(event.data);
+
+                // Check if message belongs to current conversation
+                const isCurrentConversation =
+                    (data.sender_id === 1 && data.receiver_id === contact.id) ||
+                    (data.sender_id === contact.id && data.receiver_id === 1);
+
+                if (isCurrentConversation) {
+                    setMessages(prev => [...prev, {
+                        ...data,
+                        timestamp: data.timestamp || new Date().toISOString()
+                    }]);
+                }
+            } catch (err) {
+                console.error("Failed to parse message:", event.data);
+            }
         };
 
-        socket.addEventListener("message", handleMessage);
+        socket.addEventListener('message', handleMessage);
+        return () => socket.removeEventListener('message', handleMessage);
+    }, [contact.id]); // Add contact.id as dependency
 
-        return () => {
-            socket.removeEventListener("message", handleMessage);
-        };
-    }, []);
+    useEffect(() => {
+        // Filter messages to only show those relevant to current contact
+        const filteredMessages = messages.filter(msg =>
+            msg.receiver_id === contact.id || msg.sender_id === 1
+        );
+        setMessages(filteredMessages);
+    }, [contact.id]); // Reset messages when contact changes
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -60,173 +71,142 @@ export default function ChatBox({ contact, onClickClose }) {
             const reader = new FileReader();
             reader.onload = () => {
                 const metadata = {
-                    "sender_id": 1,
-                    "reciever_id": 2,
-                    "type": "image",
-                    "token": "online",
-                    // "content": reader.result,
-                    "mime": image.type,
-                    "filename": image.name,
-                }
+                    sender_id: 1,
+                    receiver_id: contact.id,
+                    type: 'image',
+                    token: 'online',
+                    mime: image.type,
+                    filename: image.name,
+                    timestamp: new Date().toISOString()
+                };
                 const messageBuffer = buildBinaryMessage(metadata, reader.result);
-                // socket.send(JSON.stringify(MsgImg));
                 socket.send(messageBuffer);
+                // Add optimistic update for better UX
+                setMessages(prev => [...prev, {
+                    ...metadata,
+                    content: '[Image]',
+                    isOptimistic: true
+                }]);
             };
-            // reader.readAsDataURL(imageFile);
-            // reader.readAsDataURL(image);
             reader.readAsArrayBuffer(image);
-            SetImage(null);
+            setImage(null);
         }
 
-        if (message.trim() !== "") {
-            const Msg = {
-                "sender_id": 1,
-                "reciever_id": 2,
-                "type": "message",
-                "content": message,
-                "token": "online"
-            }
-            console.log("send Message:", message);
-            socket.send(JSON.stringify(Msg))
-            // socket.send(JSON.stringify({type : "msg" , content: message}))
-            setMessages(prev => [prev, Msg]);
-            setMessage("");
-        }
+        if (message.trim() !== '') {
+            const newMsg = {
+                sender_id: 1,
+                receiver_id: contact.id,
+                type: 'message',
+                content: message,
+                token: 'online',
+                timestamp: new Date().toISOString(),
+                isOptimistic: true // Mark as unconfirmed
+            };
 
+            // Optimistic update
+            setMessages(prev => [...prev, newMsg]);
+            socket.send(JSON.stringify(newMsg));
+            setMessage('');
+        }
     };
-
-    socket.addEventListener("message", (event) => {
-        console.log("Message from server ", event.data);
-        let data = JSON.parse(event.data)
-        if (data.reciever_id) {
-            useEffect(() => {
-                console.log(addMessage.current);
-
-                if (addMessage.current) {
-                    const newMessage = document.createElement("div")
-                    newMessage.className = "me"
-                    newMessage.textContent = data.content
-                    addMessage.current.append(newMessage)
-                }
-            }, [])
-        }
-    });
-
-
 
     return (
         <div className={styles.chatBox}>
             <div className={styles.header}>
                 <div className={styles.imgProfile}>
-                    <Image
-                        src="/profile/profile.png"
-                        alt="image profile"
-                        fill
-                        style={{ objectFit: 'cover', borderRadius: '50%' }}
-                    />
+                    <Image src="/profile/profile.png" alt="image profile" fill style={{ objectFit: 'cover', borderRadius: '50%' }} />
                 </div>
                 <div className={styles.infoProfile}>
                     <h3>{contact.name}</h3>
-                    <p>Lorem ipsum dolor sit amet.</p>
+                    <p>Chat started...</p>
                 </div>
                 <div className={styles.close} onClick={onClickClose}>x</div>
             </div>
-            <div ref={addMessage} className={styles.readmessages}>
 
+            <div className={styles.readmessages}>
                 {messages.map((msg, index) => (
                     <div key={index} className={msg.sender_id === 1 ? styles.me : styles.sender}>
                         {msg.sender_id !== 1 && (
                             <div className={styles.profileImage}>
-                                <Image
-                                    src="/profile/profile.png"
-                                    alt="profile"
-                                    fill
-                                    style={{ objectFit: 'cover', borderRadius: '50%' }}
-                                />
+                                <Image src="/profile/profile.png" alt="profile" fill style={{ objectFit: 'cover', borderRadius: '50%' }} />
                             </div>
                         )}
                         <div className={styles.message}>
+                            {msg.type === 'image' ? (
+                                <div className={styles.imageContainer}>
+                                    {console.log(`link the image ${process.env.NEXT_PUBLIC_HOST}/uploads/${msg.filename}`)}
+                                    {console.log(`msg content ${msg.filename}`)}
+                                    {/* const metadata = {
+                                    sender_id: 1,
+                                    receiver_id: contact.id,
+                                    type: 'image',
+                                    token: 'online',
+                                    mime: image.type,
+                                    filename: image.name,
+                                    timestamp: new Date().toISOString()
+                                    }; */}
+                                    <img
+                                        // src={`${process.env.NEXT_PUBLIC_HOST}/uploads/${msg.filename}`}
+                                        alt="sent-image"
+                                        width={250}  // Set appropriate dimensions
+                                        height={250}
+                                        className={styles.imageMessage}
+                                        onError={(e) => {
+                                            e.target.src = '/default-error-image.png'; // Add fallback image
+                                        }}
+                                    />
+                                    <span className={styles.timeStamp}>
+                                        {new Date(msg.timestamp).toLocaleTimeString([], {
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
+                                    </span>
+                                </div>
+                            ) : (
+                                <div className={styles.textMessage}>
+                                    <p>{msg.content}</p>
+                                    <span className={styles.timeStamp}>
+                                        {new Date(msg.timestamp).toLocaleTimeString([], {
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+                        {/* <div className={styles.message}>
                             <p>{msg.content}</p>
                             <span>{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                        </div>
+                        </div> */}
                         {msg.sender_id === 1 && (
                             <div className={styles.profileImage}>
-                                <Image
-                                    src="/profile/profile.png"
-                                    alt="profile"
-                                    fill
-                                    style={{ objectFit: 'cover', borderRadius: '50%' }}
-                                />
+                                <Image src="/profile/profile.png" alt="profile" fill style={{ objectFit: 'cover', borderRadius: '50%' }} />
                             </div>
                         )}
                     </div>
                 ))}
-
-
-                {/* <div className={styles.me}>
-                    <div className={styles.message}>
-                        <p>Lorem ipsum dolor sit amet.</p>
-                        <span>8:55Am, Today</span>
-                    </div>
-                    <div className={styles.profileImage}>
-                        <Image
-                            src="/profile/profile.png"
-                            alt="image profile"
-                            fill
-                            style={{ objectFit: 'cover', borderRadius: '50%' }}
-                        />
-                    </div>
-                </div> */}
-
-
-                {/* <div className={styles.sender}>
-                    <div className={styles.profileImage}>
-                        <Image
-                            src="/profile/profile.png"
-                            alt="image profile"
-                            fill
-                            style={{ objectFit: 'cover', borderRadius: '50%' }}
-                        />
-                    </div>
-                    <div className={styles.message}>
-                        <p>Lorem ipsum dolor sit amet.</p>
-                        <span>8:55Am, Today</span>
-                    </div>
-                </div> */}
+                <div ref={bottomRef} />
             </div>
+
             <div className={styles.sendmessages}>
                 <form onSubmit={handleSubmit}>
-                    {/* Emoji picket */}
                     {showEmojis && (
                         <div className={styles.emojiPicker}>
                             {emojis.map((emoji, index) => (
-                                <button
-                                    key={index}
-                                    type="button"
-                                    className={styles.emojiButton}
-                                    onClick={() => handleEmojiClick(emoji)}
-                                >
+                                <button key={index} type="button" className={styles.emojiButton} onClick={() => handleEmojiClick(emoji)}>
                                     {emoji}
                                 </button>
-                            ))};
+                            ))}
                         </div>
-                    )};
+                    )}
                     <div className={styles.elementsSend}>
-                        <button
-                            type="button"
-                            className={styles.emojiButton}
-                            onClick={() => setShowEmojis(!showEmojis)}
-                        >
-                            😀
-                        </button>
-                        <input type="text" name="message" placeholder="Type your message..." value={message} onChange={handleChange} id="" />
-
-                        <input type="file" name="uploadImage" id="uploadImage" onChange={handleImageChange} className={styles.hiddenInput} />
+                        <button type="button" className={styles.emojiButton} onClick={() => setShowEmojis(!showEmojis)}>😀</button>
+                        <input type="text" name="message" placeholder="Type your message..." value={message} onChange={handleChange} />
+                        <input type="file" id="uploadImage" onChange={handleImageChange} className={styles.hiddenInput} />
                         <label htmlFor="uploadImage" className={styles.uploadLabel}>
                             <FaCloudUploadAlt className={styles.iconUpload} />
                         </label>
-
-                        <input type="submit" name="submit" className={styles.hiddenInput} id="submit" />
+                        <input type="submit" id="submit" className={styles.hiddenInput} />
                         <label htmlFor="submit" className={styles.labelSend}>
                             <IoIosSend className={styles.iconSend} />
                         </label>
@@ -237,15 +217,11 @@ export default function ChatBox({ contact, onClickClose }) {
     );
 }
 
-
 function buildBinaryMessage(metadata, fileBuffer) {
     const meta = JSON.stringify(metadata) + "::";
     const encoder = new TextEncoder();
     const metaBuffer = encoder.encode(meta);
-    // console.log("metaBuffer", metaBuffer);
-    const combined = new Uint8Array(
-        metaBuffer.length + fileBuffer.byteLength
-    );
+    const combined = new Uint8Array(metaBuffer.length + fileBuffer.byteLength);
     combined.set(metaBuffer, 0);
     combined.set(new Uint8Array(fileBuffer), metaBuffer.length);
     return combined;
