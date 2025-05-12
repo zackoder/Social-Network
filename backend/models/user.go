@@ -21,6 +21,9 @@ func GetUserById(userId int) (*utils.User, error) {
 		&user.LastName,
 		&user.Nickname,
 		&user.Email,
+		&user.Avatar,
+		&user.AboutMe,
+		&user.Privacy,
 	)
 
 	if err != nil {

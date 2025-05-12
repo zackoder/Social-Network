@@ -45,6 +45,17 @@ func AddReaction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check if user has access to interact with this post based on privacy settings
+	canAccess, err := models.CanUserAccessPost(userId, reaction.PostId)
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "Error checking post access: " + err.Error()}, http.StatusInternalServerError)
+		return
+	}
+	if !canAccess {
+		utils.WriteJSON(w, map[string]string{"error": "You don't have permission to interact with this post"}, http.StatusForbidden)
+		return
+	}
+
 	// Check if the user has already reacted to this post
 	existingReaction, err := models.GetUserReactionForPost(userId, reaction.PostId)
 	if err == nil && existingReaction != nil {
@@ -56,14 +67,15 @@ func AddReaction(w http.ResponseWriter, r *http.Request) {
 			}
 			utils.WriteJSON(w, map[string]string{"message": "Reaction updated", "type": reaction.ReactionType}, http.StatusOK)
 			return
-		}
-		// If the reaction is the same, remove it (toggle)
-		if err := models.DeleteReaction(userId, reaction.PostId); err != nil {
-			utils.WriteJSON(w, map[string]string{"error": "Failed to remove reaction"}, http.StatusInternalServerError)
+		} else {
+			// If the reaction is the same, remove it (toggle)
+			if err := models.DeleteReaction(userId, reaction.PostId); err != nil {
+				utils.WriteJSON(w, map[string]string{"error": "Failed to remove reaction"}, http.StatusInternalServerError)
+				return
+			}
+			utils.WriteJSON(w, map[string]string{"message": "Reaction removed"}, http.StatusOK)
 			return
 		}
-		utils.WriteJSON(w, map[string]string{"message": "Reaction removed"}, http.StatusOK)
-		return
 	}
 
 	// Insert new reaction
@@ -109,7 +121,7 @@ func GetReactions(w http.ResponseWriter, r *http.Request) {
 	// Get current user's reaction, if any
 	cookie, _ := r.Cookie("token")
 	var currentUserReaction *utils.Reaction
-	
+
 	if cookie != nil {
 		userId, err := models.Get_session(cookie.Value)
 		if err == nil {
@@ -119,8 +131,8 @@ func GetReactions(w http.ResponseWriter, r *http.Request) {
 
 	// Create response with reaction counts and current user's reaction
 	response := map[string]interface{}{
-		"reactions": reactions,
-		"counts":    models.CountReactionsByType(reactions),
+		"reactions":    reactions,
+		"counts":       models.CountReactionsByType(reactions),
 		"userReaction": currentUserReaction,
 	}
 

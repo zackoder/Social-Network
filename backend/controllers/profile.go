@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"social-network/models"
 	"social-network/utils"
@@ -19,7 +20,7 @@ func HandleFollow(w http.ResponseWriter, r *http.Request) {
 	noti.Target_id, _ = strconv.Atoi(followed)
 	noti.Message = "follow request"
 	privacy, err := models.IsPrivateProfile(followed)
-
+	fmt.Println("privacy", privacy, "err", err)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"resp": "user not found"}, 404)
 		return
