@@ -12,6 +12,7 @@ type Regester struct {
 	About_Me        string `json:"AboutMe"`
 	Avatar          string `json:"avatar"`
 	Pravecy         string `json:"privecy"`
+	ProfileOner     bool   `json:"profileOner"`
 }
 
 type Login struct {
