@@ -5,6 +5,7 @@ import Link from "next/link";
 
 async function getData() {
     const host = process.env.NEXT_PUBLIC_HOST;
+    console.log("host", host)
     const response = await fetch(`${host}/api/posts`);
     //const res = await response.json();
     console.log("response ------", response.ok);
@@ -16,10 +17,11 @@ async function getData() {
 
 export default async function Post() {
     const posts = await getData();
-    console.log(posts);
+    if (!posts || posts.lenght === 0){
+        return null;
+    }
 
     return (
-
         <div className={styles.container}>
             {posts.map((post) => (
                 <div className={styles.post} key={post.id}>
