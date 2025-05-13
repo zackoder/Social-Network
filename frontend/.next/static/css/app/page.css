@@ -21,6 +21,213 @@
   flex-direction: column;
   
 }
+/*!*************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[3]!./src/components/chatbox/chatbox.module.css ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************/
+/* body {
+    position: relative;
+} */
+
+.chatbox_chatBox___adjD {
+    min-width: 400px;
+    padding: 20px;
+    position: fixed;
+    bottom: -20px;
+    right: 0;
+    z-index: 1111;
+    /* display: none; */
+}
+
+.chatbox_header__PRtN_ {
+    padding: 10px 20px;
+    /* background-color: #4d5983; */
+    background-color: #eee;
+    color: #000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
+    position: relative;
+    border-bottom: 1px solid #111;
+}
+
+.chatbox_imgProfile__JYedc {
+    width: 50px;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    position: relative;
+}
+.chatbox_close__T5HcM{
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 30px;
+    cursor: pointer;
+    transition: color .2s ease-in-out;
+}
+.chatbox_close__T5HcM:hover{
+    color: #f00;
+}
+
+.chatbox_infoProfile__V6mds {}
+
+/* ------------------------- */
+.chatbox_readmessages__okvdT {
+    padding: 15px 20px;
+    /* background-color: #505f88; */
+    background-color: #ddd;
+    min-height: 400px;
+    max-height: 400px;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+.chatbox_readmessages__okvdT .chatbox_me__64_4g,
+.chatbox_readmessages__okvdT .chatbox_sender__NVgQu{
+    display: flex;
+    align-items: start;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.chatbox_readmessages__okvdT .chatbox_me__64_4g{
+    justify-content: end;
+}
+.chatbox_readmessages__okvdT .chatbox_sender__NVgQu{
+    justify-content: start;
+}
+.chatbox_profileImage__KtBRm{
+    width: 40px;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    position: relative;
+}
+.chatbox_readmessages__okvdT .chatbox_message__sVY3p p{
+    width: 100%;
+    padding: 10px;
+    border-radius: 25px;
+    color: #111;
+    font-size: 14px;
+}
+.chatbox_readmessages__okvdT .chatbox_message__sVY3p span{
+    font-size: 12px;
+    color: #111;
+}
+.chatbox_readmessages__okvdT .chatbox_me__64_4g .chatbox_message__sVY3p p{
+    background-color: #78e08f;
+}
+
+.chatbox_readmessages__okvdT .chatbox_sender__NVgQu .chatbox_message__sVY3p p{
+    background-color: #82ccdd;
+}
+
+/* ------------------------- */
+
+.chatbox_sendmessages__F5srn {
+    padding: 20px 10px;
+    /* background-color: #4d5983; */
+    background-color: #eee;
+}
+
+.chatbox_emojiPicker__a_z0X {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0.2rem;
+    border: 1px solid #ccc;
+    background: white;
+    border-radius: 8px;
+    margin-top: 0.2rem;
+    max-width: 500px;
+    gap: 2px;
+}
+
+.chatbox_emogiButton__2WSb7 {
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+.chatbox_emojiButton__OsSxa{
+    background-color: transparent;
+    border: none;
+    font-size: 25px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+.chatbox_elementsSend__lIgCJ{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 30px;
+    padding: 5px;
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.chatbox_hiddenInput__XPF_i{
+    display: none;
+}
+.chatbox_elementsSend__lIgCJ input[type="text"]{
+    width: 80%;
+    outline: none;
+    border: none;
+    padding: 5px;
+    background-color: #06d6a07d;
+    color: #111;
+    display: inline-block;
+    height: 40px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+.chatbox_elementsSend__lIgCJ input[type="file"]{
+    width: 10%;
+}
+.chatbox_elementsSend__lIgCJ input[type="submit"]{
+    width: 10%;
+}
+
+.chatbox_uploadLabel__WNEIu, .chatbox_labelSend__udPro{
+    width: 10%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    padding: 10px;
+    background-color: #06d6a07d;
+    color: #01694e;
+
+    border: none;
+}
+
+.chatbox_labelSend__udPro{
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+
+.chatbox_iconUpload__CJPIV{
+    font-size: 25px;
+    transition: color .2s ease-in-out;
+}
+.chatbox_iconUpload__CJPIV:hover{
+    color: #01694ec9;
+}
+
+.chatbox_iconSend__O5lPI{
+    font-size: 100px;
+    width: 2em;
+    color: #01694e;
+    transition: color .2s ease-in-out;
+}
+
+.chatbox_iconSend__O5lPI:hover{
+    color: #01694ec9;
+}
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[3]!./src/components/chatsystem/chatsystem.module.css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************/
+
 /*!***************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[3]!./src/components/contacts/contacts.module.css ***!
   \***************************************************************************************************************************************************************************************************************************************************************************************/
@@ -29,6 +236,7 @@
     align-items: center;
     gap: 10px;
     margin-bottom: 20px;
+    cursor: pointer;
 }
 
 .contacts_imgProfile__2R9Oz{}
