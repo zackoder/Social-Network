@@ -67,6 +67,9 @@ type User struct {
 	Email     string `json:"email"`
 	Password  string `json:"password"`
 	SessionId string
+	Avatar    string `json:"avatar"`
+	AboutMe   string `json:"aboutme"`
+	Privacy   string `json:"privacy"`
 }
 type Session struct {
 	Id        int    `json:"id"`
