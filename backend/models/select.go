@@ -121,6 +121,7 @@ func Get_session(ses string) (int, error) {
 	query := `SELECT user_id FROM sessions WHERE token = ?`
 	err := Db.QueryRow(query, ses).Scan(&sessionid)
 	if err != nil {
+		fmt.Println(err)
 		return 0, err
 	}
 	return sessionid, nil
@@ -221,7 +222,7 @@ func GetGroups(user_id int) []string {
 		fmt.Println("Error querying group_ids for user:", err)
 		return nil
 	}
-	defer rows.Close() 
+	defer rows.Close()
 	var groupIDs []int
 	for rows.Next() {
 		var group_id int
@@ -241,7 +242,7 @@ func GetGroups(user_id int) []string {
 	}
 
 	query := "SELECT name FROM groups WHERE id IN (?)"
-	query = fmt.Sprintf(query, strings.Join(strings.Split(fmt.Sprint(groupIDs), " "), ",")) 
+	query = fmt.Sprintf(query, strings.Join(strings.Split(fmt.Sprint(groupIDs), " "), ","))
 	row, err := Db.Query(query)
 	if err != nil {
 		fmt.Println("Error querying group names:", err)
@@ -265,43 +266,45 @@ func GetGroups(user_id int) []string {
 
 	return res
 }
+
 func GetAllGroups() []string {
-    res := []string{}
+	res := []string{}
 
-    Quirie := "SELECT name FROM groups"
-    rows, err := Db.Query(Quirie)
-    if err != nil {
-        fmt.Println("Error querying names:", err)
-        return nil
-    }
-    defer rows.Close()
+	Quirie := "SELECT name FROM groups"
+	rows, err := Db.Query(Quirie)
+	if err != nil {
+		fmt.Println("Error querying names:", err)
+		return nil
+	}
+	defer rows.Close()
 
-    for rows.Next() {
-        var groupName string
-        err := rows.Scan(&groupName)
-        if err != nil {
-            fmt.Println("Error scanning row:", err)
-            return nil
-        }
-        res = append(res, groupName)
-    }
+	for rows.Next() {
+		var groupName string
+		err := rows.Scan(&groupName)
+		if err != nil {
+			fmt.Println("Error scanning row:", err)
+			return nil
+		}
+		res = append(res, groupName)
+	}
 
-    if err := rows.Err(); err != nil {
-        fmt.Println("Error iterating over rows:", err)
-        return nil
-    }
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error iterating over rows:", err)
+		return nil
+	}
 
-    return res
+	return res
 }
-func MyGroupes(user_id int)[]string{
+
+func MyGroupes(user_id int) []string {
 	var res []string
-quirie := "SELECT group_id FROM group_members WHERE user_id = ? AND role = 'creator' "
-rows,err := Db.Query(quirie,user_id)
+	quirie := "SELECT group_id FROM group_members WHERE user_id = ? AND role = 'creator' "
+	rows, err := Db.Query(quirie, user_id)
 	if err != nil {
 		fmt.Println("Error querying group_ids for user:", err)
 		return nil
 	}
-	defer rows.Close() 
+	defer rows.Close()
 	var groupIDs []int
 	for rows.Next() {
 		var group_id int
@@ -320,7 +323,7 @@ rows,err := Db.Query(quirie,user_id)
 		return res
 	}
 	query := "SELECT name FROM groups WHERE id IN (?)"
-	query = fmt.Sprintf(query, strings.Join(strings.Split(fmt.Sprint(groupIDs), " "), ",")) 
+	query = fmt.Sprintf(query, strings.Join(strings.Split(fmt.Sprint(groupIDs), " "), ","))
 	row, err := Db.Query(query)
 	if err != nil {
 		fmt.Println("Error querying group names:", err)
@@ -343,5 +346,4 @@ rows,err := Db.Query(quirie,user_id)
 	}
 
 	return res
-
 }
