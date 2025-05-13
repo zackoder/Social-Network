@@ -33,8 +33,13 @@ mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/getProfilePosts",midleware.AuthMiddleware(controllers.GetProfilePosts))
 	mux.HandleFunc("GET /api/posts", controllers.Posts)
 	mux.HandleFunc("GET /group/{GroupName}", controllers.Group)
-	mux.HandleFunc("GET /api/getfollowers",controllers.GetFollowers)
+	
+	// note for walid 
+	// this endpoint is gonna be used to fetch the users for the post privacy  
+	mux.HandleFunc("GET /api/getfollowers",midleware.AuthMiddleware(controllers.GetFollowers))
 	mux.HandleFunc("GET /api/registrationData",midleware.AuthMiddleware(controllers.GetRegistrationData))
+	// this endpoint is gonna be used to fetch the users for the chat pannel . 
+	// the func GetFollowers and GetFollowers they look the same but they are not 🕶😎
 	mux.HandleFunc("GET /api/getuserfriends",midleware.AuthMiddleware(controllers.GetUsers))
     mux.HandleFunc("/ws", controllers.Websocket)
 	fmt.Println("Server is running on port 8080")
