@@ -274,7 +274,7 @@ func GetAllowedPosts(profileOwnerID int, viewerID int) ([]utils.Post, error) {
 	WHERE p.user_id = ?
 	AND (
 		p.post_privacy = 'public'
-		OR (p.post_privacy = 'almostPrivate')
+		OR (p.post_privacy = 'almostPrivate' AND P)
 		OR (p.post_privacy = 'private' AND ppv.friend_id = ?)
 	)
 	ORDER BY p.createdAt DESC
