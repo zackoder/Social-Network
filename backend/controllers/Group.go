@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"social-network/models"
 	"social-network/utils"
@@ -18,8 +19,8 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request) {
 
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
-
 	}
+
 	var Groupe utils.Groupe
 	err := json.NewDecoder(r.Body).Decode(&Groupe)
 	if err != nil {
@@ -27,12 +28,19 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Bad Request"}, http.StatusBadRequest)
 		return
 	}
-	if !utils.ValidatNames(Groupe.Title) || !utils.ValidatNames(Groupe.Description) || len(Groupe.Title) < 2 ||
-		len(Groupe.Title) > 100 || len(Groupe.Description) < 2 || len(Groupe.Description) > 300 {
-		utils.WriteJSON(w, map[string]string{"error": "Bad Request"}, http.StatusBadRequest)
 
+	fmt.Println(len(Groupe.Title), len(Groupe.Description))
+
+	if len(strings.TrimSpace(Groupe.Title)) < 2 || len(Groupe.Title) > 50 {
+		utils.WriteJSON(w, map[string]string{"error": "invalid group title"}, http.StatusBadRequest)
 		return
 	}
+
+	if len(strings.TrimSpace(Groupe.Description)) < 2 || len(Groupe.Description) > 300 {
+		utils.WriteJSON(w, map[string]string{"error": "invalid group discription"}, http.StatusBadRequest)
+		return
+	}
+
 	err = models.InsserGroupe(Groupe.Title, Groupe.Description, Groupe.CreatorId)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
@@ -41,6 +49,7 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, map[string]string{"Groupe": "criete groupe seccesfel"}, http.StatusOK)
 	return
 }
+
 func Jouind_Groupe(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 
@@ -54,6 +63,7 @@ func Jouind_Groupe(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Bad Request"}, http.StatusBadRequest)
 		return
 	}
+	if !models.IsMember(requist.Groupe_id,requist.User_id){
 	err = models.InsserMemmberInGroupe(requist.Groupe_id, requist.User_id)
 	fmt.Println(err)
 	if err != nil {
@@ -61,8 +71,12 @@ func Jouind_Groupe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	utils.WriteJSON(w, map[string]string{"prossotion": "seccesfel"}, http.StatusOK)
-	return
+}else{
+	utils.WriteJSON(w, map[string]string{"error": "you are redy member in this group"},403)
+
 }
+}
+
 // fetch('/api/searchGroups?query=tech')
 //   .then(response => response.json())
 //   .then(data => {
@@ -83,7 +97,6 @@ func SearchGroupsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(groups)
 }
-
 
 func InviteUser(w http.ResponseWriter, r *http.Request, groupID uint) {
 	if r.Method != http.MethodPost {
@@ -123,7 +136,6 @@ func InsertToGroupe(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
 func Get_all_post(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
@@ -162,54 +174,52 @@ func CreatEvent(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)
 		return
-    }
+	}
 	var event utils.Event
-	if err:= json.NewDecoder(r.Body).Decode(&event);err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&event); err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest"}, http.StatusBadRequest)
 		return
-    }
- 
-  if !utils.ValidatNames(event.Title)|| !utils.ValidatNames(event.Description) ||
-  len(event.Title)>25 || len(event.Description)>100 {
-	utils.WriteJSON(w, map[string]string{"error": "Status BadRequest"}, http.StatusBadRequest)
-	return
-   }
-  if !models.IsMember(event.GroupID,event.CreatedBy){
-	utils.WriteJSON(w, map[string]string{"error": "Access denied: you must be a member of the group to creat event."}, 403)
-	return
-   }
-   err := models.InsserEventInDatabase(event)
-   if err != nil {
-	utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
-	return
-   }
+	}
 
+	if len(event.Title) > 25 || len(event.Description) > 100 || len(strings.TrimSpace(event.Description)) < 2 || len(strings.TrimSpace(event.Title)) < 2{
+		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest"}, http.StatusBadRequest)
+		return
+	}
+	if !models.IsMember(event.GroupID, event.CreatedBy) {
+		utils.WriteJSON(w, map[string]string{"error": "Access denied: you must be a member of the group to creat event."}, 403)
+		return
+	}
+	err := models.InsserEventInDatabase(event)
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
+		return
+	}
 
-  w.WriteHeader(http.StatusCreated)
-  json.NewEncoder(w).Encode(map[string]string{"message": "The event cried out successfully"})
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(map[string]string{"message": "The event cried out successfully"})
 }
-func EventRrspponce(w http.ResponseWriter, r *http.Request){
+
+func EventRrspponce(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)
 		return
-    }
+	}
 	var responce utils.EventResponse
-	if err:= json.NewDecoder(r.Body).Decode(&responce);err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&responce); err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest"}, http.StatusBadRequest)
 		return
-    }
+	}
 
-  if !models.IsMember(responce.GroupeId,responce.UserID){
-	utils.WriteJSON(w, map[string]string{"error": "Access denied: you must be a member of the group to creat event."}, 403)
-	return
-   }
-   err := models.InsserResponceInDatabase(responce)
-   if err != nil {
-	utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
-	return
-   }
+	if !models.IsMember(responce.GroupeId, responce.UserID) {
+		utils.WriteJSON(w, map[string]string{"error": "Access denied: you must be a member of the group to creat event."}, 403)
+		return
+	}
+	err := models.InsserResponceInDatabase(responce)
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
+		return
+	}
 
-
-  w.WriteHeader(http.StatusCreated)
-  json.NewEncoder(w).Encode(map[string]string{"message": "The answer was successfully added"})
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(map[string]string{"message": "The answer was successfully added"})
 }
