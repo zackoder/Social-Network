@@ -29,6 +29,11 @@ export default function CreatePost() {
             body: formData
         })
 
+        setPrivacy("public")
+        setTitle("")
+        setContent("")
+        setImage(null)
+        
         if (!response.ok) {
             console.log("error not ok");
         }
