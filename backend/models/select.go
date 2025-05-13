@@ -70,6 +70,7 @@ func GetProfilePost(user_id, offset int) []utils.Post {
 }
 
 func IsPrivateProfile(followed string) (bool, error) {
+	fmt.Println("is private profile", followed)
 	query := "SELECT privacy FROM users WHERE id = ?"
 	var privacy string
 	err := Db.QueryRow(query, followed).Scan(&privacy)
