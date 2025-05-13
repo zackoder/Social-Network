@@ -292,3 +292,82 @@ func GetAllGroups() []string {
 
     return res
 }
+// func Get_Groupes_Joined(user_id int)[]string{
+	// res := []string{}
+
+    // Quirie := "SELECT group_id FROM group_members WHERE user_id = ?"
+    // rows, err := Db.Query(Quirie,user_id)
+    // if err != nil {
+    //     fmt.Println("Error querying names:", err)
+    //     return nil
+    // }
+    // defer rows.Close()
+
+    // for rows.Next() {
+    //     var groupe_id int 
+    //     err := rows.Scan(&groupe_id)
+    //     if err != nil {
+    //         fmt.Println("Error scanning row:", err)
+    //         return nil
+    //     }
+    //     res = append(res, groupe_id)
+    // }
+
+    // if err := rows.Err(); err != nil {
+    //     fmt.Println("Error iterating over rows:", err)
+    //     return nil
+    // }
+
+    // return res
+// 	var res []string
+
+// 	quirie0 := "SELECT group_id FROM group_members WHERE user_id = ?"
+// 	rows, err := Db.Query(quirie0, user_id)
+// 	if err != nil {
+// 		fmt.Println("Error querying group_ids for user:", err)
+// 		return nil
+// 	}
+// 	defer rows.Close() 
+// 	var groupIDs []int
+// 	for rows.Next() {
+// 		var group_id int
+// 		if err := rows.Scan(&group_id); err != nil {
+// 			fmt.Println("Error scanning group_id:", err)
+// 			return nil
+// 		}
+// 		groupIDs = append(groupIDs, group_id)
+// 	}
+// 	if err := rows.Err(); err != nil {
+// 		fmt.Println("Error with rows iteration:", err)
+// 		return nil
+// 	}
+
+// 	if len(groupIDs) == 0 {
+// 		return res
+// 	}
+
+// 	query := "SELECT name FROM groups WHERE id IN (?)"
+// 	query = fmt.Sprintf(query, strings.Join(strings.Split(fmt.Sprint(groupIDs), " "), ",")) 
+// 	row, err := Db.Query(query)
+// 	if err != nil {
+// 		fmt.Println("Error querying group names:", err)
+// 		return nil
+// 	}
+// 	defer row.Close()
+
+// 	for row.Next() {
+// 		var groupName string
+// 		if err := row.Scan(&groupName); err != nil {
+// 			fmt.Println("Error scanning group name:", err)
+// 			return nil
+// 		}
+// 		res = append(res, groupName)
+// 	}
+
+// 	if err := row.Err(); err != nil {
+// 		fmt.Println("Error with rows iteration:", err)
+// 		return nil
+// 	}
+
+// 	return res
+// }
