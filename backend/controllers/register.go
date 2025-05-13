@@ -27,7 +27,10 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusMethodNotAllowed)
 		return
 	}
-
+	if len(userData) == 0 {
+		utils.WriteJSON(w, map[string]string{"error": "Empty request body"}, http.StatusBadRequest)
+		return
+	}
 
 
 	var regesterreq utils.Regester

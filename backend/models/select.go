@@ -205,6 +205,32 @@ func GetFollowers(userID int) ([]int, error) {
 // 	return posts, nil
 // }
 
+
+func GetRegistration(id string) (utils.Regester, error) {
+	query := `SELECT * FROM users WHERE id = ?`
+	
+	var data utils.Regester
+	var Id int
+	
+	err := Db.QueryRow(query, id).Scan(
+		&Id,
+		&data.NickName,
+		&data.FirstName,
+		&data.LastName,
+		&data.Age,
+		&data.Gender,
+		&data.Email,
+		&data.Avatar,
+		&data.Password,
+		&data.About_Me,
+		&data.Pravecy,
+	)
+	if err != nil {
+		return data, err
+	}
+	data.Password = ""
+	return data, nil
+}
 func GetPuclicPosts(userID int) ([]utils.Post, error) {
 	var publicPosts []utils.Post
 	query := `
@@ -239,32 +265,6 @@ func GetPuclicPosts(userID int) ([]utils.Post, error) {
 	return publicPosts, nil
 }
 
-func GetRegistration(id string) (utils.Regester, error) {
-	query := `SELECT * FROM users WHERE id = ?`
-
-	var data utils.Regester
-	var Id int
-
-	err := Db.QueryRow(query, id).Scan(
-		&Id,
-		&data.NickName,
-		&data.FirstName,
-		&data.LastName,
-		&data.Age,
-		&data.Gender,
-		&data.Email,
-		&data.Avatar,
-		&data.Password,
-		&data.About_Me,
-		&data.Pravecy,
-	)
-	if err != nil {
-		return data, err
-	}
-	data.Password = ""
-	return data, nil
-}
-
 func GetAllowedPosts(profileOwnerID int, viewerID int) ([]utils.Post, error) {
 	query := `
 	SELECT DISTINCT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt
@@ -274,14 +274,15 @@ func GetAllowedPosts(profileOwnerID int, viewerID int) ([]utils.Post, error) {
 	WHERE p.user_id = ?
 	AND (
 		p.post_privacy = 'public'
-		OR (p.post_privacy = 'almostPrivate' AND P)
+		OR (p.post_privacy = 'almostPrivate')
 		OR (p.post_privacy = 'private' AND ppv.friend_id = ?)
-	)
-	ORDER BY p.createdAt DESC
-	`
-
+		)
+		ORDER BY p.createdAt DESC
+		`
+		
 	rows, err := Db.Query(query, profileOwnerID, viewerID)
 	if err != nil {
+		// fmt.Println(err)
 		return nil, err
 	}
 	var posts []utils.Post
