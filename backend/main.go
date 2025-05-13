@@ -19,6 +19,7 @@ func main() {
 	models.Db = db.InitDB()
 	defer models.Db.Close()
 	mux := http.NewServeMux()
+	
 	mux.Handle("/", (midleware.WithCORS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tmp, err := template.ParseFiles("./index.html")
 		if err != nil {
@@ -26,15 +27,16 @@ func main() {
 		}
 		tmp.Execute(w, nil)
 	}))))
+
 	mux.Handle("/login", midleware.WithCORS(http.HandlerFunc(controllers.Login)))
 	mux.Handle("/register", midleware.WithCORS(http.HandlerFunc(controllers.Register)))
 	mux.Handle("POST /addPost", midleware.WithCORS(http.HandlerFunc(controllers.AddPost)))
 	mux.Handle("POST /followReq", midleware.WithCORS(http.HandlerFunc(controllers.HandleFollow)))
 	mux.Handle("POST /updatePrivacy", midleware.WithCORS(http.HandlerFunc(controllers.UpdatePrivacy)))
 	mux.Handle("POST /creategroup", midleware.WithCORS(http.HandlerFunc(controllers.Creat_groupe)))
-	http.HandleFunc("/JouindGroupe", controllers.Jouind_Groupe)
-	http.HandleFunc("/GetPostsFromGroupe", controllers.Get_all_post)
-	http.HandleFunc("/CreatEvent", controllers.CreatEvent)
+	mux.HandleFunc("/JouindGroupe", controllers.Jouind_Groupe)
+	mux.HandleFunc("/GetPostsFromGroupe", controllers.Get_all_post)
+	mux.HandleFunc("/CreatEvent", controllers.CreatEvent)
 
 	mux.HandleFunc("GET /uploads/", controllers.HandelPics)
 	mux.HandleFunc("/api/posts", controllers.Posts)

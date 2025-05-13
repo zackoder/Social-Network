@@ -15,6 +15,24 @@ func AddPost(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
+
+	cookie, err := r.Cookie("token")
+	if err != nil {
+		fmt.Println(err)
+		utils.WriteJSON(w, map[string]string{"error": "Unauthorized"}, http.StatusUnauthorized)
+		return
+	}
+
+	var post utils.Post
+	fmt.Println(cookie.Value)
+	post.Poster_id, err = models.Get_session(cookie.Value)
+	if err != nil {
+		fmt.Println(err)
+		utils.WriteJSON(w, map[string]string{"error": "Unauthorized aras lfta"}, http.StatusUnauthorized)
+		return
+	}
+
+	fmt.Println(post.Poster_id)
 	host := r.Host
 	// if _, exists := r.Form["postData"]; !exists {
 
@@ -28,7 +46,6 @@ func AddPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var post utils.Post
 	fmt.Println("post data", postData)
 	err = json.Unmarshal([]byte(postData), &post)
 	if err != nil {
@@ -37,7 +54,10 @@ func AddPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	post.Poster_id, _ = strconv.Atoi(r.URL.Query().Get("id"))
+	// post.Poster_id, _ = strconv.Atoi(r.URL.Query().Get("id"))
+	// if post.Poster_id == 0 {
+	// 	post.Poster_id = 1
+	// }
 	fmt.Println("post", r.URL.Query().Get("id"))
 
 	if filepath != "" {
@@ -63,10 +83,8 @@ func AddPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func Posts(w http.ResponseWriter, r *http.Request) {
-
 	offset := 0
 	posts := models.QueryPosts(offset, r)
-	fmt.Println(posts)
 	utils.WriteJSON(w, posts, 200)
 }
 
