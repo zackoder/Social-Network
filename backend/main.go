@@ -39,8 +39,8 @@ func main() {
 	mux.HandleFunc("/CreatEvent", controllers.CreatEvent)
 
 	mux.HandleFunc("GET /uploads/", controllers.HandelPics)
-	mux.HandleFunc("/api/posts", controllers.Posts)
-	mux.HandleFunc("GET /group", controllers.Group)
+	mux.Handle("/api/posts", midleware.WithCORS(http.HandlerFunc(controllers.Posts)))
+	mux.HandleFunc("GET /group/{GroupName}", controllers.Group)
 	mux.HandleFunc("/ws", controllers.Websocket)
 
 	// Comment handlers

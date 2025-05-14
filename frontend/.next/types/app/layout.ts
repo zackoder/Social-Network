@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-// File: /home/walid/Desktop/social-network/Social-Network/frontend/src/app/layout.jsx
-=======
-// File: /Users/ismail-bentour/Desktop/Social-Network/frontend/src/app/layout.jsx
->>>>>>> origin/ibentour
+// File: /home/zbessado/Social-Network/frontend/src/app/layout.jsx
 import * as entry from '../../../src/app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
