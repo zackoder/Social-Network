@@ -6,9 +6,7 @@ import Post from "../post/post";
 export default function PostSystem() {
     const [posts, setPosts] = useState([]);
 
-    const host = process.env.NEXT_PUBLIC_HOST;
-    console.log("Host", host);
-    
+    const host = process.env.NEXT_PUBLIC_HOST;    
 
     const fetchAllPosts = async () => {
         try {
@@ -19,6 +17,7 @@ export default function PostSystem() {
                 throw new Error("Failed to fetch posts");
             }
             const data = await response.json();
+            
             setPosts(data);
         } catch (err) {
             console.error("Fetch error:", err);
