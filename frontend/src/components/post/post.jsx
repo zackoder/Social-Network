@@ -3,22 +3,36 @@ import styles from "./post.module.css"
 // import Image from "next/image";
 import Link from "next/link";
 
-async function getData() {
-    const host = process.env.NEXT_PUBLIC_HOST;
-    console.log("host", host)
-    const response = await fetch(`${host}/api/posts`);
-    //const res = await response.json();
-    console.log("response ------", response.ok);
-    if (!response.ok) {
-        throw new Error('Failed to Fetch Data');
-    }
-    return response.json();
-}
 
-export default async function Post() {
-    const posts = await getData();
-    if (!posts || posts.lenght === 0){
-        return null;
+// export function getData(data) {
+//     console.log("data", data);
+//     return data;
+
+// }
+
+// export async function fetchAllPosts() {
+//     const host = process.env.NEXT_PUBLIC_HOST;
+//     try{
+//         const response = await fetch(`${host}/api/posts`);
+//         if (!response.ok) {
+//             throw new Error('Failed to Fetch Data');
+//         }
+//         const result = await response.json();
+//         return result;
+//     }catch (error){
+//         console.log("Error loading posts:", error);
+        
+//     }
+//     // const data = await response.json();
+//     // getData(data)
+// }
+
+
+
+export default function Post({posts}) {
+    // const posts = await fetchAllPosts();
+    if (!posts || posts.lenght === 0) {
+        return <p>No posts yet.</p>;
     }
 
     return (
@@ -47,14 +61,14 @@ export default async function Post() {
                         <p>{post.content}</p>
                     </div>
                     <div className={styles.imagePost}>
-                        {post.image ? (                            
+                        {post.image ? (
                             <img
                                 className={styles.image}
                                 src={`http://${post.image}`}
                                 alt="post"
                                 width={500}
                                 height={300}
-                                // fill={true}
+                            // fill={true}
                             />
 
                         ) : null}
