@@ -1,10 +1,7 @@
-import Image from "next/image";
 import styles from "./page.module.css";
-import Post from "@/components/post/post";
-import CreatePost from "@/components/createPost/createPost";
-import ChatBox from "@/components/chatbox/chatbox.jsx";
-import Contacts from "@/components/contacts/contacts.jsx"
 import ChatSystem from "@/components/chatsystem/chatsystem";
+
+import PostSystem from "@/components/postsystem/postsystem";
 
 export default function Home() {
   return (
@@ -12,10 +9,11 @@ export default function Home() {
       <div className={styles.sidebar}>
         <ChatSystem />
       </div>
-      
+
       <div className={styles.posts}>
-        <CreatePost />
-        <Post />
+        <PostSystem />
+        {/* <CreatePost />
+        <Post /> */}
       </div>
     </div>
   );
