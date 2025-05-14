@@ -25,8 +25,6 @@ export default function PostSystem() {
     };
     const addNewPost = (newPost) => {
         if (!posts || posts.length === 0) {
-            console.log("hello");
-
             setPosts([newPost])
         } else {
             setPosts((prev) => [newPost, ...prev]);
