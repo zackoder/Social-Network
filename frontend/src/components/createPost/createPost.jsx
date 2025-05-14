@@ -41,8 +41,9 @@ export default function CreatePost({onPostCreated}) {
                 credentials: "include"
             });
 
+            const newPost = await response.json();
+            
             if (response.ok) {
-                const newPost = await response.json();
                 if (onPostCreated){
                     onPostCreated(newPost);
                 }
@@ -54,6 +55,9 @@ export default function CreatePost({onPostCreated}) {
 
                 // Trigger revalidation
                 //await revalidatePosts();
+            }
+            if (!response.ok) {
+                throw new Error(`Failed to fetch posts: ${newPost.error}`);
             }
 
             // Reset file input
