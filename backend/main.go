@@ -35,7 +35,7 @@ func main() {
 	mux.Handle("POST /joinReq", midleware.WithCORS(http.HandlerFunc(controllers.JoinReq)))
 
 	mux.HandleFunc("GET /uploads/", controllers.HandelPics)
-	mux.HandleFunc("/api/posts", controllers.Posts)
+	mux.Handle("/api/posts", midleware.WithCORS(http.HandlerFunc(controllers.Posts)))
 	mux.HandleFunc("GET /group/{GroupName}", controllers.Group)
 	mux.HandleFunc("/ws", controllers.Websocket)
 

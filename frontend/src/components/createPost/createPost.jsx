@@ -1,43 +1,75 @@
 "use client"
 import { use, useState } from "react";
 import "./createPost.modules.css"
+import { getData } from "../post/post";
+import { useRef } from "react";
 
-export default function CreatePost() {
-    
+export default function CreatePost({onPostCreated}) {
+
     let [privacy, setPrivacy] = useState("public")
     let [title, setTitle] = useState("")
     let [content, setContent] = useState("")
     let [image, setImage] = useState(null)
+    const fileInputRef = useRef(null) 
+    const host = process.env.NEXT_PUBLIC_HOST
 
     const postData = {
         privacy: privacy,
         title: title,
         content: content
     }
-    
-    const host = process.env.NEXT_PUBLIC_HOST
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData();
-        formData.append('postData', JSON.stringify(postData))
-        if (image) {            
+        const postData = {
+            privacy,
+            title,
+            content
+        };
+
+        formData.append('postData', JSON.stringify(postData));
+        if (image) {
             formData.append('avatar', image);
         }
-        const response = await fetch(`${host}/addPost`, { //${host}
-            method: "POST",
-            body: formData
-        })
 
-        setPrivacy("public")
-        setTitle("")
-        setContent("")
-        setImage(null)
-        
-        if (!response.ok) {
-            console.log("error not ok");
+        try {
+            const response = await fetch(`${host}/addPost`, {
+                method: "POST",
+                body: formData,
+                credentials: "include"
+            });
+
+            if (response.ok) {
+                const newPost = await response.json();
+                if (onPostCreated){
+                    onPostCreated(newPost);
+                }
+                // Reset form
+                setPrivacy("public");
+                setTitle("");
+                setContent("");
+                setImage(null);
+
+                // Trigger revalidation
+                //await revalidatePosts();
+            }
+
+            // Reset file input
+            if (fileInputRef.current) {
+                fileInputRef.current.value = ""
+            }
+
+             // Notify parent
+             if (onPostCreated) {
+                onPostCreated(newPost);
+            }
+
+        } catch (error) {
+            console.log("Submission error:", error);
         }
-    }
+    };
 
 
     return (
@@ -64,12 +96,13 @@ export default function CreatePost() {
                     </div>
                 </div>
                 <div className="title">
-                    <input onChange={(e) => { setTitle(e.target.value) }} type="text" name="title" placeholder="enter your title" />
+                    <input onChange={(e) => { setTitle(e.target.value) }} value={title} type="text" name="title" placeholder="enter your title" />
                 </div>
                 <div className="content">
                     {/* <textarea name="content" placeholder="enter your content"></textarea> */}
                     <textarea
                         onChange={(e) => { setContent(e.target.value) }}
+                        value={content}
                         placeholder="Write a content..."
                         // value={comment}
                         // onChange={(e) => setComment(e.target.value)}
@@ -78,7 +111,7 @@ export default function CreatePost() {
                     />
                 </div>
                 <div className="uploadImage">
-                    <input onChange={(e) => {setImage(e.target.files[0]) }} type="file" name="image" />
+                    <input onChange={(e) => { setImage(e.target.files[0]) }} ref={fileInputRef} type="file" name="image" />
                 </div>
                 <div>
                     <input className="submit" type="submit" value="Publish" />
