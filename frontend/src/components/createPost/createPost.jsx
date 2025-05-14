@@ -4,13 +4,13 @@ import "./createPost.modules.css"
 import { getData } from "../post/post";
 import { useRef } from "react";
 
-export default function CreatePost({onPostCreated}) {
+export default function CreatePost({ onPostCreated }) {
 
     let [privacy, setPrivacy] = useState("public")
     let [title, setTitle] = useState("")
     let [content, setContent] = useState("")
     let [image, setImage] = useState(null)
-    const fileInputRef = useRef(null) 
+    const fileInputRef = useRef(null)
     const host = process.env.NEXT_PUBLIC_HOST
 
     const postData = {
@@ -42,22 +42,15 @@ export default function CreatePost({onPostCreated}) {
             });
 
             const newPost = await response.json();
-            
-            if (response.ok) {
-                if (onPostCreated){
-                    onPostCreated(newPost);
-                }
+
+            if (!response.ok) {
+                throw new Error(newPost.error);
+            } else {
                 // Reset form
                 setPrivacy("public");
                 setTitle("");
                 setContent("");
                 setImage(null);
-
-                // Trigger revalidation
-                //await revalidatePosts();
-            }
-            if (!response.ok) {
-                throw new Error(`Failed to fetch posts: ${newPost.error}`);
             }
 
             // Reset file input
@@ -65,8 +58,8 @@ export default function CreatePost({onPostCreated}) {
                 fileInputRef.current.value = ""
             }
 
-             // Notify parent
-             if (onPostCreated) {
+            // Notify parent
+            if (onPostCreated) {
                 onPostCreated(newPost);
             }
 
