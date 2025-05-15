@@ -53,6 +53,15 @@
     /* background-color: #333; */
 }
 
+select{
+    outline: none;
+    border: none;
+    width: 200px;
+    height: 30px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
 .submit{
     background-color: transparent;
     border: 1px solid #333;
@@ -66,4 +75,15 @@
 .submit:hover{
     background-color: #333;
     color: #f1f1f1;
+}
+
+.hiddenInput{
+    display: none;
+}
+
+.iconUpload{
+    width: 100px;
+    height: 50px;
+    cursor: pointer;
+    color: var(--color-primary);
 }

@@ -301,6 +301,15 @@
     /* background-color: #333; */
 }
 
+select{
+    outline: none;
+    border: none;
+    width: 200px;
+    height: 30px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
 .submit{
     background-color: transparent;
     border: 1px solid #333;
@@ -314,6 +323,17 @@
 .submit:hover{
     background-color: #333;
     color: #f1f1f1;
+}
+
+.hiddenInput{
+    display: none;
+}
+
+.iconUpload{
+    width: 100px;
+    height: 50px;
+    cursor: pointer;
+    color: var(--color-primary);
 }
 /*!**************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./src/components/likeDislikeComment/likeDislikeComment.modules.css ***!
@@ -470,4 +490,21 @@
 }
 .post_reaction___CoG4 .post_comment__j9lnu span{
     margin-bottom: 2px;
+}
+/*!***************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[3]!./src/components/contactprivate/contactprivate.module.css ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************************/
+.contactprivate_contacts__lvxAY{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0 20px 40px;
+}
+
+.contactprivate_contacts__lvxAY .contactprivate_contact__t33Ni{
+    background-color: #777;
+    padding: 5px;
+    margin-right: 10px;
+    border-radius: 8px;
+    cursor: pointer;
 }

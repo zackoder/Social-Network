@@ -1,8 +1,10 @@
 "use client"
+import { FaCloudUploadAlt } from "react-icons/fa";
 import { use, useState } from "react";
 import "./createPost.modules.css"
 import { getData } from "../post/post";
 import { useRef } from "react";
+import ContactsPrivate from "../contactprivate/contactprivate";
 
 export default function CreatePost({ onPostCreated }) {
 
@@ -92,6 +94,7 @@ export default function CreatePost({ onPostCreated }) {
                         </select>
                     </div>
                 </div>
+                {privacy === "private" && <ContactsPrivate />}
                 <div className="title">
                     <input onChange={(e) => { setTitle(e.target.value) }} value={title} type="text" name="title" placeholder="enter your title" />
                 </div>
@@ -108,7 +111,10 @@ export default function CreatePost({ onPostCreated }) {
                     />
                 </div>
                 <div className="uploadImage">
-                    <input onChange={(e) => { setImage(e.target.files[0]) }} ref={fileInputRef} type="file" name="image" />
+                    <input onChange={(e) => { setImage(e.target.files[0]) }} id="uploadImage" className="hiddenInput" ref={fileInputRef} type="file" name="image" />
+                    <label htmlFor="uploadImage" className="uploadLabel">
+                        <FaCloudUploadAlt className="iconUpload" />
+                    </label>
                 </div>
                 <div>
                     <input className="submit" type="submit" value="Publish" />
