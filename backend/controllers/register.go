@@ -27,7 +27,10 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusMethodNotAllowed)
 		return
 	}
-
+	if len(userData) == 0 {
+		utils.WriteJSON(w, map[string]string{"error": "Empty request body"}, http.StatusBadRequest)
+		return
+	}
 
 
 	var regesterreq utils.Regester
@@ -43,7 +46,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(regesterreq.NickName)
 	
-	if utils.ValidatNames(regesterreq.FirstName, regesterreq.LastName, regesterreq.NickName) && utils.ValidEmail(regesterreq.Email) && regesterreq.Password == regesterreq.ConfermPassword && regesterreq.Age > 15 {
+	if utils.ValidatNames(regesterreq.FirstName, regesterreq.LastName, regesterreq.NickName) && utils.ValidEmail(regesterreq.Email) && regesterreq.Password == regesterreq.ConfermPassword{
 		hashedPss := utils.Hashpass(regesterreq.Password)
 		if hashedPss == "" {
 			utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
