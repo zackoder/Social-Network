@@ -1,0 +1,26 @@
+
+.container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100px;
+}
+
+.nav_start {
+    width: calc(100% / 3);
+    display: flex;
+    align-items: center;
+    justify-content: start;
+}
+.nav_middle {
+    width: calc(100% / 3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.nav_end {
+    width: calc(100% / 3);
+    display: flex;
+    align-items: center;
+    justify-content: end;
+}
