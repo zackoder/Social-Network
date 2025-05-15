@@ -50,7 +50,7 @@ export default function Post({posts}) {
                                 fill={false}
                             /> */}
                                 </div>
-                                <h2>Name</h2>
+                                <h2>{post.Poster_name}</h2>
 
                             </div>
                         </Link>
