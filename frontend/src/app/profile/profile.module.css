@@ -1,0 +1,49 @@
+.container{
+
+}
+
+.header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 100px;
+}
+
+.info{
+    display: flex;
+    /* justify-content: space-between; */
+    align-items: center;
+    gap: 20px;
+}
+.info .boxImage{
+    width: 200px;
+    aspect-ratio: 1/1;
+    position: relative;
+}
+.info .image{
+    border-radius: 30px;
+}
+
+.info .name{}
+.info .name h3{
+    font-weight: bold;
+    font-size: 40px;
+}
+.info .name p{
+    max-width: 300px;
+    margin: 15px 0;
+}
+
+.follow{
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    gap: 50px;
+    height: 160px;
+}
+.followers{
+    text-align: center;
+}
+.following{
+    text-align: center;
+}
