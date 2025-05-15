@@ -16,8 +16,8 @@ func InsertUser(user utils.Regester) error {
 }
 
 func InsertPost(post utils.Post) (int, error) {
-	insetpostQuery := "INSERT INTO posts (post_privacy, title, content, user_id, imagePath, createdAt) VALUES (?,?,?,?,?,strftime('%s', 'now'))"
-	res, err := Db.Exec(insetpostQuery, post.Privacy, post.Title, post.Content, post.Poster_id, post.Image)
+	insetpostQuery := "INSERT INTO posts (post_privacy, title, content, user_id, imagePath, createdAt,groupe_id) VALUES (?,?,?,?,?,strftime('%s', 'now'),?)"
+	res, err := Db.Exec(insetpostQuery, post.Privacy, post.Title, post.Content, post.Poster_id, post.Image, post.Groupe_id)
 	if err != nil {
 		fmt.Println(err)
 		return 0, err
@@ -99,23 +99,27 @@ func SaveInvitation(Groupe_id, sender_id, resever_id int) error {
 	_, err := Db.Exec(Quirie, sender_id, resever_id, Groupe_id)
 	return err
 }
+
 func InsserGroupe(title, description string, creator_id int) error {
-	Query := "INSERT INTO groups (title,description,creatorId) VALUES (?,?,?)"
+	Query := "INSERT INTO groups (name, description, group_oner) VALUES (?,?,?)"
 	_, err := Db.Exec(Query, title, description, creator_id)
 	return err
 }
+
 func InsserMemmberInGroupe(Groupe_id, User_id int) error {
 	Quirie := "INSERT INTO group_members (groupe_id,user_id) VALUES (?,?)"
 	_, err := Db.Exec(Quirie, Groupe_id, User_id)
 	return err
 }
-func InsserEventInDatabase(event utils.Event)error{
-Quirie := "INSERT INTO events (group_id,title,description,event_time,created_by) VALUES (?,?,?,?)"
-_,err := Db.Exec(Quirie,event.GroupID,event.Title,event.Description,event.EventTime,event.CreatedBy)
-return err 
+
+func InsserEventInDatabase(event utils.Event) error {
+	Quirie := "INSERT INTO events (group_id,title,description,event_time,created_by) VALUES (?,?,?,?)"
+	_, err := Db.Exec(Quirie, event.GroupID, event.Title, event.Description, event.EventTime, event.CreatedBy)
+	return err
 }
-func InsserResponceInDatabase(responce utils.EventResponse)error {
+
+func InsserResponceInDatabase(responce utils.EventResponse) error {
 	Quirie := "INSERT INTO event_responses (user_id,event_id,response) VALUES (?,?,?)"
-_,err := Db.Exec(Quirie,responce.UserID,responce.EventID,responce.Response)
-return err 
+	_, err := Db.Exec(Quirie, responce.UserID, responce.EventID, responce.Response)
+	return err
 }

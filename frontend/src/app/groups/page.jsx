@@ -1,7 +1,7 @@
-import styles from "./groups.module.css";
-
+"use client";
 
 import { useState } from 'react';
+import styles from './groups.module.css'; // Importer le fichier CSS
 
 export default function Groupes() {
   // État initial pour tous les groupes, ceux que l'utilisateur a créés, et ceux dont il est membre
@@ -31,15 +31,15 @@ export default function Groupes() {
   };
 
   return (
-    <div>
-      <h1>Gestion des Groupes</h1>
+    <div className={styles.container}>
+      <h1 className='title'>Gestion des Groupes</h1>
 
       {/* Section 1: Tous les groupes */}
-      <section>
-        <h2>Tous les Groupes</h2>
-        <ul>
+      <section className='section'>
+        <h2 className="section_title">Tous les Groupes</h2>
+        <ul className="containers">
           {groupes.map(groupe => (
-            <li key={groupe.id}>
+            <li  className="group_title" key={groupe.id}>
               <h3>{groupe.nom}</h3>
               <p>{groupe.description}</p>
             </li>
@@ -48,11 +48,11 @@ export default function Groupes() {
       </section>
 
       {/* Section 2: Groupes créés par l'utilisateur */}
-      <section>
-        <h2>Groupes que j'ai créés</h2>
-        <ul>
+      <section className='section'>
+        <h2 className="section_title">Groupes que j'ai créés</h2>
+        <ul className="containers">
           {groupes.filter(groupe => groupe.createur).map(groupe => (
-            <li key={groupe.id}>
+            <li  className="group_title" key={groupe.id}>
               <h3>{groupe.nom}</h3>
               <p>{groupe.description}</p>
             </li>
@@ -61,48 +61,46 @@ export default function Groupes() {
       </section>
 
       {/* Section 3: Groupes dont l'utilisateur est membre */}
-      <section>
-        <h2>Groupes dont je suis membre</h2>
-        <ul>
+      <section className='section'>
+        <h2 className="section_title">Groupes dont je suis membre</h2>
+        <ul className="containers">
           {groupes.filter(groupe => groupe.membre).map(groupe => (
-            <li key={groupe.id}>
-              <h3>{groupe.nom}</h3>
-              <p>{groupe.description}</p>
+            <li  className="group_title" key={groupe.id}>
+              <h3 className='gT'>{groupe.nom}</h3>
+              <p className='group_dis'>{groupe.description}</p>
             </li>
           ))}
         </ul>
       </section>
 
       {/* Section 4: Notifications des groupes */}
-      <section>
-        <h2>Notifications des Groupes</h2>
-        <ul>
+      <section className='section'>
+        <h2 className="section_title">Notifications des Groupes</h2>
+        <ul className="containers">
           {notifications.map(notification => (
-            <li key={notification.id}>
-              <strong>Groupe {groupes.find(g => g.id === notification.groupeId)?.nom}</strong>: {notification.message}
+            <li  className="group_title" key={notification.id}>
+              <strong className='strong'>Groupe {groupes.find(g => g.id === notification.groupeId)?.nom}</strong>: {notification.message}
             </li>
           ))}
         </ul>
       </section>
 
       {/* Formulaire pour ajouter un groupe */}
-      <section>
-        <h2>Ajouter un nouveau groupe</h2>
-        <input
-          type="text"
+      <section className='section'>
+        <h2 className="section_title">Ajouter un nouveau groupe</h2>
+        <input className='input'
+          typeh2="text"
           placeholder="Nom du groupe"
           value={nom}
           onChange={(e) => setNom(e.target.value)}
         />
-        <textarea
+        <textarea className='textarea'
           placeholder="Description du groupe"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
-        <button onClick={handleAjouterGroupe}>Ajouter</button>
+        <button className='button' onClick={handleAjouterGroupe}>Ajouter</button>
       </section>
-
-
     </div>
   );
 }

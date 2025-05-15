@@ -16,7 +16,6 @@ func Group(w http.ResponseWriter, r *http.Request) {
 
 func Creat_groupe(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
@@ -43,6 +42,7 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request) {
 
 	err = models.InsserGroupe(Groupe.Title, Groupe.Description, Groupe.CreatorId)
 	if err != nil {
+		fmt.Println(err)
 		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
 		return
 	}
@@ -73,7 +73,6 @@ func Jouind_Groupe(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"prossotion": "seccesfel"}, http.StatusOK)
 	} else {
 		utils.WriteJSON(w, map[string]string{"error": "you are redy member in this group"}, 403)
-
 	}
 }
 
@@ -229,5 +228,4 @@ func EventRrspponce(w http.ResponseWriter, r *http.Request) {
 }
 
 func Event(noti utils.Notification) {
-
 }

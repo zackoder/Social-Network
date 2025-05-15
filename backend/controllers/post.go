@@ -32,7 +32,7 @@ func AddPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(post.Poster_id)
+	post.Poster_id = 10
 	host := r.Host
 	// if _, exists := r.Form["postData"]; !exists {
 
