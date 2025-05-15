@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"fmt"
 
 	"social-network/utils"
@@ -33,10 +34,35 @@ func InsertFriends(id int, friendes []int) {
 	}
 }
 
+func InserOrUpdate(follower, followed string) (string, error) {
+	privacy, err := IsPrivateProfile(followed)
+	if err != nil {
+		return "", err
+	}
+	if !privacy {
+
+		if err := InsertFollow(follower, followed); err != nil {
+			if err := Deletfollow(follower, followed); err != nil {
+				fmt.Println(err)
+				return "", err
+			}
+			fmt.Println(err)
+			return "unfollow seccessfully", nil
+		}
+		return "following seccessfully", nil
+	}
+	InsertFollowreq(followed)
+	return "follow request sent", nil
+}
+
 func InsertFollow(follower, followed string) error {
 	inserQuery := "INSERT INTO followers (follower_id, followed_id) VALUES (?,?)"
 	_, err := Db.Exec(inserQuery, follower, followed)
 	return err
+}
+
+func InsertFollowreq(followed string) {
+
 }
 
 func InsertNewGroup(group *utils.NewGroup, user_id int) error {
@@ -118,4 +144,50 @@ func InsserResponceInDatabase(responce utils.EventResponse)error {
 	Quirie := "INSERT INTO event_responses (user_id,event_id,response) VALUES (?,?,?)"
 _,err := Db.Exec(Quirie,responce.UserID,responce.EventID,responce.Response)
 return err 
+}
+// this function is not used yet it supposed to insert people who can see the private posts into DB. 
+func AddPrivateViewers(postID int, viewerIDs []int) error {
+	query := `INSERT INTO friends (post_id, friend_id) VALUES (?, ?)`
+
+	stmt, err := Db.Prepare(query)
+	if err != nil {
+		return err
+	}
+	for _, viewerID := range viewerIDs {
+		_, err := stmt.Exec(postID, viewerID)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// reactions functions
+
+func AddOrUpdateReaction(userID, postID int, reactionType string) error {
+	var existingID int
+	checkQuery := "SELECT id FROM reactions WHERE user_id = ? AND post_id = ?"
+	err := Db.QueryRow(checkQuery, userID, postID).Scan(&existingID)
+
+	if err != nil && err != sql.ErrNoRows {
+		return err
+	}
+
+	if err == sql.ErrNoRows {
+		insertQuery := `
+			INSERT INTO reactions (user_id, post_id, reaction_type)
+			VALUES (?, ?, ?)
+		`
+		_, err := Db.Exec(insertQuery, userID, postID, reactionType)
+		return err
+	} else {
+		// Reaction exists → update it
+		updateQuery := `
+			UPDATE reactions
+			SET reaction_type = ?, date = CURRENT_TIMESTAMP
+			WHERE id = ?
+		`
+		_, err := Db.Exec(updateQuery, reactionType, existingID)
+		return err
+	}
 }
