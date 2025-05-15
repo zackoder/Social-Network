@@ -24,6 +24,7 @@ export default function LikeDislikeComment() {
   const handleCommentSubmit = (e) => {
     e.preventDefault();
     setSubmittedComment(comment);
+    //end point
     setComment('');
   };
 
@@ -45,12 +46,12 @@ export default function LikeDislikeComment() {
       </div>
 
       <form className="form" onSubmit={handleCommentSubmit}>
-            <textarea
+            <input
                 placeholder="Write a comment..."
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 rows={2}
-                style={{ width: '90%', padding: '5px', borderRadius: '4px', resize: 'none' }}
+                style={{ width: '90%', padding: '14px 5px', borderRadius: '4px', resize: 'none', border: 'none', outline: 'none' }}
             />
             <button
             type="submit"
