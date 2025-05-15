@@ -1,0 +1,9 @@
+.links{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.image{
+    margin-left: 10px;
+}
