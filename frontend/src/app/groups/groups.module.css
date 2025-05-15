@@ -1,6 +1,74 @@
-.groups{
-    background-color: #F00;
-    color: #fff;
-    padding: 10px;
-    
+/* Global styles for the groups page */
+.container {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+/* Header */
+.title {
+  color: #333;
+}
+
+/* Section styles */
+.section {
+  margin-bottom: 40px;
+}
+
+/* Style for section headings */
+.section_title {
+  color: #444;
+}
+
+/* Style for lists of groups */
+.containers {
+  list-style-type: none;
+  padding: 0;
+}
+
+.group_title {
+  padding: 15px;
+  margin: 10px 0;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+/* Input and textarea for adding a new group */
+.input,
+.textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+/* Style for the add group button */
+.button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #45a049;
+}
+
+/* Style for individual group items */
+.gT {
+  margin: 0;
+  font-size: 18px;
+}
+
+.group_dis {
+  margin: 10px 0;
+  font-size: 14px;
+}
+
+/* Notification styles */
+.strong {
+  font-weight: bold;
+  margin-right: 5px;
 }
