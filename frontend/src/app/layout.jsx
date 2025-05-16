@@ -28,6 +28,8 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  const paths = ["/login","/sign-up"]
+  // const current = window.location.pathname
   return (
     <html lang="en">
       {/* <body className={`${geistSans.variable} ${geistMono.variable}`}> */}
@@ -35,6 +37,7 @@ export default function RootLayout({ children }) {
         <div className="container">
           {/* <Websocket /> */}
           <WebsocketInitializer />
+          {/* {!paths.includes(current) ? : ""} */}
           <Navbar/>
           {children}
           <Footer/>

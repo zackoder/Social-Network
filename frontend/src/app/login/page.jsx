@@ -74,7 +74,7 @@ export default function Login() {
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input
-              type="email"
+              type="text"
               id="email"
               name="email"
               value={formData.email}
