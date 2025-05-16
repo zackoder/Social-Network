@@ -21,7 +21,7 @@ func Hashpass(password string) string {
 func CheckExtension(FileExtension string) bool {
 	extensions := []string{".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp", ".ico", ".heif", ".apng"}
 	for _, extension := range extensions {
-		if strings.Contains(FileExtension, extension) {
+		if strings.Contains(strings.ToLower(FileExtension), extension) {
 			return true
 		}
 	}
