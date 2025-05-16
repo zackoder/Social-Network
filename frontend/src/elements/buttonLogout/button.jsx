@@ -1,13 +1,21 @@
 "use client"
+import { redirect } from "next/navigation";
 // import Link from "next/link";
 import styles from "./button.module.css";
 
 export default function ButtonLogout(){
+    const link = process.env.NEXT_PUBLIC_HOST
     return(
         <button 
             className={styles.logout}
             // href={"/"}
-            onClick={()=>{console.log("Logout")}}    
+            onClick={()=>{
+                fetch(`${link}/logout`, {
+                    method: "POST",
+                    credentials: "include"
+                });
+                redirect('/login')
+            }}    
         >
             <img
                 src="/images/logout.png" 

@@ -5,6 +5,7 @@ import "./createPost.modules.css"
 import { getData } from "../post/post";
 import { useRef } from "react";
 import ContactsPrivate from "../contactprivate/contactprivate";
+import { isAuthenticated } from "@/app/page";
 
 export default function CreatePost({ onPostCreated }) {
 
@@ -43,9 +44,16 @@ export default function CreatePost({ onPostCreated }) {
                 credentials: "include"
             });
 
+            if (!title.trim() || !content.trim()) {
+                return
+            }
+
             const newPost = await response.json();
+            console.log("newPost", response);
+
 
             if (!response.ok) {
+                isAuthenticated(response.status, newPost.error);
                 throw new Error(newPost.error);
             } else {
                 // Reset form
@@ -67,6 +75,7 @@ export default function CreatePost({ onPostCreated }) {
 
         } catch (error) {
             console.log("Submission error:", error);
+
         }
     };
 
