@@ -16,8 +16,24 @@ post data {
 }
 
 {
-    "privacy":"private",
-    "title":"hello there",
-    "friends":[1,2,3,4,5,6,7],
-    "content":"test1"
+  "aboutMe": "",
+  "age": 24,
+  "confirmPassword": "Zack123",
+  "email": "Zack1@gmail.com",
+  "firstName": "Zack",
+  "lastName": "Smith",
+  "nickname": "Zackie",
+  "password": "Zack123"
 }
+
+{
+  "aboutMe": "",
+  "age": 24,
+  "confirmPassword": "zikobes@gmial.com",
+  "email": "Zack0@gmail.com",
+  "firstName": "zikobes@gmial.com",
+  "lastName": "zikobes@gmial.com",
+  "nickname": "zikobes@gmial.com",
+  "password": "zikobes@gmial.com"
+}
+

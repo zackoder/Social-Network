@@ -9,44 +9,57 @@ import { isAuthenticated } from "@/app/page";
 
 export default function CreatePost({ onPostCreated }) {
 
-    let [privacy, setPrivacy] = useState("public")
-    let [title, setTitle] = useState("")
-    let [content, setContent] = useState("")
-    let [image, setImage] = useState(null)
+    // let [privacy, setPrivacy] = useState("public")
+    // let [title, setTitle] = useState("")
+    // let [content, setContent] = useState("")
+    // let [namePoster, setNamePoster] = useState("")
+    // let [image, setImage] = useState(null)
+    const [post,setPost] = useState({
+        privacy:"public",
+        title:"",
+        content:"",
+        namePoster:"",
+        image: null
+        
+    })
     const fileInputRef = useRef(null)
     const host = process.env.NEXT_PUBLIC_HOST
-
-    const postData = {
-        privacy: privacy,
-        title: title,
-        content: content
-    }
+    // const postData = {
+    //     privacy: privacy,
+    //     title: title,
+    //     content: content
+    // }
 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const formData = new FormData();
+        const formData = new FormData(e.target);
         const postData = {
-            privacy,
-            title,
-            content
+            privacy : formData.get('privacy'),
+            title : formData.get('title'),
+            content : formData.get('content'),
+            image : formData.get('image')
+            
         };
-
-        formData.append('postData', JSON.stringify(postData));
-        if (image) {
-            formData.append('avatar', image);
-        }
+        // console.log("formData", postData);
+        
+        formData.append('postData', postData);  //JSON.stringify(postData)
+        console.log("formData", formData);
+        
+        // if (image) {
+        //     formData.append('avatar', image);
+        // }
 
         try {
             const response = await fetch(`${host}/addPost`, {
                 method: "POST",
-                body: formData,
+                body: postData,
                 credentials: "include"
             });
 
-            if (!title.trim() || !content.trim()) {
-                return
-            }
+            // if (!postData.title.trim() || !postData.content.trim()) {
+            //     return
+            // }
 
             const newPost = await response.json();
             console.log("newPost", response);
@@ -57,10 +70,15 @@ export default function CreatePost({ onPostCreated }) {
                 throw new Error(newPost.error);
             } else {
                 // Reset form
-                setPrivacy("public");
-                setTitle("");
-                setContent("");
-                setImage(null);
+                // setPrivacy("public");
+                // setTitle("");
+                // setContent("");
+                // setImage(null);
+
+                setPost(p => p.title = "");
+                setPost(p => p.content = "");
+                setPost(p => p.image = null);
+                setPost(p => p.privacy = "public");
             }
 
             // Reset file input
@@ -96,23 +114,24 @@ export default function CreatePost({ onPostCreated }) {
                     </div>
                     <div className="nameProfile">
                         <h3>full name</h3>
-                        <select onChange={(e) => { setPrivacy(e.target.value) }} name="friends" id="friends" defaultValue={"public"}>
+                        <select /*onChange={(e) => { setPost(p=>p.privacy = e.target.value)  /*setPrivacy(e.target.value) }}*/ name="friends" id="friends" defaultValue={"public"}>
                             <option value={"public"}>Public</option>
                             <option value={"private"}>Private</option>
                             <option value={"almostPrivate"}>Almost Private </option>
                         </select>
                     </div>
                 </div>
-                {privacy === "private" && <ContactsPrivate />}
+                {/* {privacy === "private" && <ContactsPrivate />} */}
                 <div className="title">
-                    <input onChange={(e) => { setTitle(e.target.value) }} value={title} type="text" name="title" placeholder="enter your title" />
+                    <input /*onChange={(e) => { setPost(p) /*setTitle(e.target.value)* }} value={title}*/ type="text" name="title" placeholder="enter your title" />
                 </div>
                 <div className="content">
                     {/* <textarea name="content" placeholder="enter your content"></textarea> */}
                     <textarea
-                        onChange={(e) => { setContent(e.target.value) }}
-                        value={content}
+                        // onChange={(e) => { setContent(e.target.value) }}
+                        // value={content}
                         placeholder="Write a content..."
+                        name="content"
                         // value={comment}
                         // onChange={(e) => setComment(e.target.value)}
                         rows={4}
@@ -120,7 +139,7 @@ export default function CreatePost({ onPostCreated }) {
                     />
                 </div>
                 <div className="uploadImage">
-                    <input onChange={(e) => { setImage(e.target.files[0]) }} id="uploadImage" className="hiddenInput" ref={fileInputRef} type="file" name="image" />
+                    <input /*onChange={(e) => { setImage(e.target.files[0]) }}*/ id="uploadImage" className="hiddenInput" ref={fileInputRef} type="file" name="image" />
                     <label htmlFor="uploadImage" className="uploadLabel">
                         <FaCloudUploadAlt className="iconUpload" />
                     </label>
@@ -132,4 +151,3 @@ export default function CreatePost({ onPostCreated }) {
         </div>
     );
 }
-
