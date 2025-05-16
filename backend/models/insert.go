@@ -7,6 +7,7 @@ import (
 )
 
 func InsertUser(user utils.Regester) error {
+	fmt.Println("\n\n\nstart inserting\n\n\n")
 	insertuserquery := "INSERT INTO users (first_name, last_name, nickname, email, age, gender, password, avatar, AboutMe)  VALUES(?,?,?,?,?,?,?,?,?)"
 	if _, err := Db.Exec(insertuserquery, user.FirstName, user.LastName, user.NickName, user.Email, user.Age, user.Gender, user.Password, user.Avatar, user.About_Me); err != nil {
 		fmt.Println(err)
@@ -31,6 +32,31 @@ func InsertFriends(id int, friendes []int) {
 	for _, friend := range friendes {
 		Db.Exec(insertFriend, id, friend)
 	}
+}
+
+func InserOrUpdate(follower, followed string) (string, error) {
+	privacy, err := IsPrivateProfile(followed)
+	if err != nil {
+		return "", err
+	}
+	
+	if !privacy {
+		if err := InsertFollow(follower, followed); err != nil {
+			if err := Deletfollow(follower, followed); err != nil {
+				fmt.Println(err)
+				return "", err
+			}
+			fmt.Println(err)
+			return "unfollow seccessfully", nil
+		}
+		return "following seccessfully", nil
+	}
+	InsertFollowreq(followed)
+	return "follow request sent", nil
+}
+
+func InsertFollowreq(followed string) {
+
 }
 
 func InsertFollow(follower, followed string) error {
@@ -109,13 +135,29 @@ func InsserMemmberInGroupe(Groupe_id, User_id int) error {
 	_, err := Db.Exec(Quirie, Groupe_id, User_id)
 	return err
 }
-func InsserEventInDatabase(event utils.Event)error{
-Quirie := "INSERT INTO events (group_id,title,description,event_time,created_by) VALUES (?,?,?,?)"
-_,err := Db.Exec(Quirie,event.GroupID,event.Title,event.Description,event.EventTime,event.CreatedBy)
-return err 
+func InsserEventInDatabase(event utils.Event) error {
+	Quirie := "INSERT INTO events (group_id,title,description,event_time,created_by) VALUES (?,?,?,?)"
+	_, err := Db.Exec(Quirie, event.GroupID, event.Title, event.Description, event.EventTime, event.CreatedBy)
+	return err
 }
-func InsserResponceInDatabase(responce utils.EventResponse)error {
+func InsserResponceInDatabase(responce utils.EventResponse) error {
 	Quirie := "INSERT INTO event_responses (user_id,event_id,response) VALUES (?,?,?)"
-_,err := Db.Exec(Quirie,responce.UserID,responce.EventID,responce.Response)
-return err 
+	_, err := Db.Exec(Quirie, responce.UserID, responce.EventID, responce.Response)
+	return err
+}
+
+func AddPrivateViewers(postID int, viewerIDs []int) error {
+	query := `INSERT INTO private_post_viewers (post_id, viewer_id) VALUES (?, ?)`
+
+	stmt, err := Db.Prepare(query)
+	if err != nil {
+		return err
+	}
+	for _, viewerID := range viewerIDs {
+		_, err := stmt.Exec(postID, viewerID)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

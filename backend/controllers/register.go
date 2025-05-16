@@ -11,6 +11,7 @@ import (
 )
 
 func Register(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("HELLO")
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
@@ -20,15 +21,19 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Too larg file"}, http.StatusRequestEntityTooLarge)
 		return
 	}
-	
+
+	//fmt.Println("form data", r.Form["userData"])
+
 	userData := r.FormValue("userData")
 	filePath, err := utils.UploadImage(r)
+	fmt.Println(filePath)
 	if err != nil {
-		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusMethodNotAllowed)
-		return
+		if err.Error() != "nothing" {
+			fmt.Println(err)
+			utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusMethodNotAllowed)
+			return
+		}
 	}
-
-
 
 	var regesterreq utils.Regester
 	if err := json.Unmarshal([]byte(userData), &regesterreq); err != nil {
@@ -36,34 +41,49 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
+	fmt.Println("afin asi lmhdi")
+	fmt.Println(regesterreq, "5555")
 
 	regesterreq.Avatar = filePath
 	if regesterreq.NickName == "" {
 		regesterreq.NickName = nil
 	}
-	fmt.Println(regesterreq.NickName)
-	
-	if utils.ValidatNames(regesterreq.FirstName, regesterreq.LastName, regesterreq.NickName) && utils.ValidEmail(regesterreq.Email) && regesterreq.Password == regesterreq.ConfermPassword && regesterreq.Age > 15 {
-		hashedPss := utils.Hashpass(regesterreq.Password)
-		if hashedPss == "" {
-			utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
-			return
-		}
-		regesterreq.Password = hashedPss
 
-		if err := models.InsertUser(regesterreq); err != nil {
-			if strings.Contains(err.Error(), "users.email") {
-				utils.WriteJSON(w, map[string]string{"error": "Email has already been taken."}, http.StatusNotAcceptable)
-			} else if strings.Contains(err.Error(), "users.nickname") {
-				utils.WriteJSON(w, map[string]string{"error": "nickname has already been taken."}, http.StatusNotAcceptable)
-			} else {
-				utils.WriteJSON(w, map[string]string{"error": "Fail to register user"}, http.StatusNotAcceptable)
-			}
-			if err := os.Remove(filePath); err != nil {
-				fmt.Println("removing error:", err)
-			}
-			return
-		}
+	if !utils.ValidatNames(regesterreq.FirstName, regesterreq.LastName, regesterreq.NickName) {
+		utils.WriteJSON(w, map[string]string{"error": "invalid first name or last name or nickname"}, http.StatusBadRequest)
+		return
 	}
+	if !utils.ValidEmail(regesterreq.Email) {
+		utils.WriteJSON(w, map[string]string{"error": "invalid Email"}, http.StatusBadRequest)
+		return
+	}
+	if regesterreq.Password != regesterreq.ConfermPassword {
+		utils.WriteJSON(w, map[string]string{"error": "password different from confirm password"}, http.StatusBadRequest)
+		return
+	}
+
+	hashedPss := utils.Hashpass(regesterreq.Password)
+	if hashedPss == "" {
+		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
+		return
+	}
+
+	err = models.InsertUser(regesterreq)
+	if err != nil {
+		fmt.Println("shi7aja")
+		if strings.Contains(err.Error(), "users.email") {
+			utils.WriteJSON(w, map[string]string{"error": "Email has already been taken."}, http.StatusNotAcceptable)
+		} else if strings.Contains(err.Error(), "users.nickname") {
+			utils.WriteJSON(w, map[string]string{"error": "nickname has already been taken."}, http.StatusNotAcceptable)
+		} else {
+			utils.WriteJSON(w, map[string]string{"error": "Fail to register user"}, http.StatusNotAcceptable)
+		}
+		if err := os.Remove(filePath); err != nil {
+			fmt.Println("removing error:", err)
+		}
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("endded")
 	utils.WriteJSON(w, map[string]string{"success": "ok"}, http.StatusOK)
 }
