@@ -42,33 +42,6 @@ func QueryPosts(offset int, r *http.Request) []utils.Post {
 	return posts
 }
 
-func GetProfilePost(user_id, offset int) []utils.Post {
-	var posts []utils.Post
-	fmt.Printf("Querying posts for user_id=%d with offset=%d\n", user_id, offset)
-
-	query := "SELECT * FROM posts WHERE user_id = ? LIMIT 10 OFFSET ?"
-	rows, err := Db.Query(query, user_id, offset)
-	if err != nil {
-		fmt.Println("Error querying posts:", err)
-		return nil
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var post utils.Post
-
-		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Image, &post.CreatedAt)
-		if err != nil {
-			fmt.Println("error scaning the rows", err)
-		}
-		posts = append(posts, post)
-	}
-	if err = rows.Err(); err != nil {
-		fmt.Println("Error during rows iteration:", err)
-		return nil
-	}
-	return posts
-}
-
 func IsPrivateProfile(followed string) (bool, error) {
 	fmt.Println("is private profile", followed)
 	query := "SELECT privacy FROM users WHERE id = ?"
@@ -116,9 +89,62 @@ func GetActiveSession(userData *utils.User) (bool, error) {
 	return exists, nil
 }
 
+func GetRegistration(id string) (utils.Regester, error) {
+	query := `SELECT * FROM users WHERE id = ?`
+
+	var data utils.Regester
+	var Id int
+
+	err := Db.QueryRow(query, id).Scan(
+		&Id,
+		&data.NickName,
+		&data.FirstName,
+		&data.LastName,
+		&data.Age,
+		&data.Gender,
+		&data.Email,
+		&data.Avatar,
+		&data.Password,
+		&data.About_Me,
+		&data.Pravecy,
+	)
+	if err != nil {
+		return data, err
+	}
+	data.Password = ""
+	return data, nil
+}
+
+func GetProfilePost(user_id, offset int) ([]utils.Post, error) {
+	var posts []utils.Post
+	fmt.Printf("Querying posts for user_id=%d with offset=%d\n", user_id, offset)
+
+	query := "SELECT * FROM posts WHERE user_id = ? LIMIT 10 OFFSET ?"
+	rows, err := Db.Query(query, user_id, offset)
+	if err != nil {
+		fmt.Println("Error querying posts:", err)
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var post utils.Post
+
+		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Image, &post.CreatedAt)
+		if err != nil {
+			fmt.Println("error scaning the rows", err)
+		}
+		posts = append(posts, post)
+	}
+	if err = rows.Err(); err != nil {
+		fmt.Println("Error during rows iteration:", err)
+		return nil, err
+	}
+	return posts, err
+}
+
 func Get_session(ses string) (int, error) {
 	var sessionid int
-	query := `SELECT user_id FROM sessions WHERE token = ?`
+	query := `SELECT user_id FROM sessions WHERE token = ?;`
 	err := Db.QueryRow(query, ses).Scan(&sessionid)
 	if err != nil {
 		fmt.Println(err)
@@ -265,6 +291,23 @@ func GetGroups(user_id int) []string {
 	}
 
 	return res
+}
+
+func GetFollowers(userID int) ([]int, error) {
+	query := `SELECT follower_id FROM followers WHERE followed_id = ?`
+	rows, err := Db.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	var followerIDs []int
+	for rows.Next() {
+		var followerID int
+		if err := rows.Scan(&followerID); err != nil {
+			return nil, err
+		}
+		followerIDs = append(followerIDs, followerID)
+	}
+	return followerIDs, nil
 }
 
 func GetAllGroups() []string {

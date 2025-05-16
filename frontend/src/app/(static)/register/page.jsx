@@ -4,7 +4,7 @@ export default function Register() {
     return (
         <main className={styles.main}>
             <div className={styles.containerRegister}>
-                <h2 className={styles.title}>Register</h2>
+                <h2 className={styles.title}>Register+"1231"</h2>
                 <form action="">
                     <div className={styles.name}>
                         <input type="text" className={styles.firstname} name='firstname' placeholder='First Name' />
