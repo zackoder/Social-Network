@@ -65,9 +65,9 @@ func AuthMiddleware(next customHandler) http.HandlerFunc {
 				return
 			} else if err == sql.ErrNoRows {
 				http.SetCookie(w, &http.Cookie{
-					Name:    "token",
-					Path:    "/",
-					Value:   "",
+					Name:  "token",
+					Path:  "/",
+					Value: "",
 				})
 				utils.WriteJSON(w, map[string]string{"error": "Unauthorized"}, http.StatusUnauthorized)
 				return
@@ -97,12 +97,11 @@ func AuthMiddleware(next customHandler) http.HandlerFunc {
 // 	return err
 // }
 
-
 func ValidUser(r *http.Request) (int, error) {
-		cookie, err := r.Cookie("token")
-		if err != nil {
-			return 0, err
-		}
+	cookie, err := r.Cookie("token")
+	if err != nil {
+		return 0, err
+	}
 	userId, err := models.Get_session(cookie.Value)
 	if err != nil {
 		return 0, err
@@ -111,18 +110,20 @@ func ValidUser(r *http.Request) (int, error) {
 }
 
 func WithCORS(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000") 
-        w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
-        w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-        w.Header().Set("Access-Control-Allow-Credentials", "true")
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Accept")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
 
-        // Handle preflight
-        if r.Method == "OPTIONS" {
-            w.WriteHeader(http.StatusOK)
-            return
-        }
+		// Handle preflight
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
 
-        next.ServeHTTP(w, r)
-    })
+		next.ServeHTTP(w, r)
+	})
 }

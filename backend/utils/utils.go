@@ -7,14 +7,15 @@ import "time"
 type Regester struct {
 	FirstName       string `json:"firstName"`
 	LastName        string `json:"lastName"`
-	NickName        any    `json:"nickName"`
+	NickName        any    `json:"nickname"`
 	Age             int    `json:"age"`
 	Gender          string `json:"gender"`
 	Email           string `json:"email"`
 	Password        string `json:"password"`
-	ConfermPassword string `json:"confermPassword"`
-	About_Me        string `json:"AboutMe"`
+	ConfermPassword string `json:"confirmPassword"`
+	About_Me        string `json:"aboutMe"`
 	Avatar          string `json:"avatar"`
+	Pravecy         string `json:"privecy"`
 }
 
 type Login struct {
@@ -26,7 +27,7 @@ type Post struct {
 	Id          int       `json:"id"`
 	Privacy     string    `json:"privacy"`
 	Poster_id   int       `json:"poster"`
-	Poster_name string    `json:"first_name`
+	Poster_name string    `json:"name"`
 	Title       string    `json:"title"`
 	Content     string    `json:"content"`
 	Image       string    `json:"image"`
@@ -71,6 +72,7 @@ type User struct {
 	AboutMe   string `json:"aboutme"`
 	Privacy   string `json:"privacy"`
 }
+
 type Session struct {
 	Id        int    `json:"id"`
 	UserId    int    `json:"user_id"`
@@ -108,16 +110,16 @@ type Groupe_member struct {
 	Groupe_id int `json:"groupe_id"`
 }
 type Event struct {
-    GroupID     int `json:"groupe_id"`
-    Title       string `json:"title"`
-    Description string `json:"description"`
-    EventTime   time.Time `json:"event_time"`
-    CreatedBy   int `json:"created_by"`
+	GroupID     int       `json:"groupe_id"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	EventTime   time.Time `json:"event_time"`
+	CreatedBy   int       `json:"created_by"`
 }
 
 type EventResponse struct {
-    UserID  int `json:"user_id"`
-    EventID int `json:"event_id"`
-	GroupeId int `json:"groupe_id"`
-    Response string  `json:"responce"`
+	UserID   int    `json:"user_id"`
+	EventID  int    `json:"event_id"`
+	GroupeId int    `json:"groupe_id"`
+	Response string `json:"responce"`
 }
