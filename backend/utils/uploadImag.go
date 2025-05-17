@@ -12,18 +12,20 @@ import (
 )
 
 func UploadImage(r *http.Request) (string, error) {
-	if _, exists := r.Form["avatar"]; !exists {
-		return "", fmt.Errorf("nothing")
-	}
+	// if _, exists := r.Form["avatar"]; !exists {
+	// 	fmt.Println("there is no image ")
+	// 	return "", fmt.Errorf("nothing")
+	// }
 	file, handler, err := r.FormFile("avatar")
-	fmt.Println(handler.Filename)
 	if err != nil {
 		if file == nil {
+			fmt.Println("there is no image ")
 			return "", nil
 		}
 		fmt.Println(err)
 		return "", err
 	}
+	fmt.Println(handler.Filename)
 	os.MkdirAll("uploads", os.ModePerm)
 	defer file.Close()
 	fileName := fmt.Sprintf("%d_%s", time.Now().Unix(), handler.Filename)
@@ -52,7 +54,7 @@ func UploadMsgImg(pyload []byte) (Message, error) {
 	if len(parts) != 2 {
 		return message, fmt.Errorf("Send a valid data")
 	}
-	
+
 	metaPart := parts[0]
 	filePart := parts[1]
 
@@ -63,7 +65,7 @@ func UploadMsgImg(pyload []byte) (Message, error) {
 	}
 
 	// file to visulize the pyload
-	if err := os.WriteFile("test.txt", pyload, 0644); err != nil {
+	if err := os.WriteFile("test.txt", pyload, 0o644); err != nil {
 		fmt.Println("writing file error ", err)
 		return message, fmt.Errorf("internal sercer error")
 	}
@@ -75,7 +77,7 @@ func UploadMsgImg(pyload []byte) (Message, error) {
 
 	message.Filename = fmt.Sprintf("uploads/%d_%s", time.Now().Unix(), message.Filename)
 
-	if err := os.WriteFile(message.Filename, filePart, 0644); err != nil {
+	if err := os.WriteFile(message.Filename, filePart, 0o644); err != nil {
 		fmt.Println("writing file error ", err)
 		return message, fmt.Errorf("internal sercer error")
 	}

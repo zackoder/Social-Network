@@ -24,7 +24,6 @@ func AddPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var post utils.Post
-	fmt.Println(cookie.Value)
 	post.Poster_id, err = models.Get_session(cookie.Value)
 	if err != nil {
 		fmt.Println(err)
@@ -32,7 +31,9 @@ func AddPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(post.Poster_id)
+	registrationData, _ := models.GetRegistration(strconv.Itoa(post.Poster_id))
+	post.Poster_name = registrationData.FirstName
+
 	host := r.Host
 	// if _, exists := r.Form["postData"]; !exists {
 
@@ -40,14 +41,14 @@ func AddPost(w http.ResponseWriter, r *http.Request) {
 	// }
 	postData := r.FormValue("postData")
 	filepath := ""
-	if _, exists := r.Form["avatar"]; exists {
-		filepath, err = utils.UploadImage(r)
-		if err != nil {
-			utils.WriteJSON(w, map[string]string{"error": err.Error()}, http.StatusInternalServerError)
-			fmt.Println("Upload Image error:", err)
-			return
-		}
+	// if _, exists := r.Form["avatar"]; exists {
+	filepath, err = utils.UploadImage(r)
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": err.Error()}, http.StatusInternalServerError)
+		fmt.Println("Upload Image error:", err)
+		return
 	}
+	// }
 
 	fmt.Println("post data", postData)
 	err = json.Unmarshal([]byte(postData), &post)
