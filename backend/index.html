@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
   <body>
@@ -148,77 +147,4 @@
     </script>
   </body>
 </html>
-=======
-<!DOCTYPE html>
-<html>
-  <body>
-    <h2>WebSocket Test</h2>
-    <textarea id="log" rows="10" cols="50" readonly></textarea><br />
-    <form class="form" action="#">
-      <input type="text" id="msgInput" placeholder="Type a message..." />
-      <input type="file" id="avatar" />
-      <button type="submit">Send</button>
-    </form>
 
-    <script>
-      const socket = new WebSocket("ws://localhost:8080/ws");
-      const form = document.querySelector(".form");
-
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-
-        const msg = document.getElementById("msgInput").value;
-        const avatar = document.querySelector("#avatar").files[0];
-
-        if (msg) {
-          socket.send(msg);
-        }
-
-        if (avatar) {
-          const reader = new FileReader();
-          reader.onload = function () {
-            const arrayBuffer = reader.result;
-
-            const meta =
-              JSON.stringify({
-                type: "image",
-                name: avatar.name,
-                mime: avatar.type,
-              }) + "::";
-
-            const encoder = new TextEncoder();
-            const metaBuffer = encoder.encode(meta);
-
-            const combined = new Uint8Array(
-              metaBuffer.length + arrayBuffer.byteLength
-            );
-            combined.set(metaBuffer, 0);
-            combined.set(new Uint8Array(arrayBuffer), metaBuffer.length);
-
-            socket.send(combined.buffer);
-          };
-
-          reader.readAsArrayBuffer(avatar);
-        }
-      });
-
-      socket.onmessage = function (event) {
-        const data = event.data;
-        console.log(data);
-        console.log(data.msg);
-        console.log(data.image);
-        if (data.msg) {
-          const msg = document.createElement("p");
-          msg.innerText = data.msg;
-          document.body.append(msg);
-        }
-        if (data.image) {
-          const image = document.createElement("img");
-          image.src = data.image;
-          document.body.append(image);
-        }
-      };
-    </script>
-  </body>
-</html>
->>>>>>> origin/front-Profile

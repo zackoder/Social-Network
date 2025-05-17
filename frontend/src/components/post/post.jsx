@@ -62,7 +62,7 @@ export default function Post({posts}) {
                     </div>
                     <div className={styles.imagePost}>
                         {post.image ? (
-                            <Image
+                            <img
                                 className={styles.image}
                                 src={`http://${post.image}`}
                                 alt="post"
