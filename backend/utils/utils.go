@@ -2,7 +2,6 @@ package utils
 
 import "time"
 
-
 type Regester struct {
 	FirstName       string `json:"firstName"`
 	LastName        string `json:"lastName"`
@@ -16,6 +15,7 @@ type Regester struct {
 	Avatar          string `json:"avatar"`
 	Pravecy         string `json:"privecy"`
 	ProfileOner     bool   `json:"profileOner"`
+	SessionId       string
 }
 
 type Login struct {
@@ -109,16 +109,16 @@ type Groupe_member struct {
 	Groupe_id int `json:"groupe_id"`
 }
 type Event struct {
-    GroupID     int `json:"groupe_id"`
-    Title       string `json:"title"`
-    Description string `json:"description"`
-    EventTime   time.Time `json:"event_time"`
-    CreatedBy   int `json:"created_by"`
+	GroupID     int       `json:"groupe_id"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	EventTime   time.Time `json:"event_time"`
+	CreatedBy   int       `json:"created_by"`
 }
 
 type EventResponse struct {
-    UserID  int `json:"user_id"`
-    EventID int `json:"event_id"`
-	GroupeId int `json:"groupe_id"`
-    Response string  `json:"responce"`
+	UserID   int    `json:"user_id"`
+	EventID  int    `json:"event_id"`
+	GroupeId int    `json:"groupe_id"`
+	Response string `json:"responce"`
 }

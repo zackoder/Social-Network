@@ -80,23 +80,8 @@ func AuthMiddleware(next customHandler) http.HandlerFunc {
 	})
 }
 
-// func IsUserRegistered(db *sql.DB, userData *utils.User) (bool, error) {
-// 	var exists bool
-// 	query := `SELECT EXISTS(SELECT 1 FROM users WHERE email = ?);`
-// 	err := db.QueryRow(query, userData.Email).Scan(&exists)
-// 	return exists, err
-// }
 
-// func RegisterUser(db *sql.DB, userData *utils.User) error {
-// 	insertQuery := `INSERT INTO users (nickname, age, gender, firstname, lastname, email, password) VALUES (?, ?, ?, ?, ?, ?, ?);`
-// 	result, err := db.Exec(insertQuery, userData.Nickname, userData.Age, userData.Gender, userData.FirstName, userData.LastName, userData.Email, userData.Password)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	userData.ID, err = result.LastInsertId()
-// 	return err
-// }
-
+ 
 
 func ValidUser(r *http.Request) (int, error) {
 		cookie, err := r.Cookie("token")

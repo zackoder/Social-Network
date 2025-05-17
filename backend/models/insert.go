@@ -7,15 +7,25 @@ import (
 	"social-network/utils"
 )
 
-func InsertUser(user utils.Regester) error {
+func InsertUser(user utils.User) (int, error ){
 	insertuserquery := "INSERT INTO users (first_name, last_name, nickname, email, age, gender, password, avatar, AboutMe)  VALUES(?,?,?,?,?,?,?,?,?)"
-	if _, err := Db.Exec(insertuserquery, user.FirstName, user.LastName, user.NickName, user.Email, user.Age, user.Gender, user.Password, user.Avatar, user.About_Me); err != nil {
-		fmt.Println(err)
+	 result,err := Db.Exec(insertuserquery, user.FirstName, user.LastName, user.Nickname, user.Email, user.Age, user.Gender, user.Password, user.Avatar, user.AboutMe);
+	 if err != nil{
+		 fmt.Println(err)
+		 return 0, err
+		}
+		user.ID,_ = result.LastInsertId()
+	return  int(user.ID),nil
+}
+func RegisterUser(user *utils.User) error {
+	insertuserquery := "INSERT INTO users (first_name, last_name, nickname, email, age, gender, password, avatar, AboutMe)  VALUES(?,?,?,?,?,?,?,?,?)"
+	 result,err := Db.Exec(insertuserquery, user.FirstName, user.LastName, user.Nickname, user.Email, user.Age, user.Gender, user.Password, user.Avatar, user.AboutMe);
+	if err != nil {
 		return err
 	}
-	return nil
+	user.ID, err = result.LastInsertId()
+	return err
 }
-
 func InsertPost(post utils.Post) (int, error) {
 	insetpostQuery := "INSERT INTO posts (post_privacy, title, content, user_id, imagePath, createdAt) VALUES (?,?,?,?,?,strftime('%s', 'now'))"
 	res, err := Db.Exec(insetpostQuery, post.Privacy, post.Title, post.Content, post.Poster_id, post.Image)
@@ -89,6 +99,7 @@ func InsertMumber(group_id, user_id int) error {
 
 func InsertSession(userData *utils.User) error {
 	_, err := Db.Exec("INSERT INTO sessions ( user_id, token) VALUES (?, ?)", userData.ID, userData.SessionId)
+	fmt.Println(err)
 	return err
 }
 

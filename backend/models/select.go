@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
-
 	"social-network/utils"
 )
 
@@ -96,6 +94,7 @@ func CheckPostPrivacy(post string) (string, error) {
 ///////////////////////////login///////////////////////////////////////////
 
 func ValidCredential(userData *utils.User) error {
+	fmt.Println("i was here")
 	query := `SELECT id, password FROM users WHERE nickname = ? OR email = ?;`
 	err := Db.QueryRow(query, userData.Email, userData.Email).Scan(&userData.ID, &userData.Password)
 	if err != nil {
@@ -105,9 +104,9 @@ func ValidCredential(userData *utils.User) error {
 }
 
 func GetActiveSession(userData *utils.User) (bool, error) {
+	fmt.Println("i was here ")
 	var exists bool
-	currentTime := time.Now()
-	fmt.Println(currentTime)
+
 	query := `SELECT EXISTS(SELECT 1 FROM sessions WHERE user_id = ? );`
 	err := Db.QueryRow(query, userData.ID).Scan(&exists)
 	if err != nil {
@@ -576,3 +575,12 @@ func MyGroupes(user_id int) []string {
 // 	}
 // 	return posts, nil
 // }
+
+
+
+func IsUserRegistered(userData *utils.User) (bool, error) {
+	var exists bool
+	query := `SELECT EXISTS(SELECT 1 FROM users WHERE email = ?);`
+	err := Db.QueryRow(query, userData.Email).Scan(&exists)
+	return exists, err
+}
