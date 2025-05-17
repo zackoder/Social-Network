@@ -23,6 +23,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	err := models.ValidCredential(&userData)
 	if err != nil {
 		if err == sql.ErrNoRows {
+			fmt.Println("that user doesn't exists")
 			utils.WriteJSON(w, "Incorect Username or password", http.StatusUnauthorized)
 			return
 		}
@@ -30,7 +31,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, "internaInternal Server Error1", http.StatusInternalServerError)
 		return
 	}
-	if userData.ID > 11 {
+	if userData.ID > 10 {
 		if !utils.CheckPasswordHash(&password, &userData.Password) {
 			utils.WriteJSON(w, "Incorect password", http.StatusUnauthorized)
 			return
@@ -74,7 +75,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		Name:  "token",
 		Path:  "/",
 		Value: userData.SessionId,
+		HttpOnly: true, // 🛡️ Protects from JavaScript access
+		Secure:   false, // ❗ Use true only in production over HTTPS
+		SameSite: http.SameSiteLaxMode, // or Strict/None
 	})
-
+	fmt.Println(w)
 	utils.WriteJSON(w, map[string]string{"success": "ok"}, http.StatusOK)
 }
