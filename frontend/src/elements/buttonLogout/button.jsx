@@ -10,7 +10,7 @@ export default function ButtonLogout(){
             className={styles.logout}
             // href={"/"}
             onClick={()=>{
-                fetch(`${link}/logout`, {
+                fetch(`${link}/api/logout`, {
                     method: "POST",
                     credentials: "include"
                 });

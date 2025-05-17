@@ -5,13 +5,14 @@ import "./createPost.modules.css"
 import { getData } from "../post/post";
 import { useRef } from "react";
 import ContactsPrivate from "../contactprivate/contactprivate";
+import { isAuthenticated } from "@/app/page";
 
 export default function CreatePost({ onPostCreated }) {
 
   let [privacy, setPrivacy] = useState("public")
   let [title, setTitle] = useState("")
   let [content, setContent] = useState("")
-  let [image, setImage] = useState(null)
+  let [image, setImage] = useState("")
   const fileInputRef = useRef(null)
   const host = process.env.NEXT_PUBLIC_HOST
 
@@ -32,9 +33,9 @@ export default function CreatePost({ onPostCreated }) {
     };
     
     formData.append('postData', JSON.stringify(postData));
-    if (image) {
-      formData.append('avatar', image);
-    }
+    // if (image) {
+      formData.append('avatar', image[0]);
+    // }
 
     try {
       const response = await fetch(`${host}/addPost`, {
@@ -44,7 +45,9 @@ export default function CreatePost({ onPostCreated }) {
       });
 
       const newPost = await response.json();
-
+      console.log("new post", postData);
+      
+      console.log("errooor", newPost);
       if (!response.ok) {
         isAuthenticated(response.status, newPost.error);
         throw new Error(newPost.error);
@@ -53,7 +56,7 @@ export default function CreatePost({ onPostCreated }) {
         setPrivacy("public");
         setTitle("");
         setContent("");
-        setImage(null);
+        setImage("");
       }
 
       // Reset file input
@@ -112,7 +115,7 @@ export default function CreatePost({ onPostCreated }) {
           />
         </div>
         <div className="uploadImage">
-          <input onChange={(e) => { setImage(e.target.files[0]) }} id="uploadImage" className="hiddenInput" ref={fileInputRef} type="file" />
+          <input onChange={(e) => { setImage(e.target.files) }} id="uploadImage" className="hiddenInput" ref={fileInputRef} type="file" />
           <label htmlFor="uploadImage" className="uploadLabel">
             <FaCloudUploadAlt className="iconUpload" />
           </label>
