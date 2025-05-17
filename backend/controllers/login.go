@@ -18,10 +18,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(userData.Email) < 5 || len(userData.Password) < 5 || len(userData.Email) > 250 || len(userData.Password) > 64 {
-		utils.WriteJSON(w, map[string]string{"error": "invalid username/password/email"}, http.StatusBadRequest)
-		return
-	}
+	// if len(userData.Email) < 5 || len(userData.Password) < 5 || len(userData.Email) > 250 || len(userData.Password) > 64 {
+	// 	utils.WriteJSON(w, map[string]string{"error": "invalid username/password/email"}, http.StatusBadRequest)
+	// 	return
+	// }
 
 	// if utils.IsValidEmail(&userData.Email) {
 	// 	 userData.Email = userData.Email, userData.Email
