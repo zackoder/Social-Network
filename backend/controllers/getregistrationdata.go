@@ -8,9 +8,6 @@ import (
 	"social-network/utils"
 )
 
-
-
-
 func GetRegistrationData(w http.ResponseWriter, r *http.Request)  {
 	profileOwnerIDStr := r.URL.Query().Get("id")
 	registrationData , err := models.GetRegistration(profileOwnerIDStr) 

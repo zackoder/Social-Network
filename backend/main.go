@@ -57,6 +57,8 @@ func main() {
 
 	mux.HandleFunc("GET /api/getfollowers", controllers.GetFollowers)
 	mux.HandleFunc("GET /api/registrationData", controllers.GetRegistrationData)
+	mux.Handle("/userData", midleware.WithCORS(http.HandlerFunc(controllers.UserData)))
+
 	fmt.Println("localhost:8080")
 	http.ListenAndServe(":8080", midleware.WithCORS(mux))
 }
