@@ -187,40 +187,18 @@ func CheckSender(group_id, sender_id int) bool {
 }
 
 func IsMember(groupID, userID int) bool {
-	query := "SELECT 1 FROM group_members WHERE user_id = ? AND group_id = ? LIMIT 1"
-	rows, err := Db.Query(query, userID, groupID)
+	var exists bool
+	query := "SELECT EXISTS(SELECT 1 FROM group_members WHERE group_id = ? AND user_id = ?)"
+	err := Db.QueryRow(query, groupID, userID).Scan(&exists)
 	if err != nil {
 		fmt.Println("Query error:", err)
-		return false
 	}
-	defer rows.Close()
-
-	if rows.Next() {
-		return true
-	}
-
-	return false
-}
-
-func InvitationExists(groupe_id, recever_id int) bool {
-	query := "SELECT 1 FROM invitation WHERE  groupe_id=? AND  recever_id=?"
-	rows, err := Db.Query(query, groupe_id, recever_id)
-	if err != nil {
-		fmt.Println("Query error:", err)
-		return false
-	}
-	defer rows.Close()
-
-	if rows.Next() {
-		return false
-	}
-
-	return true
+	return exists
 }
 
 func SearchGroupsInDatabase(tocken string) ([]utils.Groupe, error) {
 	var Groups []utils.Groupe
-	quirie := `SELECT * FROM groups WHERE title = ?`
+	quirie := `SELECT * FROM groups WHERE title LIKE %?%`
 	rows, err := Db.Query(quirie, tocken)
 	if err != nil {
 		fmt.Println("Error querying Groups", err)

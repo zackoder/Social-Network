@@ -28,6 +28,7 @@ type Post struct {
 	Privacy     string    `json:"privacy"`
 	Poster_id   int       `json:"poster"`
 	Poster_name string    `json:"name"`
+	Avatar      string    `json:"avatar"`
 	Title       string    `json:"title"`
 	Content     string    `json:"content"`
 	Image       string    `json:"image"`
