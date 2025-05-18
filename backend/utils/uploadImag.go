@@ -12,11 +12,7 @@ import (
 )
 
 func UploadImage(r *http.Request) (string, error) {
-	if _, exists := r.Form["avatar"]; !exists {
-		return "", fmt.Errorf("nothing")
-	}
 	file, handler, err := r.FormFile("avatar")
-	fmt.Println(handler.Filename)
 	if err != nil {
 		if file == nil {
 			return "", nil
