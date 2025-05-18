@@ -33,9 +33,9 @@ export default function CreatePost({ onPostCreated }) {
     };
     
     formData.append('postData', JSON.stringify(postData));
-    // if (image) {
-      formData.append('avatar', image[0]);
-    // }
+    if (image) {
+      formData.append('avatar', image);
+    }
 
     try {
       const response = await fetch(`${host}/addPost`, {
@@ -44,10 +44,8 @@ export default function CreatePost({ onPostCreated }) {
         credentials: "include"
       });
 
-      const newPost = await response.json();
-      console.log("new post", postData);
+      const newPost = await response.json();     
       
-      console.log("errooor", newPost);
       if (!response.ok) {
         isAuthenticated(response.status, newPost.error);
         throw new Error(newPost.error);
@@ -115,7 +113,7 @@ export default function CreatePost({ onPostCreated }) {
           />
         </div>
         <div className="uploadImage">
-          <input onChange={(e) => { setImage(e.target.files) }} id="uploadImage" className="hiddenInput" ref={fileInputRef} type="file" />
+          <input onChange={(e) => { setImage(e.target.files[0]) }} id="uploadImage" className="hiddenInput" ref={fileInputRef} type="file" />
           <label htmlFor="uploadImage" className="uploadLabel">
             <FaCloudUploadAlt className="iconUpload" />
           </label>
