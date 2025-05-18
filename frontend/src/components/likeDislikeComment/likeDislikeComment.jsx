@@ -31,16 +31,14 @@ export default function LikeDislikeComment() {
     e.preventDefault();
     const formData = new FormData();
     const commentData = {
-      liked,
-      disliked,
-      comment,
+      content : comment,
     };
-    formData.append('postData', JSON.stringify(commentData))
+    formData.append('commentData', JSON.stringify(commentData))
     if (image) {
-      formData.append('image', image)
+      formData.append('avatar', image)
     }
     try {
-      const response = fetch(`${host}/end point the comments `, {
+      const response = fetch(`${host}/addComment`, {
         method: "POST",
         body: formData,
         credentials: "include"

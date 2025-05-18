@@ -15,14 +15,7 @@ export default function CreatePost({ onPostCreated }) {
   let [image, setImage] = useState("")
   const fileInputRef = useRef(null)
   const host = process.env.NEXT_PUBLIC_HOST
-
-  // const postData = {
-  //   privacy: privacy,
-  //   title: title,
-  //   content: content
-  // }
-
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
