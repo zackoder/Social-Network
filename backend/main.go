@@ -35,7 +35,9 @@ func main() {
 	mux.Handle("POST /followReq", midleware.WithCORS(http.HandlerFunc(controllers.HandleFollow)))
 	mux.Handle("POST /updatePrivacy", midleware.WithCORS(http.HandlerFunc(controllers.UpdatePrivacy)))
 	mux.Handle("POST /creategroup", midleware.WithCORS(http.HandlerFunc(controllers.Creat_groupe)))
-	mux.HandleFunc("/JouindGroupe", controllers.Jouind_Groupe)
+	mux.Handle("/JouindGroupe", midleware.WithCORS(http.HandlerFunc(controllers.Jouind_Groupe)))
+	mux.Handle("/groupInvitarion", midleware.WithCORS(http.HandlerFunc(controllers.InviteUser)))
+
 	mux.HandleFunc("/GetPostsFromGroupe", controllers.Get_all_post)
 	mux.HandleFunc("/CreatEvent", controllers.CreatEvent)
 
@@ -45,6 +47,7 @@ func main() {
 	mux.Handle("/api/posts", midleware.WithCORS(http.HandlerFunc(controllers.Posts)))
 	mux.HandleFunc("GET /api/getProfilePosts", controllers.GetProfilePosts)
 	mux.HandleFunc("GET /group/{GroupName}", controllers.Group)
+	// mux.Handle("/event-resp", midleware.WithCORS(http.HandlerFunc(connections.EventResponse)))
 	mux.HandleFunc("/ws", controllers.Websocket)
 
 	// Comment handlers

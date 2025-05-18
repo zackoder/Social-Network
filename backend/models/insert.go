@@ -39,7 +39,7 @@ func InserOrUpdate(follower, followed string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	
+
 	if !privacy {
 		if err := InsertFollow(follower, followed); err != nil {
 			if err := Deletfollow(follower, followed); err != nil {
@@ -121,20 +121,23 @@ func InsertNotification(noti utils.Notification) error {
 }
 
 func SaveInvitation(Groupe_id, sender_id, resever_id int) error {
-	Quirie := "INSER INTO invitation (sender_id,recever_id,groupe_id) VALUES(?,?)"
+	Quirie := "INSERT INTO invitation (sender_id,recever_id,groupe_id) VALUES(?,?,?)"
 	_, err := Db.Exec(Quirie, sender_id, resever_id, Groupe_id)
 	return err
 }
-func InsserGroupe(title, description string, creator_id int) error {
-	Query := "INSERT INTO groups (title,description,creatorId) VALUES (?,?,?)"
-	_, err := Db.Exec(Query, title, description, creator_id)
+
+func InsserGroupe(title, description string, creator_id int) (int, error) {
+	Query := "INSERT INTO groups (name, description, group_oner) VALUES (?,?,?)"
+	res, err := Db.Exec(Query, title, description, creator_id)
+	lastGroupInserted, _ := res.LastInsertId()
+	return int(lastGroupInserted), err
+}
+func InsserMemmberInGroupe(Groupe_id, User_id int, role string) error {
+	Quirie := "INSERT INTO group_members (group_id,user_id, role) VALUES (?, ?, ?)"
+	_, err := Db.Exec(Quirie, Groupe_id, User_id, role)
 	return err
 }
-func InsserMemmberInGroupe(Groupe_id, User_id int) error {
-	Quirie := "INSERT INTO group_members (groupe_id,user_id) VALUES (?,?)"
-	_, err := Db.Exec(Quirie, Groupe_id, User_id)
-	return err
-}
+
 func InsserEventInDatabase(event utils.Event) error {
 	Quirie := "INSERT INTO events (group_id,title,description,event_time,created_by) VALUES (?,?,?,?)"
 	_, err := Db.Exec(Quirie, event.GroupID, event.Title, event.Description, event.EventTime, event.CreatedBy)
