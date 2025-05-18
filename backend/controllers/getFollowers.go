@@ -26,5 +26,4 @@ func GetFollowers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	utils.WriteJSON(w, followers, http.StatusAccepted)
-
 }
