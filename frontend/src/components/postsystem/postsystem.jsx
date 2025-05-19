@@ -16,8 +16,7 @@ export default function PostSystem() {
             if (!response.ok) {
                 throw new Error("Failed to fetch posts");
             }
-            const data = await response.json();
-
+            const data = await response.json();            
             setPosts(data);
         } catch (err) {
             console.error("Fetch error:", err);

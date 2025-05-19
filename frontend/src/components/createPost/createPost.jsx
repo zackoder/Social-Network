@@ -15,7 +15,7 @@ export default function CreatePost({ onPostCreated }) {
   let [image, setImage] = useState("")
   const fileInputRef = useRef(null)
   const host = process.env.NEXT_PUBLIC_HOST
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -24,7 +24,7 @@ export default function CreatePost({ onPostCreated }) {
       title,
       content
     };
-    
+
     formData.append('postData', JSON.stringify(postData));
     if (image) {
       formData.append('avatar', image);
@@ -37,8 +37,8 @@ export default function CreatePost({ onPostCreated }) {
         credentials: "include"
       });
 
-      const newPost = await response.json();     
-      
+      const newPost = await response.json();
+
       if (!response.ok) {
         isAuthenticated(response.status, newPost.error);
         throw new Error(newPost.error);
@@ -81,15 +81,19 @@ export default function CreatePost({ onPostCreated }) {
                         /> */}
           </div>
           <div className="nameProfile">
-            <h3>full name</h3>
-            <select onChange={(e) => { setPrivacy(e.target.value) }} name="friends" id="friends" defaultValue={"public"}>
-              <option value={"public"}>Public</option>
-              <option value={"private"}>Private</option>
-              <option value={"almostPrivate"}>Almost Private </option>
-            </select>
+            <div className="name-privacy">
+              <h3>full name</h3>
+              <select onChange={(e) => { setPrivacy(e.target.value) }} name="friends" id="friends" defaultValue={"public"}>
+                <option value={"public"}>Public</option>
+                <option value={"private"}>Private</option>
+                <option value={"almostPrivate"}>Almost Private </option>
+              </select>
+            </div>
+            <div>
+              {privacy === "private" && <ContactsPrivate className="contactPrivate"/>}
+            </div>
           </div>
         </div>
-        {privacy === "private" && <ContactsPrivate />}
         <div className="title">
           <input onChange={(e) => { setTitle(e.target.value) }} value={title} type="text" name="title" placeholder="enter your title" />
         </div>
