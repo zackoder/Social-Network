@@ -49,8 +49,8 @@ export default function LikeDislikeComment() {
       } else {
         setSubmittedComment(comment);
         setComment('');
-        setLiked(false)
-        setDisliked(false)
+        // setLiked(false)
+        // setDisliked(false)
         setImage("")
       }
 
