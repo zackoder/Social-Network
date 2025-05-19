@@ -35,6 +35,13 @@ const listContacts = [
   { id: 1, name: "walid" },
   { id: 2, name: "zaki" },
   { id: 3, name: "ayoub" },
+  { id: 4, name: "walid zouguagh" },
+  { id: 5, name: "zouguagh" },
+  { id: 6, name: "zouguagh" },
+  { id: 7, name: "zouguagh" },
+  { id: 8, name: "zouguagh" },
+  { id: 9, name: "zouguagh" },
+  { id: 10, name: "zouguagh" },
 ];
 
 export default function ContactsPrivate() {
@@ -49,11 +56,11 @@ export default function ContactsPrivate() {
   };
 
   return (
-    <div style={{ position: 'relative', width: '200px' }}>
-      <div style={{ border: '1px solid #ccc', padding: '5px', borderRadius: '8px', background: '#777', border: 'none' }}>
+    <div style={{ position: 'relative', width: '200px'}}>
+      <div style={{ border: '1px solid #ccc', padding: '5px', borderRadius: '4px', background: '#777', border: 'none' }}>
         {selectedContacts.length > 0 ? selectedContacts.join(', ') : 'Select contacts'}
       </div>
-      <div style={{ border: '1px solid #ccc', padding: '8px', position: 'absolute', background: '#111', zIndex: 1,  borderRadius: '8px' }}>
+      <div style={{ border: '1px solid #ccc', padding: '8px', position: 'absolute', background: '#111', zIndex: 1, borderRadius: '8px', display: "flex", gap: "10px", overflowY: 'scroll'}}>
         {listContacts.map(contact => (
           <label key={contact.id} style={{ display: 'block'}}>
             <input
