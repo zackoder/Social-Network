@@ -16,10 +16,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, "invalid input data", http.StatusBadRequest)
 		return
 	}
-	fmt.Println("test-------------------", userData.Email)
-	fmt.Println("test", userData.Password)
 
 	password := userData.Password
+	fmt.Println(password)
 	err := models.ValidCredential(&userData)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -27,12 +26,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			utils.WriteJSON(w, "Incorect Username or password", http.StatusUnauthorized)
 			return
 		}
-		fmt.Println(err)
 		utils.WriteJSON(w, "internaInternal Server Error1", http.StatusInternalServerError)
 		return
 	}
 	if userData.ID > 10 {
-		if !utils.CheckPasswordHash(&password, &userData.Password) {
+		if password !=  userData.Password {
 			utils.WriteJSON(w, "Incorect password", http.StatusUnauthorized)
 			return
 		}

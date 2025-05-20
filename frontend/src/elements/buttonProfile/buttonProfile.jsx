@@ -4,7 +4,7 @@ import styles from "./buttonProfile.modules.css"
 
 export default function ButtonProfile(){
     return (
-        <Link href="/profile/2">
+        <Link href="">
             <Image 
                 src="/images/profile.png"
                 // className={styles.imgProfile}
