@@ -18,7 +18,7 @@ type Reaction struct {
 	PostId       int    `json:"postId"`
 	UserId       int    `json:"userId"`
 	ReactionType string `json:"reactionType"`
-	Date         int64  `json:"date"`
+	Date         string  `json:"date"`
 }
 
 // ReactionCount represents the count of each reaction type for a post

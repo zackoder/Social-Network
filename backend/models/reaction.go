@@ -70,7 +70,7 @@ func GetReactionsByPostId(postId int) ([]utils.Reaction, error) {
 func GetUserReactionForPost(userId, postId int) (*utils.Reaction, error) {
 	query := `
 		SELECT id, post_id, user_id, reaction_type, 
-		       strftime('%s', date) as unix_date
+		       date
 		FROM reactions
 		WHERE user_id = ? AND post_id = ?
 	`
@@ -83,8 +83,9 @@ func GetUserReactionForPost(userId, postId int) (*utils.Reaction, error) {
 		&reaction.ReactionType,
 		&reaction.Date,
 	)
-
+	
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
