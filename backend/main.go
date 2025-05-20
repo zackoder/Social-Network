@@ -38,6 +38,8 @@ func main() {
 	mux.HandleFunc("/JouindGroupe", controllers.Jouind_Groupe)
 	mux.HandleFunc("/GetPostsFromGroupe", controllers.Get_all_post)
 	mux.HandleFunc("/CreatEvent", controllers.CreatEvent)
+	mux.Handle("/userData", midleware.WithCORS(http.HandlerFunc(controllers.UserData)))
+
 
 	mux.Handle("POST /api/logout", midleware.WithCORS(http.HandlerFunc(controllers.LogoutHandler)))
 

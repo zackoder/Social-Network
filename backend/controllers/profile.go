@@ -52,3 +52,26 @@ func UpdatePrivacy(w http.ResponseWriter, r *http.Request) {
 	test := models.UpdateProfile(id)
 	utils.WriteJSON(w, map[string]string{"test": test}, 200)
 }
+
+func UserData(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("22222222222222222222222222")
+	if r.Method != http.MethodGet {
+		utils.WriteJSON(w, map[string]string{"error": "Not allowed"}, http.StatusMethodNotAllowed)
+		return
+	}
+	cookie, _ := r.Cookie("token")
+	var userD utils.UserD
+	err := models.Db.QueryRow(
+		`SELECT u.id, u.first_name, u.avatar
+            FROM users u 
+            JOIN sessions s on s.id = u.id 
+            WHERE token = ?`, cookie.Value).Scan(&userD.Id, &userD.Firstname, &userD.Avatar)
+	if err != nil {
+		fmt.Println(err)
+	}
+	if userD.Avatar != "" {
+		userD.Avatar = r.Host + userD.Avatar
+	}
+	fmt.Println(userD)
+	utils.WriteJSON(w, userD, 200)
+}
