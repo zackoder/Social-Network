@@ -3,6 +3,7 @@ package utils
 import "time"
 
 type Regester struct {
+	ID              int    `json:"id"`
 	FirstName       string `json:"firstName"`
 	LastName        string `json:"lastName"`
 	NickName        any    `json:"nickName"`
@@ -27,7 +28,7 @@ type Post struct {
 	Id          int       `json:"id"`
 	Privacy     string    `json:"privacy"`
 	Poster_id   int       `json:"poster"`
-	Poster_name string    `json:"first_name`
+	Poster_name string    `json:"first_name"`
 	Title       string    `json:"title"`
 	Content     string    `json:"content"`
 	Image       string    `json:"image"`

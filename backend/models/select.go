@@ -155,21 +155,25 @@ func IsFollower(profileOwnerID int, viewerID int) (bool, error) {
 	return count > 0, nil
 }
 
-func GetFollowers(userID int) ([]int, error) {
-	query := `SELECT follower_id FROM followers WHERE followed_id = ?`
+func GetFollowers(userID int) ([]utils.Regester, error) {
+	query := `SELECT  f.follower_id, u.first_name FROM followers f 
+	JOIN users u 
+	ON f.follower_id = u.id 
+	WHERE f.followed_id  = ? `
 	rows, err := Db.Query(query, userID)
 	if err != nil {
 		return nil, err
 	}
-	var followerIDs []int
+	var followersInfo []utils.Regester
+
 	for rows.Next() {
-		var followerID int
-		if err := rows.Scan(&followerID); err != nil {
+		var followerID utils.Regester
+		if err := rows.Scan(&followerID.ID, &followerID.FirstName); err != nil {
 			return nil, err
 		}
-		followerIDs = append(followerIDs, followerID)
+		followersInfo = append(followersInfo,followerID)
 	}
-	return followerIDs, nil
+	return followersInfo, nil
 }
 
 func GetRegistration(id string) (utils.Regester, error) {
@@ -264,11 +268,11 @@ func GetAllowedPosts(profileOwnerID int, viewerID int) ([]utils.Post, error) {
 	return posts, nil
 }
 
-func GetUserFriends(userId int) ([]utils.Regester, error) {
+func GetUserFriends(userId int , host string) ([]utils.Regester, error) {
 	var users []utils.Regester
 
 	query := `
-	SELECT DISTINCT u.first_name, u.last_name, u.avatar
+	SELECT DISTINCT u.id, u.first_name, u.last_name, u.avatar
 	FROM users u
 	INNER JOIN (
 		SELECT followed_id AS friend_id FROM followers WHERE follower_id = ?
@@ -294,13 +298,16 @@ func GetUserFriends(userId int) ([]utils.Regester, error) {
 
 	for rows.Next() {
 		var u utils.Regester
-		err := rows.Scan(&u.FirstName, &u.LastName, &u.Avatar)
+		err := rows.Scan(&u.ID, &u.FirstName, &u.LastName, &u.Avatar)
 		if err != nil {
 			return nil, err
 		}
+		if u.Avatar != ""{
+			u.Avatar = host+ u.Avatar
+		}
+		 
 		users = append(users, u)
 	}
-
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
