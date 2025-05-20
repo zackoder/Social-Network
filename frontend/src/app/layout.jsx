@@ -3,10 +3,6 @@ import "./globals.css";
 
 import Navbar from "@/components/navbar/navbar";
 import Footer from "@/components/footer/footer";
-import {Montserrat} from "next/font/google";
-import WebsocketInitializer from "@/components/websocket/websocketInitializer";
-import { headers } from "next/headers";
-import ConditionalNavbar from "@/components/navbar/ConditionalNavbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,6 +13,8 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+import {Montserrat} from "next/font/google";
 
 const bodyFont = Montserrat({
   subsets: ['latin'],
@@ -29,16 +27,12 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  const headerList = headers();
-  const path = headerList.get("x-invoke-path") || "";
-  const isAuthPage = path.startsWith("/login") || path.startsWith("/sign-up");
   return (
     <html lang="en">
+      {/* <body className={`${geistSans.variable} ${geistMono.variable}`}> */}
       <body className={`${bodyFont.className}`}>
         <div className="container">
-          <WebsocketInitializer />
-          {/* {!isAuthPage && <Navbar/>} */}
-          <ConditionalNavbar />
+          <Navbar/>
           {children}
           <Footer/>
         </div>

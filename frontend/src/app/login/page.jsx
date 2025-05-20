@@ -10,12 +10,13 @@ export default function Login() {
     email: "",
     password: "",
   });
+  
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-
+  
   const host = process.env.NEXT_PUBLIC_HOST;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
+  
   const validate = () => {
     if (!emailRegex.test(formData.email)) {
       return "Please enter a valid email address.";
@@ -25,7 +26,7 @@ export default function Login() {
     }
     return "";
   };
-
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -33,7 +34,7 @@ export default function Login() {
       [name]: value,
     }));
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -43,7 +44,7 @@ export default function Login() {
       return;
     }
     setIsLoading(true);
-
+    
     try {
       const response = await fetch(`${host}/login`, {
         method: "POST",
@@ -53,8 +54,11 @@ export default function Login() {
         body: JSON.stringify(formData),
         credentials: "include",
       });
-
+      
       const data = await response.json();
+      console.log(formData);
+      console.log(data);
+      
 
       if (response.ok && data.success === "ok") {
         // Redirect to home page on successful login
@@ -84,7 +88,7 @@ export default function Login() {
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input
-              type="text"
+              type="email"
               id="email"
               name="email"
               value={formData.email}
