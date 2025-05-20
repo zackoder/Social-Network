@@ -45,7 +45,60 @@ func AddReaction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if user has access to interact with this post based on privacy settings
+	// Get post details to access the post owner's ID and post privacy
+	var postOwnerId int
+	var postPrivacy string
+	err = models.Db.QueryRow("SELECT user_id, post_privacy FROM posts WHERE id = ?", reaction.PostId).Scan(&postOwnerId, &postPrivacy)
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "Error retrieving post details: " + err.Error()}, http.StatusInternalServerError)
+		return
+	}
+
+	// Check if poster's profile is private
+	isProfilePrivate, err := models.IsProfilePrivate(postOwnerId)
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "Error checking poster's profile privacy: " + err.Error()}, http.StatusInternalServerError)
+		return
+	}
+
+	// Skip all permission checks if user is the post owner
+	if userId != postOwnerId {
+		// If profile is private, user must be a follower to interact with any post
+		if isProfilePrivate {
+			// Check if user is following the post owner
+			isFollowing, err := models.IsUserFollowing(userId, postOwnerId)
+			if err != nil {
+				utils.WriteJSON(w, map[string]string{"error": "Error checking following status: " + err.Error()}, http.StatusInternalServerError)
+				return
+			}
+
+			// If not following, deny access
+			if !isFollowing {
+				utils.WriteJSON(w, map[string]string{"error": "You cannot interact with posts from this private profile as you are not a follower"}, http.StatusForbidden)
+				return
+			}
+		}
+	}
+
+	// If post is private, user must be explicitly selected as a friend for this post
+	if postPrivacy == "private" {
+		// Check if user is in the friends table for this post
+		var count int
+		query := `SELECT COUNT(*) FROM friends WHERE post_id = ? AND friend_id = ?`
+		err := models.Db.QueryRow(query, reaction.PostId, userId).Scan(&count)
+		if err != nil {
+			utils.WriteJSON(w, map[string]string{"error": "Error checking post permissions: " + err.Error()}, http.StatusInternalServerError)
+			return
+		}
+
+		// If not explicitly selected as friend for this post and not the post creator, deny access
+		if count == 0 && userId != postOwnerId {
+			utils.WriteJSON(w, map[string]string{"error": "This is a private post. Only selected friends can interact with it."}, http.StatusForbidden)
+			return
+		}
+	}
+
+	// Check if user has access to interact with this post based on post privacy settings
 	canAccess, err := models.CanUserAccessPost(userId, reaction.PostId)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Error checking post access: " + err.Error()}, http.StatusInternalServerError)
