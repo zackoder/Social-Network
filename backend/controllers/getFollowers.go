@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"social-network/models"
@@ -12,13 +13,8 @@ func GetFollowers(w http.ResponseWriter, r *http.Request, userID int) {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowed"}, http.StatusMethodNotAllowed)
 		return
 	}
-	// profileOwnerIDStr := r.URL.Query().Get("id")
-	// profileOwnerID,err := strconv.Atoi(profileOwnerIDStr)
-	// if err != nil {
-	// 	utils.WriteJSON(w,map[string]string{"error":"Internal Server Error"},http.StatusInternalServerError)
-	// 	return
-	// }
 	followers, err := models.GetFollowers(userID)
+	fmt.Println(followers)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "We Can't Fetsh Followers List"}, http.StatusInternalServerError)
 		return

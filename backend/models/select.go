@@ -167,11 +167,13 @@ func GetFollowers(userID int) ([]utils.Regester, error) {
 	var followersInfo []utils.Regester
 
 	for rows.Next() {
-		var followerID utils.Regester
-		if err := rows.Scan(&followerID.ID, &followerID.FirstName); err != nil {
+		var followerinfo utils.Regester
+		if err := rows.Scan(&followerinfo.ID, &followerinfo.FirstName); err != nil {
+			fmt.Println(followerinfo.ID)
+			fmt.Println(followerinfo.FirstName)
 			return nil, err
 		}
-		followersInfo = append(followersInfo,followerID)
+		followersInfo = append(followersInfo,followerinfo)
 	}
 	return followersInfo, nil
 }
