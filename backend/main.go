@@ -31,7 +31,7 @@ func main() {
 	mux.HandleFunc("/CreatEvent", controllers.CreatEvent)
 
 
-	
+
 	mux.Handle("POST /addPost", (http.HandlerFunc(controllers.AddPost)))
 	mux.Handle("POST /followReq", (http.HandlerFunc(controllers.HandleFollow)))
 	mux.Handle("POST /updatePrivacy", (http.HandlerFunc(controllers.UpdatePrivacy)))
@@ -42,11 +42,11 @@ func main() {
 	mux.HandleFunc("/ws", controllers.Websocket)
 
 	// Comment handlers
-	mux.Handle("POST /addComment", http.HandlerFunc(controllers.AddComment))
+	mux.Handle("POST /addComment", midleware.AuthMiddleware(controllers.AddComment))
 	mux.Handle("GET /getComments", http.HandlerFunc(controllers.GetComments))
 
 	// Reaction handlers
-	mux.Handle("POST /addReaction", midleware.WithCORS(http.HandlerFunc(controllers.AddReaction)))
+	mux.Handle("POST /addReaction", midleware.AuthMiddleware(controllers.AddReaction))
 	mux.Handle("GET /getReactions", http.HandlerFunc(controllers.GetReactions))
 
 	mux.HandleFunc("GET /api/getProfilePosts", midleware.AuthMiddleware(controllers.GetProfilePosts))

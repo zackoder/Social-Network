@@ -13,7 +13,6 @@ import (
 
 func Login(w http.ResponseWriter, r *http.Request) {
 	var userData utils.User
-	fmt.Println("1111111111111111111111111111111111")
 	if err := json.NewDecoder(r.Body).Decode(&userData); err != nil {
 		utils.WriteJSON(w, "invalid input data", http.StatusBadRequest)
 		return
