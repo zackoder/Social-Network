@@ -9,24 +9,24 @@ import (
 )
 
 // AddReaction handles adding a new reaction to a post
-func AddReaction(w http.ResponseWriter, r *http.Request) {
+func AddReaction(w http.ResponseWriter, r *http.Request , userId int) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method not allowed"}, http.StatusMethodNotAllowed)
 		return
 	}
 
 	// Get user session to identify who is reacting
-	cookie, err := r.Cookie("token")
-	if err != nil {
-		utils.WriteJSON(w, map[string]string{"error": "Authentication required"}, http.StatusUnauthorized)
-		return
-	}
+	// cookie, err := r.Cookie("token")
+	// if err != nil {
+	// 	utils.WriteJSON(w, map[string]string{"error": "Authentication required"}, http.StatusUnauthorized)
+	// 	return
+	// }
 
-	userId, err := models.Get_session(cookie.Value)
-	if err != nil {
-		utils.WriteJSON(w, map[string]string{"error": "Invalid session"}, http.StatusUnauthorized)
-		return
-	}
+	// userId, err := models.Get_session(cookie.Value)
+	// if err != nil {
+	// 	utils.WriteJSON(w, map[string]string{"error": "Invalid session"}, http.StatusUnauthorized)
+	// 	return
+	// }
 
 	// Parse the reaction data
 	var reaction utils.Reaction
