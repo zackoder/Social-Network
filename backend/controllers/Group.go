@@ -76,12 +76,16 @@ func Jouind_Groupe(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// fetch('/api/searchGroups?query=tech')
-//   .then(response => response.json())
-//   .then(data => {
-//     console.log(data);
-//     // Met à jour l'UI avec les résultats
-//   });
+func AllGroups(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("hi")
+	// if r.Method != http.MethodPost {
+	// 	utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
+	// 	return
+	// }
+	Groups := models.GetAllGroups()
+	fmt.Println(Groups)
+	utils.WriteJSON(w, Groups, 200)
+}
 
 func SearchGroupsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
