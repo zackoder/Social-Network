@@ -1,11 +1,11 @@
-.reactionContainer{
+.reactionContainer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 50%;
 }
 
-.buttons{
+.buttons {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -13,22 +13,43 @@
     /*position: relative;*/
 }
 
-.buttons button{
+.buttons button {
     cursor: pointer;
 }
 
-.buttons button span{
+.buttons button span {
     position: relative;
     top: -2px;
     /* left: 0; */
 }
 
-.form{
+.formComment {
     display: flex;
     justify-content: space-between;
     align-items: center;
 
 }
+
+.formComment .uploadImage, .formComment .submit {
+    display: none;
+}
+
+.formComment .uploadIcon,
+.formComment .submitIcon {
+    font-size: 30px;
+    cursor: pointer;
+    color: var(--color-primary);
+    transition: color 0.5s ease-in-out;
+}
+.formComment .submitIcon{
+    font-size: 25px;
+}
+
+.formComment .uploadIcon:hover,
+.formComment .submitIcon:hover {
+    color: var(--color-primary-hover);
+}
+
 /* .reactionContainer{
     display: flex;
     justify-content: space-between;
@@ -56,4 +77,17 @@
 .button span{
     position: absolute;
     top: -2px;
+} */
+
+/* button {
+    marginTop: '0px';
+    marginLeft: '5px';
+    width: '10%';
+    padding: '14px 0';
+    backgroundColor: 'var(--color-primary)';
+    color: 'white';
+    fontWeight: 'bold';
+    border: 'none';
+    borderRadius: '4px';
+    cursor: 'pointer';
 } */

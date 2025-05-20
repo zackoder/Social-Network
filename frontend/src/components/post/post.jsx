@@ -21,7 +21,7 @@ import Link from "next/link";
 //         return result;
 //     }catch (error){
 //         console.log("Error loading posts:", error);
-        
+
 //     }
 //     // const data = await response.json();
 //     // getData(data)
@@ -29,28 +29,29 @@ import Link from "next/link";
 
 
 
-export default function Post({posts}) {
+export default function Post({ posts }) {
     // const posts = await fetchAllPosts();
     if (!posts || posts.lenght === 0) {
         return <p>No posts yet.</p>;
     }
-
+    console.log("posts", posts);
+    
     return (
         <div className={styles.container}>
             {posts.map((post) => (
                 <div className={styles.post} key={post.id}>
                     <div className={styles.header}>
-                        <Link href={"/profile?id=1&profile=zack"}>
+                        <Link href={`/profile?id=${post.poster}&profile=${post.first_name}`}>
                             <div className={styles.containerHeader}>
                                 <div className={styles.imageContainer}>
-                                    {/* <Image
-                                className={styles.image}
-                                src=""
-                                alt=""
-                                fill={false}
-                            /> */}
+                                    {/* <img
+                                        className={styles.image}
+                                        src={`http://${post.avatar}`}
+                                        alt={`post.name`}
+                                        fill={false}
+                                    /> */}
                                 </div>
-                                <h2>Name</h2>
+                                <h2>{post.first_name}</h2>
 
                             </div>
                         </Link>

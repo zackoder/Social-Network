@@ -15,7 +15,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request,userID int) {
 	fmt.Println("im used")
 	fmt.Println(userID)
 	// userID = 11
-	users, err := models.GetUserFriends(userID)
+	users, err := models.GetUserFriends(userID,r.Host)
 	if err != nil {
 		utils.WriteJSON(w,map[string]string{"error":"Internal Server Error"},http.StatusInternalServerError)
 		fmt.Println("can't fetch users from DataBase")
