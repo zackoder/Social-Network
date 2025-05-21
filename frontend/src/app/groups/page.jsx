@@ -1,52 +1,80 @@
-"use client";
-import { useState } from 'react';
-import styles from "./groups.module.css"
-
-
-
+"use client"
+import { useState } from "react";
+import styles from "./groups.module.css"; // ou ton fichier CSS module
 
 export default function Home() {
-  const [content, setContent] = useState("C'est le contenu par défaut");
+  const [groups, setGroups] = useState([]);
+  const [error, setError] = useState(null);
 
-  const changeContent = (newContent) => {
-    setContent(newContent);
+  const host = process.env.NEXT_PUBLIC_HOST;
+
+  const fetchMyGroups = async () => {
+    setError(null);
+    try {
+      const res = await fetch(`${host}/GetMyGroups`);
+      if (!res.ok) throw new Error("Erreur lors du fetch de mes groupes");
+      const data = await res.json();
+      setGroups(data);
+    } catch (err) {
+      setError(err.message);
+      setGroups([]);
+    }
+  };
+
+  const fetchJoinedGroups = async () => {
+    setError(null);
+    try {
+      const res = await fetch(`${host}/GetJoinedGroups`);
+      if (!res.ok) throw new Error("Erreur lors du fetch des groupes rejoints");
+      const data = await res.json();
+      setGroups(data);
+    } catch (err) {
+      setError(err.message);
+      setGroups([]);
+    }
+  };
+
+  const fetchAllGroups = async () => {
+    setError(null);
+    try {
+      const res = await fetch(`${host}/GetGroups`);
+      if (!res.ok) throw new Error("Erreur lors du fetch des groupes");
+      const data = await res.json();
+      setGroups(data);
+    } catch (err) {
+      setError(err.message);
+      setGroups([]);
+    }
   };
 
   return (
     <div>
-      {/* Conteneur pour les liens */}
       <div className={styles.div0}>
-        <a className={styles.lien} href="#" onClick={() =>
-          fetchGroups()
-
-        }>My groups</a>
-        <a className={styles.lien} href="#" onClick={() => changeContent("Contenu du deuxième lien")} >Joined groups</a>
-        <a className={styles.lien} href="#" onClick={() => changeContent("Contenu du troisième lien")}>All the groups</a>
+        <a href="#" className={styles.lien} onClick={fetchMyGroups}>
+          My groups
+        </a>
+        <a href="#" className={styles.lien} onClick={fetchJoinedGroups}>
+          Joined groups
+        </a>
+        <a href="#" className={styles.lien} onClick={fetchAllGroups}>
+          All the groups
+        </a>
       </div>
 
-      {/* Contenu changeable affiché sous les liens */}
-      <div style={{ marginTop: '20px' }}>
-        <h2>{content}</h2>
+      <div className={styles.contenu} style={{ marginTop: "20px" }}>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        {groups.length > 0 ? (
+          <ul>
+            {groups.map((groupe, i) => (
+              <li key={i}>
+                <p>{typeof groupe === "string" ? groupe : groupe.name}</p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          !error && <p>Aucun groupe à afficher.</p>
+        )}
       </div>
     </div>
   );
 }
-async function fetchGroups() {
-  const host = process.env.NEXT_PUBLIC_HOST;
-
-  try {
-    const response = await fetch(`${host}/GetGroups`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const groups = await response.json();
-    console.log(groups);
-
-  } catch (error) {
-    console.log("Erreur lors du fetch des groupes :", error);
-  }
-}
-
