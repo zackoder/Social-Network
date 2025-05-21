@@ -15,6 +15,7 @@ func Group(w http.ResponseWriter, r *http.Request) {
 }
 
 func Creat_groupe(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("hihi")
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
@@ -78,10 +79,10 @@ func Jouind_Groupe(w http.ResponseWriter, r *http.Request) {
 
 func AllGroups(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("hi")
-	// if r.Method != http.MethodPost {
-	// 	utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
-	// 	return
-	// }
+	if r.Method != http.MethodGet {
+		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
+		return
+	}
 	Groups := models.GetAllGroups()
 	fmt.Println(Groups)
 	utils.WriteJSON(w, Groups, 200)
