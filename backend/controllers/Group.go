@@ -88,6 +88,16 @@ func AllGroups(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, Groups, 200)
 }
 
+
+func GetGroupsJoined(w http.ResponseWriter,r *http.Request){
+	if r.Method != http.MethodGet {
+		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
+		return
+	}
+	Groups := models.GetGroups()
+	utils.WriteJSON(w, Groups, 200)
+}
+
 func SearchGroupsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
