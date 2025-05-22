@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -367,4 +368,44 @@ func MyGroupes(user_id int) []string {
 	}
 
 	return res
+}
+
+// checking if the notification already sent
+func CheckNoti(noti utils.Notification) (bool, error) {
+	var exists bool
+	checknoti := `
+		SELECT
+    EXISTS (
+        SELECT
+            1
+        FROM
+            notifications
+        WHERE
+            actor_id = ?
+            AND target_id = ?
+            AND message = ?
+    );
+	`
+	err := Db.QueryRow(checknoti, noti.Actor_id, noti.Target_id, noti.Message).Scan(&exists)
+	return exists, err
+}
+
+func SelectNotifications(user_id int) ([]utils.Notification, error) {
+	var notis []utils.Notification
+	quetyNotifications := `SELECT id, user_id, actor_id, target_id, message FROM notifications WHERE target_id = ?`
+	rows, err := Db.Query(quetyNotifications, user_id)
+	if err != nil {
+		return notis, err
+	}
+
+	for rows.Next() {
+		var noti utils.Notification
+		if err := rows.Scan(&noti.Id, &noti.Sender_id, &noti.Actor_id, &noti.Target_id, &noti.Message); err != nil {
+			log.Println("scaning notifacations error:", err)
+		}
+		notis = append(notis, noti)
+	}
+
+	defer rows.Close()
+	return notis, nil
 }
