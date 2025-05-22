@@ -1,13 +1,13 @@
 "use client"
 // import styles from ""
-import { BiLike, BiDislike } from "react-icons/bi";
-import React, { useRef, useState } from 'react';
-// import styles from './likeDislikeComment.modules.css';
-import './likeDislikeComment.modules.css';
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { LuSend } from "react-icons/lu";
+import './likeDislikeComment.modules.css';
+import { BiLike, BiDislike } from "react-icons/bi";
+import React, { useEffect, useRef, useState } from 'react';
+// import styles from './likeDislikeComment.modules.css';
 
-export default function LikeDislikeComment() {
+export default function LikeDislikeComment({postId}) {
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
   const [comment, setComment] = useState('');
@@ -17,16 +17,103 @@ export default function LikeDislikeComment() {
   const host = process.env.NEXT_PUBLIC_HOST
 
 
-  const handleLike = () => {
-    setLiked(!liked);
-    if (disliked) setDisliked(false);
-  };
+  const  handleLike =  async () => {
+    try {
+      const response = await fetch(`${host}/addReaction`,{
+        method:"POST",
+        credentials: "include",
+        body: JSON.stringify({postId:postId,reactionType:"like"})
+      }) 
+      if (!response.ok) {
+        throw new Error(error);
+      } 
+      const data = await response.json()
+      // check status
+      if (await data.message == "Reaction updated" && await data.reaction.reactionType == "like"){
+          setLiked(true);
+          setDisliked(false);
+      } else if (data.message === 'Reaction removed') {
+        setLiked(false);
+        setDisliked(false);
+      } else {
+        setLiked(true);
+        setDisliked(false);
+      }
+      // data.message 
+      // umdate or remove
 
-  const handleDislike = () => {
+    }catch(error){
+      console.log();
+      
+    }
+  };
+	// Id           int    `json:"id"`
+	// PostId       int    `json:"postId"`
+	// UserId       int    `json:"userId"`
+	// ReactionType string `json:"reactionType"`
+	// Date         int64  `json:"date"`
+  const handleDislike =  async() => {
+      try {
+      const response = await fetch(`${host}/addReaction`,{
+        method:"POST",
+        credentials: "include",
+        body: JSON.stringify({postId:postId,reactionType:"dislike"})
+      }) 
+      if (!response.ok) {
+        throw new Error(error);
+      } 
+      const data = await response.json()
+      // check status
+      if (await data.message == "Reaction updated" && await data.reaction.reactionType == "dislike"){
+          setLiked(false);
+          setDisliked(true);
+      } else if (data.message === 'Reaction removed') {
+        setLiked(false);
+        setDisliked(false);
+      } else {
+        setLiked(false);
+        setDisliked(true);
+      }
+      // data.message 
+      // umdate or remove
+
+    }catch(error){
+      console.log();
+      
+    }
+
+
+
     setDisliked(!disliked);
     if (liked) setLiked(false);
   };
-
+  
+    const getReactions = async (postId) => {
+      try {
+      const response = await fetch(`${host}/getReactions?postId=${postId}`, {
+        credentials: "include",
+      });
+      const data = await response.json();
+      const userReaction = data.userReaction;
+      if (!userReaction || !userReaction.reactionType) {
+        setLiked(false);
+        setDisliked(false);
+      } else if (userReaction.reactionType === "like") {
+        setLiked(true);
+        setDisliked(false);
+      } else if (userReaction.reactionType === "dislike") {
+        setLiked(false);
+        setDisliked(true);
+      }
+    } catch (error) {
+      console.error("Failed to fetch user reaction:", error);
+    }
+  };
+  
+    useEffect(()=> {
+          getReactions(postId)
+    }, [])
+  
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -49,8 +136,6 @@ export default function LikeDislikeComment() {
       } else {
         setSubmittedComment(comment);
         setComment('');
-        // setLiked(false)
-        // setDisliked(false)
         setImage("")
       }
 
@@ -64,8 +149,8 @@ export default function LikeDislikeComment() {
 
     //end point
   };
-
   return (
+
     //className={styles.reactionContainer}
     <div style={{ minWidth: '100%', margin: '5px auto' }}>
       <div className="buttons" style={{ fontSize: '24px', marginBottom: '10px' }}>

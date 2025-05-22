@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 frontend/node_modules
 frontend/.next
 *.env
@@ -8,3 +9,8 @@ frontend/.next
 
 *.env
 >>>>>>> origin/front-Profile
+=======
+frontend/node_modules
+frontend/.next
+*.env
+>>>>>>> origin/ayoub3

@@ -45,6 +45,11 @@ export default function Login() {
     setIsLoading(true);
 
     try {
+<<<<<<< HEAD
+=======
+      console.log('hgksdfghdfghdjfghdkjhsdkfgdkfghk',formData);
+      
+>>>>>>> origin/ayoub3
       const response = await fetch(`${host}/login`, {
         method: "POST",
         headers: {

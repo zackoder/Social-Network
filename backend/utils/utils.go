@@ -2,13 +2,12 @@ package utils
 
 import "time"
 
-// import "time"
-
 type Regester struct {
+	ID              int    `json:"id"`
 	FirstName       string `json:"firstName"`
 	LastName        string `json:"lastName"`
-	NickName        any    `json:"nickname"`
-	Age             int    `json:"age"`
+	NickName        any    `json:"nickName"`
+	Age             string `json:"age"`
 	Gender          string `json:"gender"`
 	Email           string `json:"email"`
 	Password        string `json:"password"`
@@ -16,6 +15,8 @@ type Regester struct {
 	About_Me        string `json:"aboutMe"`
 	Avatar          string `json:"avatar"`
 	Pravecy         string `json:"privecy"`
+	ProfileOner     bool   `json:"profileOner"`
+	SessionId       string
 }
 
 type Login struct {
@@ -27,7 +28,7 @@ type Post struct {
 	Id          int       `json:"id"`
 	Privacy     string    `json:"privacy"`
 	Poster_id   int       `json:"poster"`
-	Poster_name string    `json:"name"`
+	Poster_name string    `json:"first_name"`
 	Title       string    `json:"title"`
 	Content     string    `json:"content"`
 	Image       string    `json:"image"`
