@@ -4,24 +4,19 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
-
 	"social-network/utils"
 )
 
 func QueryPosts(offset int, r *http.Request) []utils.Post {
 	host := r.Host
 	var posts []utils.Post
+	queryPosts := `SELECT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt
+	FROM posts p
+	JOIN users u ON p.user_id = u.id`
 	// cookie, _ := r.Cookie("token")
 	if 5 >= 4 {
 	}
 	// id := 5
-	queryPosts := `
-		SELECT p.id, p.title, p.content, p.imagePath, p.createdAt, p.user_id, p.post_privacy, u.first_name 
-		FROM posts p
-		JOIN users u ON u.id = p.user_id
-		`
-
 	rows, err := Db.Query(queryPosts)
 	if err != nil {
 		fmt.Println("ana hnaa", err)
@@ -30,7 +25,7 @@ func QueryPosts(offset int, r *http.Request) []utils.Post {
 	defer rows.Close()
 	for rows.Next() {
 		var post utils.Post
-		err := rows.Scan(&post.Id, &post.Title, &post.Content, &post.Image, &post.CreatedAt, &post.Poster_id, &post.Privacy, &post.Poster_name)
+		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt)
 		if err != nil {
 			fmt.Println("scaning error:", err)
 		}
@@ -40,79 +35,6 @@ func QueryPosts(offset int, r *http.Request) []utils.Post {
 		posts = append(posts, post)
 	}
 	return posts
-}
-
-func IsPrivateProfile(followed string) (bool, error) {
-	fmt.Println("is private profile", followed)
-	query := "SELECT privacy FROM users WHERE id = ?"
-	var privacy string
-	err := Db.QueryRow(query, followed).Scan(&privacy)
-	if err != nil {
-		fmt.Println(err)
-		return false, err
-	}
-	fmt.Println(privacy)
-	return privacy == "privet", nil
-}
-
-func CheckPostPrivacy(post string) (string, error) {
-	query := "SELECT post_privacy FROM posts WHERE id = ?"
-	var privacy string
-	err := Db.QueryRow(query, post).Scan(&privacy)
-	if err != nil {
-		fmt.Println("is privet post", err)
-		return "", err
-	}
-	return privacy, nil
-}
-
-///////////////////////////login///////////////////////////////////////////
-
-func ValidCredential(userData *utils.User) error {
-	query := `SELECT id, password FROM users WHERE nickname = ? OR email = ?;`
-	err := Db.QueryRow(query, userData.Email, userData.Email).Scan(&userData.ID, &userData.Password)
-	if err != nil {
-		return err
-	}
-	return err
-}
-
-func GetActiveSession(userData *utils.User) (bool, error) {
-	var exists bool
-	currentTime := time.Now()
-	fmt.Println(currentTime)
-	query := `SELECT EXISTS(SELECT 1 FROM sessions WHERE user_id = ? );`
-	err := Db.QueryRow(query, userData.ID).Scan(&exists)
-	if err != nil {
-		return false, err
-	}
-	return exists, nil
-}
-
-func GetRegistration(id string) (utils.Regester, error) {
-	query := `SELECT * FROM users WHERE id = ?`
-
-	var data utils.Regester
-	var Id int
-
-	err := Db.QueryRow(query, id).Scan(
-		&Id,
-		&data.NickName,
-		&data.FirstName,
-		&data.LastName,
-		&data.Age,
-		&data.Gender,
-		&data.Email,
-		&data.Avatar,
-		&data.Password,
-		&data.About_Me,
-		&data.Pravecy,
-	)
-	if err != nil {
-		return data, err
-	}
-	data.Password = ""
-	return data, nil
 }
 
 func GetProfilePost(user_id, offset int) ([]utils.Post, error) {
@@ -140,6 +62,57 @@ func GetProfilePost(user_id, offset int) ([]utils.Post, error) {
 		return nil, err
 	}
 	return posts, err
+}
+
+func IsPrivateProfile(followed string) (bool, error) {
+	fmt.Println("is private profile", followed)
+	query := "SELECT privacy FROM users WHERE id = ?"
+	var privacy string
+	err := Db.QueryRow(query, followed).Scan(&privacy)
+	if err != nil {
+		fmt.Println(err)
+		return false, err
+	}
+	fmt.Println(privacy)
+	return privacy == "privet", nil
+}
+
+
+func CheckPostPrivacy(post string) (string, error) {
+	query := "SELECT post_privacy FROM posts WHERE id = ?"
+	var privacy string
+	err := Db.QueryRow(query, post).Scan(&privacy)
+	if err != nil {
+		fmt.Println("is private post", err)
+		return "", err
+		
+	}
+	return privacy, nil
+}
+
+
+///////////////////////////login///////////////////////////////////////////
+
+func ValidCredential(userData *utils.User) error {
+	fmt.Println("i was here")
+	query := `SELECT id, password FROM users WHERE nickname = ? OR email = ?;`
+	err := Db.QueryRow(query, userData.Email, userData.Email).Scan(&userData.ID, &userData.Password)
+	if err != nil {
+		return err
+	}
+	return err
+}
+
+func GetActiveSession(userData *utils.User) (bool, error) {
+	fmt.Println("i was here ")
+	var exists bool
+
+	query := `SELECT EXISTS(SELECT 1 FROM sessions WHERE user_id = ? );`
+	err := Db.QueryRow(query, userData.ID).Scan(&exists)
+	if err != nil {
+		return false, err
+	}
+	return exists, nil
 }
 
 func Get_session(ses string) (int, error) {
@@ -172,6 +145,178 @@ func GetClientGroups(user_id int) []int {
 	return groups
 }
 
+func IsFollower(profileOwnerID int, viewerID int) (bool, error) {
+	query := `SELECT COUNT(*) FROM followers WHERE followed_id = ? AND follower_id = ?`
+	var count int
+	err := Db.QueryRow(query, profileOwnerID, viewerID).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
+func GetFollowers(userID int) ([]utils.Regester, error) {
+	query := `SELECT  f.follower_id, u.first_name FROM followers f 
+	JOIN users u 
+	ON f.follower_id = u.id 
+	WHERE f.followed_id  = ? `
+	rows, err := Db.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	var followersInfo []utils.Regester
+
+	for rows.Next() {
+		var followerinfo utils.Regester
+		if err := rows.Scan(&followerinfo.ID, &followerinfo.FirstName); err != nil {
+			fmt.Println(followerinfo.ID)
+			fmt.Println(followerinfo.FirstName)
+			return nil, err
+		}
+		followersInfo = append(followersInfo,followerinfo)
+	}
+	return followersInfo, nil
+}
+
+func GetRegistration(id string) (utils.Regester, error) {
+	query := `SELECT * FROM users WHERE id = ?`
+	
+	var data utils.Regester
+	var Id int
+	
+	err := Db.QueryRow(query, id).Scan(
+		&Id,
+		&data.NickName,
+		&data.FirstName,
+		&data.LastName,
+		&data.Age,
+		&data.Gender,
+		&data.Email,
+		&data.Avatar,
+		&data.Password,
+		&data.About_Me,
+		&data.Pravecy,
+	)
+	if err != nil {
+		return data, err
+	}
+	data.Password = ""
+	return data, nil
+}
+func GetPuclicPosts(userID int) ([]utils.Post, error) {
+	var publicPosts []utils.Post
+	query := `
+	SELECT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt
+		FROM posts p
+		JOIN users u ON p.user_id = u.id
+		WHERE p.user_id = ?
+		AND (
+			p.post_privacy = 'public' 
+		)
+		ORDER BY p.createdAt 
+		LIMIT ? OFFSET ?
+	`
+
+	rows, err := Db.Query(query, userID,10,0)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var post utils.Post
+		// var createdAt int64
+		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content,
+			&post.Poster_id, &post.Poster_name, &post.Image , &post.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+		publicPosts = append(publicPosts, post)
+	}
+
+	return publicPosts, nil
+}
+
+func GetAllowedPosts(profileOwnerID int, viewerID int) ([]utils.Post, error) {
+	query := `
+	SELECT DISTINCT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt
+	FROM posts p
+	JOIN users u ON p.user_id = u.id
+	LEFT JOIN friends ppv ON p.id = ppv.post_id
+	WHERE p.user_id = ?
+	AND (
+		p.post_privacy = 'public'
+		OR (p.post_privacy = 'almostPrivate')
+		OR (p.post_privacy = 'private' AND ppv.friend_id = ?)
+		)
+		ORDER BY p.createdAt DESC
+		`
+		
+	rows, err := Db.Query(query, profileOwnerID, viewerID)
+	if err != nil {
+		// fmt.Println(err)
+		return nil, err
+	}
+	var posts []utils.Post
+	for rows.Next() {
+		var post utils.Post
+		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt)
+		if err != nil {
+			fmt.Println("here im ", err)
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
+	return posts, nil
+}
+
+func GetUserFriends(userId int , host string) ([]utils.Regester, error) {
+	var users []utils.Regester
+
+	query := `
+	SELECT DISTINCT u.id, u.first_name, u.last_name, u.avatar
+	FROM users u
+	INNER JOIN (
+		SELECT followed_id AS friend_id FROM followers WHERE follower_id = ?
+		UNION
+		SELECT follower_id AS friend_id FROM followers WHERE followed_id = ?
+	) f ON u.id = f.friend_id
+	LEFT JOIN messages m
+		ON (u.id = m.sender_id OR u.id = m.reciever_id)
+		AND (m.sender_id = ? OR m.reciever_id = ?)
+	WHERE u.id <> ?
+	GROUP BY u.id
+	ORDER BY
+		MAX(m.creation_date) DESC,
+		u.first_name ASC;
+	`
+
+	rows, err := Db.Query(query, userId, userId, userId, userId, userId)
+	if err != nil {
+		fmt.Println("DB query error:", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var u utils.Regester
+		err := rows.Scan(&u.ID, &u.FirstName, &u.LastName, &u.Avatar)
+		if err != nil {
+			return nil, err
+		}
+		if u.Avatar != ""{
+			u.Avatar = host+ u.Avatar
+		}
+		 
+		users = append(users, u)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
 func FriendsChecker(Sender_id, Reciever_id int) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM followers WHERE follower_id = ? AND followed_id = ? OR follower_id = ? AND followed_id = ?)"
 	var friends bool
@@ -194,11 +339,11 @@ func IsMember(groupID, userID int) bool {
 		return false
 	}
 	defer rows.Close()
-
+	
 	if rows.Next() {
 		return true
 	}
-
+	
 	return false
 }
 
@@ -210,11 +355,11 @@ func InvitationExists(groupe_id, recever_id int) bool {
 		return false
 	}
 	defer rows.Close()
-
+	
 	if rows.Next() {
 		return false
 	}
-
+	
 	return true
 }
 
@@ -228,7 +373,7 @@ func SearchGroupsInDatabase(tocken string) ([]utils.Groupe, error) {
 	}
 	for rows.Next() {
 		var Groupe utils.Groupe
-
+		
 		err = rows.Scan(&Groupe.CreatorId, &Groupe.Title, &Groupe.Description)
 		if err != nil {
 			fmt.Println("error scaning the rows", err)
@@ -241,7 +386,7 @@ func SearchGroupsInDatabase(tocken string) ([]utils.Groupe, error) {
 
 func GetGroups(user_id int) []string {
 	var res []string
-
+	
 	quirie0 := "SELECT group_id FROM group_members WHERE user_id = ?"
 	rows, err := Db.Query(quirie0, user_id)
 	if err != nil {
@@ -262,11 +407,11 @@ func GetGroups(user_id int) []string {
 		fmt.Println("Error with rows iteration:", err)
 		return nil
 	}
-
+	
 	if len(groupIDs) == 0 {
 		return res
 	}
-
+	
 	query := "SELECT name FROM groups WHERE id IN (?)"
 	query = fmt.Sprintf(query, strings.Join(strings.Split(fmt.Sprint(groupIDs), " "), ","))
 	row, err := Db.Query(query)
@@ -275,7 +420,7 @@ func GetGroups(user_id int) []string {
 		return nil
 	}
 	defer row.Close()
-
+	
 	for row.Next() {
 		var groupName string
 		if err := row.Scan(&groupName); err != nil {
@@ -284,35 +429,18 @@ func GetGroups(user_id int) []string {
 		}
 		res = append(res, groupName)
 	}
-
+	
 	if err := row.Err(); err != nil {
 		fmt.Println("Error with rows iteration:", err)
 		return nil
 	}
-
+	
 	return res
-}
-
-func GetFollowers(userID int) ([]int, error) {
-	query := `SELECT follower_id FROM followers WHERE followed_id = ?`
-	rows, err := Db.Query(query, userID)
-	if err != nil {
-		return nil, err
-	}
-	var followerIDs []int
-	for rows.Next() {
-		var followerID int
-		if err := rows.Scan(&followerID); err != nil {
-			return nil, err
-		}
-		followerIDs = append(followerIDs, followerID)
-	}
-	return followerIDs, nil
 }
 
 func GetAllGroups() []string {
 	res := []string{}
-
+	
 	Quirie := "SELECT name FROM groups"
 	rows, err := Db.Query(Quirie)
 	if err != nil {
@@ -320,7 +448,7 @@ func GetAllGroups() []string {
 		return nil
 	}
 	defer rows.Close()
-
+	
 	for rows.Next() {
 		var groupName string
 		err := rows.Scan(&groupName)
@@ -330,12 +458,12 @@ func GetAllGroups() []string {
 		}
 		res = append(res, groupName)
 	}
-
+	
 	if err := rows.Err(); err != nil {
 		fmt.Println("Error iterating over rows:", err)
 		return nil
 	}
-
+	
 	return res
 }
 
@@ -361,7 +489,7 @@ func MyGroupes(user_id int) []string {
 		fmt.Println("Error with rows iteration:", err)
 		return nil
 	}
-
+	
 	if len(groupIDs) == 0 {
 		return res
 	}
@@ -373,7 +501,7 @@ func MyGroupes(user_id int) []string {
 		return nil
 	}
 	defer row.Close()
-
+	
 	for row.Next() {
 		var groupName string
 		if err := row.Scan(&groupName); err != nil {
@@ -382,11 +510,86 @@ func MyGroupes(user_id int) []string {
 		}
 		res = append(res, groupName)
 	}
-
+	
 	if err := row.Err(); err != nil {
 		fmt.Println("Error with rows iteration:", err)
 		return nil
 	}
-
+	
 	return res
+}
+// func GetReactionsCount(postID int) (map[string]int, error) {
+// 	query := `
+// 		SELECT reaction_type, COUNT(*) as count	FROM reactionsWHERE post_id = ?
+// 		GROUP BY reaction_type
+// 	`
+
+// 	rows, err := Db.Query(query, postID)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer rows.Close()
+
+// 	summary := make(map[string]int)
+
+// 	for rows.Next() {
+// 		var reactionType string
+// 		var count int
+// 		if err := rows.Scan(&reactionType, &count); err != nil {
+// 			return nil, err
+// 		}
+// 		summary[reactionType] = count
+// 	}
+// 	return summary, nil
+// }
+
+
+// func GetPublicAndAlmostPrivatePosts(profileOwnerID, viewerID int) ([]utils.Post, error) {
+// 	query := `
+// 	SELECT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt
+// 	FROM posts p
+// 	JOIN users u ON p.user_id = u.id
+// 	WHERE p.user_id = ?
+// 	AND (
+// 		p.post_privacy = 'public'
+// 		OR (
+// 			p.post_privacy = 'almostPrivate'
+// 			AND EXISTS (
+// 				SELECT 1 FROM followers f
+// 				WHERE f.followed_id = p.user_id AND f.follower_id = ?
+// 			)
+// 		)
+// 	)
+// 	ORDER BY p.createdAt DESC
+// 	LIMIT ? OFFSET ?
+// 	`
+
+// 	rows, err := Db.Query(query, profileOwnerID, viewerID, 10, 0)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer rows.Close()
+
+// 	var posts []utils.Post
+// 	for rows.Next() {
+// 		var post utils.Post
+// 		// var createdAt int64
+// 		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content,
+// 			&post.Poster_id, &post.Poster_name, &post.Image , &post.CreatedAt)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+// 		// post.CreatedAt = int(createdAt)
+// 		posts = append(posts, post)
+// 	}
+// 	return posts, nil
+// }
+
+
+
+func IsUserRegistered(userData *utils.User) (bool, error) {
+	var exists bool
+	query := `SELECT EXISTS(SELECT 1 FROM users WHERE email = ?);`
+	err := Db.QueryRow(query, userData.Email).Scan(&exists)
+	return exists, err
 }

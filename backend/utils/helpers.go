@@ -1,17 +1,17 @@
 package utils
 
 import (
-	"strings"
-
 	"net/http"
 	"regexp"
+	"slices"
+	"strings"
 
 	"github.com/gofrs/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func Hashpass(password string) string {
-	hashedPasswd, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+	hashedPasswd, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
 		return ""
 	}
@@ -35,9 +35,16 @@ func IsValidEmail(email *string) bool {
 	return re.MatchString(*email)
 }
 
-func CheckPasswordHash(password, hash *string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(*hash), []byte(*password))
-	return err == nil
+ 
+ 
+func ClearSession(w http.ResponseWriter) {
+	cookie := &http.Cookie{
+		Name:   "token",
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1,
+	}
+	http.SetCookie(w, cookie)
 }
 
 func GenerateSessionID() (string, error) {
@@ -48,12 +55,43 @@ func GenerateSessionID() (string, error) {
 	return sessionID.String(), nil
 }
 
-func ClearSession(w http.ResponseWriter) {
-	cookie := &http.Cookie{
-		Name:   "token",
-		Value:  "",
-		Path:   "/",
-		MaxAge: -1,
+func HashPassword(password *string) error {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(*password), 14)
+	*password = string(bytes)
+	return err
+}
+
+func CheckPasswordHash(password, hash *string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(*hash), []byte(*password))
+	return err == nil
+}
+
+ 
+func CheckName(name string) bool {
+	re, err := regexp.Compile(`^[a-zA-Z\s]{4,30}$`)
+	if err != nil {
+		return false
 	}
-	http.SetCookie(w, cookie)
+	return re.MatchString(name)
+}
+
+func CheckAge(age uint8) bool {
+	if age < 13 || age > 120 {
+		return false
+	}
+	return true
+}
+
+func CheckGender(gender string) bool {
+	gender = strings.ToLower(gender)
+	genders := []string{"male", "female"}
+	return slices.Contains(genders, gender)
+}
+
+func CheckNickName(nickname string) bool {
+	re, err := regexp.Compile(`^[a-zA-Z1-9-_]{4,30}$`)
+	if err != nil {
+		return false
+	}
+	return re.MatchString(nickname)
 }

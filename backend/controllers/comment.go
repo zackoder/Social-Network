@@ -32,7 +32,7 @@ func GetUserAvatarAndUserName(userId int) *UserProfileInfo {
 }
 
 // AddComment handles adding a new comment to a post
-func AddComment(w http.ResponseWriter, r *http.Request) {
+func AddComment(w http.ResponseWriter, r *http.Request, userID int) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method not allowed"}, http.StatusMethodNotAllowed)
 		return
@@ -51,18 +51,18 @@ func AddComment(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Upload Image error:", err)
 		return
 	}
-	// Get user session to identify the commenter
-	cookie, err := r.Cookie("token")
-	if err != nil {
-		utils.WriteJSON(w, map[string]string{"error": "Authentication required"}, http.StatusUnauthorized)
-		return
-	}
+	// // Get user session to identify the commenter
+	// cookie, err := r.Cookie("token")
+	// if err != nil {
+	// 	utils.WriteJSON(w, map[string]string{"error": "Authentication required"}, http.StatusUnauthorized)
+	// 	return
+	// }
 
-	userId, err := models.Get_session(cookie.Value)
-	if err != nil {
-		utils.WriteJSON(w, map[string]string{"error": "Invalid session"}, http.StatusUnauthorized)
-		return
-	}
+	// userId, err := models.Get_session(cookie.Value)
+	// if err != nil {
+	// 	utils.WriteJSON(w, map[string]string{"error": "Invalid session"}, http.StatusUnauthorized)
+	// 	return
+	// }
 
 	// Parse the comment data
 	var comment utils.Comment
@@ -75,7 +75,7 @@ func AddComment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Set the user ID from the session
-	comment.UserId = userId
+	comment.UserId = userID
 
 	// Check if post exists
 	postExists, err := models.PostExists(comment.PostId)
@@ -85,7 +85,7 @@ func AddComment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if user has access to interact with this post based on privacy settings
-	canAccess, err := models.CanUserAccessPost(userId, comment.PostId)
+	canAccess, err := models.CanUserAccessPost(userID, comment.PostId)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Error checking post access: " + err.Error()}, http.StatusInternalServerError)
 		return
@@ -109,7 +109,7 @@ func AddComment(w http.ResponseWriter, r *http.Request) {
 	comment.Id = commentID
 
 	// Get user details to include in response
-	user, err := models.GetUserById(userId)
+	user, err := models.GetUserById(userID)
 	if err == nil {
 		comment.UserName = user.FirstName + " " + user.LastName
 	}
@@ -117,8 +117,8 @@ func AddComment(w http.ResponseWriter, r *http.Request) {
 	// Set the date and default values
 	comment.Date = utils.GetCurrentDate()
 
-	comment.UserAvatar = GetUserAvatarAndUserName(userId).Avatar
-	comment.UserName = GetUserAvatarAndUserName(userId).UserName
+	comment.UserAvatar = GetUserAvatarAndUserName(userID).Avatar
+	comment.UserName = GetUserAvatarAndUserName(userID).UserName
 
 	if comment.UserAvatar == "" {
 		comment.UserAvatar = "https://example.com/default-avatar.png" // Default avatar URL

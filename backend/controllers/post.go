@@ -4,36 +4,34 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"social-network/models"
 	"social-network/utils"
 )
 
-func AddPost(w http.ResponseWriter, r *http.Request) {
+func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
 
-	cookie, err := r.Cookie("token")
-	if err != nil {
-		fmt.Println(err)
-		utils.WriteJSON(w, map[string]string{"error": "Unauthorized"}, http.StatusUnauthorized)
-		return
-	}
+	// cookie, err := r.Cookie("token")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	utils.WriteJSON(w, map[string]string{"error": "Unauthorized"}, http.StatusUnauthorized)
+	// 	return
+	// }
 
 	var post utils.Post
-	post.Poster_id, err = models.Get_session(cookie.Value)
-	if err != nil {
-		fmt.Println(err)
-		utils.WriteJSON(w, map[string]string{"error": "Unauthorized aras lfta"}, http.StatusUnauthorized)
-		return
-	}
+	// fmt.Println(cookie.Value)
+	// post.Poster_id, err = models.Get_session(cookie.Value)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	utils.WriteJSON(w, map[string]string{"error": "Unauthorized aras lfta"}, http.StatusUnauthorized)
+	// 	return
+	// }
 
-	registrationData, _ := models.GetRegistration(strconv.Itoa(post.Poster_id))
-	post.Poster_name = registrationData.FirstName
-
+	// fmt.Println(post.Poster_id)
 	host := r.Host
 	// if _, exists := r.Form["postData"]; !exists {
 
@@ -41,6 +39,7 @@ func AddPost(w http.ResponseWriter, r *http.Request) {
 	// }
 	postData := r.FormValue("postData")
 	filepath := ""
+	var err error
 	// if _, exists := r.Form["avatar"]; exists {
 	filepath, err = utils.UploadImage(r)
 	if err != nil {
@@ -58,10 +57,6 @@ func AddPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// post.Poster_id, _ = strconv.Atoi(r.URL.Query().Get("id"))
-	// if post.Poster_id == 0 {
-	// 	post.Poster_id = 1
-	// }
 	fmt.Println("post", r.URL.Query().Get("id"))
 
 	if filepath != "" {
@@ -169,46 +164,40 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
 
 */
 
-func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("token")
-	if err != nil {
-		return
-	}
+// func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
+// 	cookie, err := r.Cookie("token")
+// 	if err != nil {
+// 		return
+// 	}
 
-	profilOwnerId := r.URL.Query().Get("id")
+// 	profilOwnerId := r.URL.Query().Get("id")
 
-	userId, err := models.Get_session(cookie.Value)
-	if err != nil {
-		utils.WriteJSON(w, map[string]string{"error": "user id not found "}, http.StatusNotFound)
+// 	userId, err := models.Get_session(cookie.Value)
+// 	if err != nil {
+// 		utils.WriteJSON(w, map[string]string{"error": "user id not found "}, http.StatusNotFound)
 
-		return
-	}
-	useridstr := strconv.Itoa(userId)
-	if profilOwnerId == useridstr {
-		ProfilePosts, err := models.GetProfilePost(userId, 0)
-		if err != nil {
-			// tanshofo shno ndiro fl error
-		}
-		utils.WriteJSON(w, ProfilePosts, 200)
-	} else if profilOwnerId != useridstr {
-		profilPrivacy, err := models.IsPrivateProfile(profilOwnerId)
-		if err != nil {
-			utils.WriteJSON(w, map[string]string{"error": "not found"}, http.StatusNotFound)
-		}
-		if !profilPrivacy {
-			profileOwnerId, err := strconv.Atoi(profilOwnerId)
-			if err != nil {
-				fmt.Println("we cant convert")
-				return
-			}
-			userPostsForDisplay, err := models.GetProfilePost(profileOwnerId, 0)
-			if err != nil {
-				// tanshofo shno ndiro fl error
-			}
-			utils.WriteJSON(w, userPostsForDisplay, 200)
+// 		return
+// 	}
+// 	useridstr := strconv.Itoa(userId)
+// 	if profilOwnerId == useridstr {
+// 		ProfilePosts := models.GetProfilePost(userId, 0)
+// 		utils.WriteJSON(w, ProfilePosts, 200)
+// 	} else if profilOwnerId != useridstr {
+// 		profilPrivacy, err := models.IsPrivateProfile(profilOwnerId)
+// 		if err != nil {
+// 			utils.WriteJSON(w, map[string]string{"error": "not found"}, http.StatusNotFound)
+// 		}
+// 		if !profilPrivacy {
+// 			profileOwnerId, err := strconv.Atoi(profilOwnerId)
+// 			if err != nil {
+// 				fmt.Println("we cant convert")
+// 				return
+// 			}
+// 			userPostsForDisplay := models.GetProfilePost(profileOwnerId, 0)
+// 			utils.WriteJSON(w, userPostsForDisplay, 200)
 
-		} else if profilPrivacy {
-			// checkPostPrivacy,err := models.CheckPostPrivacy()
-		}
-	}
-}
+// 		} else if profilPrivacy {
+// 			// checkPostPrivacy,err := models.CheckPostPrivacy()
+// 		}
+// 	}
+// }
