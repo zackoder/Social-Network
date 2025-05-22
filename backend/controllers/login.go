@@ -40,24 +40,24 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !utils.CheckPasswordHash(&password, &userData.Password) {
-		fmt.Println(&password,&userData.Password)
+		// fmt.Println(&password,&userData.Password)
 		utils.WriteJSON(w, "Incorect password", http.StatusUnauthorized)
 		return
 	}
-	ok, err := models.GetActiveSession(&userData)
-	if err != nil {
-		utils.WriteJSON(w, map[string]string{"error": "internaInternal Server Error"}, http.StatusInternalServerError)
-		return
-	}
-	fmt.Println(ok)
-	if ok {
-		err = models.DeleteSession(&userData)
-		if err != nil {
-			fmt.Println(err)
-			utils.WriteJSON(w, map[string]string{"error": "internaInternal Server Error"}, http.StatusInternalServerError)
-			return
-		}
-	}
+	// ok, err := models.GetActiveSession(&userData)
+	// if err != nil {
+	// 	utils.WriteJSON(w, map[string]string{"error": "internaInternal Server Error"}, http.StatusInternalServerError)
+	// 	return
+	// }
+	// fmt.Println(ok)
+	// if ok {
+	// 	err = models.DeleteSession(&userData)
+	// 	if err != nil {
+	// 		fmt.Println(err)
+	// 		utils.WriteJSON(w, map[string]string{"error": "internaInternal Server Error"}, http.StatusInternalServerError)
+	// 		return
+	// 	}
+	// }
 
 	userData.SessionId, err = utils.GenerateSessionID()
 	if err != nil {

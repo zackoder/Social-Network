@@ -32,12 +32,12 @@ func main() {
 
 
 
-	mux.Handle("POST /addPost", (http.HandlerFunc(controllers.AddPost)))
+	mux.Handle("POST /addPost", midleware.AuthMiddleware(controllers.AddPost))
 	mux.Handle("POST /followReq", (http.HandlerFunc(controllers.HandleFollow)))
 	mux.Handle("POST /updatePrivacy", (http.HandlerFunc(controllers.UpdatePrivacy)))
 	// mux.Handle("POST /creategroup", (http.HandlerFunc(controllers.CreateGroup)))
 	// mux.Handle("POST /joinReq",(http.HandlerFunc(controllers.JoinReq)))
-	mux.Handle("POST /api/logout", (http.HandlerFunc(controllers.LogoutHandler)))
+	mux.Handle("POST /api/logout", midleware.AuthMiddleware(controllers.LogoutHandler))
 	mux.HandleFunc("GET /uploads/", controllers.HandelPics)
 	mux.HandleFunc("/ws", controllers.Websocket)
 

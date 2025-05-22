@@ -2,14 +2,17 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strconv"
+
 	"social-network/models"
 	"social-network/utils"
-	"strconv"
 )
 
 // AddReaction handles adding a new reaction to a post
-func AddReaction(w http.ResponseWriter, r *http.Request , userId int) {
+func AddReaction(w http.ResponseWriter, r *http.Request, userId int) {
+	fmt.Println(userId)
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method not allowed"}, http.StatusMethodNotAllowed)
 		return
@@ -46,21 +49,23 @@ func AddReaction(w http.ResponseWriter, r *http.Request , userId int) {
 	}
 
 	// Check if user has access to interact with this post based on privacy settings
-	canAccess, err := models.CanUserAccessPost(userId, reaction.PostId)
-	if err != nil {
-		utils.WriteJSON(w, map[string]string{"error": "Error checking post access: " + err.Error()}, http.StatusInternalServerError)
-		return
-	}
-	if !canAccess {
-		utils.WriteJSON(w, map[string]string{"error": "You don't have permission to interact with this post"}, http.StatusForbidden)
-		return
-	}
+	// canAccess, err := models.CanUserAccessPost(userId, reaction.PostId)
+	// if err != nil {
+	// 	fmt.Println("er 1111111111111111111111111111111")
+	// 	utils.WriteJSON(w, map[string]string{"error": "Error checking post access: " + err.Error()}, http.StatusInternalServerError)
+	// 	return
+	// }
+	// if !canAccess {
+	// 	utils.WriteJSON(w, map[string]string{"error": "You don't have permission to interact with this post"}, http.StatusForbidden)
+	// 	return
+	// }
 
 	// Check if the user has already reacted to this post
 	existingReaction, err := models.GetUserReactionForPost(userId, reaction.PostId)
 	if err == nil && existingReaction != nil {
 		// User has already reacted, so update the reaction type if it's different
 		if existingReaction.ReactionType != reaction.ReactionType {
+			fmt.Println("im heeere ")
 			if err := models.UpdateReaction(userId, reaction.PostId, reaction.ReactionType); err != nil {
 				utils.WriteJSON(w, map[string]string{"error": "Failed to update reaction"}, http.StatusInternalServerError)
 				return
@@ -70,6 +75,7 @@ func AddReaction(w http.ResponseWriter, r *http.Request , userId int) {
 		} else {
 			// If the reaction is the same, remove it (toggle)
 			if err := models.DeleteReaction(userId, reaction.PostId); err != nil {
+				fmt.Println("this is meee ")
 				utils.WriteJSON(w, map[string]string{"error": "Failed to remove reaction"}, http.StatusInternalServerError)
 				return
 			}
