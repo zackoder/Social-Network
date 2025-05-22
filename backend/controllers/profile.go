@@ -3,9 +3,10 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"strconv"
+
 	"social-network/models"
 	"social-network/utils"
-	"strconv"
 )
 
 func HandleFollow(w http.ResponseWriter, r *http.Request) {
@@ -41,8 +42,8 @@ func HandleFollow(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"resp": "followed seccessfoly"}, 200)
 	} else {
 		utils.WriteJSON(w, map[string]string{"resp": "follow request sent"}, 200)
-		BroadcastNotification(noti)
 		noti.Actor_id = noti.Sender_id
+		Broadcast(noti.Target_id, noti)
 		models.InsertNotification(noti)
 	}
 }

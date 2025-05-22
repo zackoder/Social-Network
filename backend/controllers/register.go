@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
+
 	"social-network/models"
 	"social-network/utils"
-	"strings"
 )
 
 func Register(w http.ResponseWriter, r *http.Request) {
@@ -22,7 +23,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//fmt.Println("form data", r.Form["userData"])
+	// fmt.Println("form data", r.Form["userData"])
 
 	userData := r.FormValue("userData")
 	filePath, err := utils.UploadImage(r)
@@ -67,6 +68,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
 		return
 	}
+	regesterreq.Password = hashedPss
 
 	err = models.InsertUser(regesterreq)
 	if err != nil {
