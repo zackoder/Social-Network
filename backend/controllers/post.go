@@ -9,29 +9,29 @@ import (
 	"social-network/utils"
 )
 
-func AddPost(w http.ResponseWriter, r *http.Request) {
+func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
 
-	cookie, err := r.Cookie("token")
-	if err != nil {
-		fmt.Println(err)
-		utils.WriteJSON(w, map[string]string{"error": "Unauthorized"}, http.StatusUnauthorized)
-		return
-	}
+	// cookie, err := r.Cookie("token")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	utils.WriteJSON(w, map[string]string{"error": "Unauthorized"}, http.StatusUnauthorized)
+	// 	return
+	// }
 
 	var post utils.Post
-	fmt.Println(cookie.Value)
-	post.Poster_id, err = models.Get_session(cookie.Value)
-	if err != nil {
-		fmt.Println(err)
-		utils.WriteJSON(w, map[string]string{"error": "Unauthorized aras lfta"}, http.StatusUnauthorized)
-		return
-	}
+	// fmt.Println(cookie.Value)
+	// post.Poster_id, err = models.Get_session(cookie.Value)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	utils.WriteJSON(w, map[string]string{"error": "Unauthorized aras lfta"}, http.StatusUnauthorized)
+	// 	return
+	// }
 
-	fmt.Println(post.Poster_id)
+	// fmt.Println(post.Poster_id)
 	host := r.Host
 	// if _, exists := r.Form["postData"]; !exists {
 

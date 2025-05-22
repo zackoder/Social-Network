@@ -12,7 +12,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request,userID int) {
 	if r.Method != "GET" {
 		utils.WriteJSON(w, map[string]string{"error":"Method Not Allowd"}, http.StatusMethodNotAllowed)
 	}
-	fmt.Println("im used")
+	// fmt.Println("im used")
 	fmt.Println(userID)
 	// userID = 11
 	users, err := models.GetUserFriends(userID,r.Host)

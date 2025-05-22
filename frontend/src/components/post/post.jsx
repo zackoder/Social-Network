@@ -34,7 +34,7 @@ export default function Post({ posts }) {
     if (!posts || posts.lenght === 0) {
         return <p>No posts yet.</p>;
     }
-    console.log("posts", posts);
+    // console.log("posts", posts);
     
     return (
         <div className={styles.container}>
@@ -77,7 +77,7 @@ export default function Post({ posts }) {
                     </div>
 
                     <div className={styles.reaction}>
-                        <LikeDislikeComment />
+                        <LikeDislikeComment postId={post.id} />
                     </div>
                 </div> //end post
             ))}
