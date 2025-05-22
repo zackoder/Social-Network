@@ -9,12 +9,12 @@ import (
 	"social-network/utils"
 )
 
-// func Posts(w http.ResponseWriter, r *http.Request) {
-// 	host := r.Host
-// 	offset := 0
-// 	posts := models.QueryPosts(offset, host)
-// 	utils.WriteJSON(w, posts, 200)
-// }
+func Posts(w http.ResponseWriter, r *http.Request) {
+	host := r.Host
+	offset := 0
+	posts := models.QueryPosts(offset, host)
+	utils.WriteJSON(w, posts, 200)
+}
 
 // cookie, err := r.Cookie("token")
 // if err != nil {
@@ -96,7 +96,7 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request, userId int) {
 	// here we fetch the public and almost privet posts and the ones only for people that are allowed to see them by
 	// checking the the user id across the privet post viewrs that stors the post
 	// with people allowed to see it
-	if /*profilePrivacy && isFollower  || !profilePrivacy &&*/ isFollower   {
+	if /*profilePrivacy && isFollower  || !profilePrivacy &&*/ isFollower {
 		posts, err := models.GetAllowedPosts(profileOwnerID, userId)
 		fmt.Println("this one is for the privat posts")
 		if err != nil {
