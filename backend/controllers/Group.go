@@ -41,6 +41,10 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request) {
 
 	groupInserted, err := models.InsserGroupe(Groupe.Title, Groupe.Description, Groupe.CreatorId)
 	if err != nil {
+		if strings.Contains(err.Error(), "groups.name") {
+			utils.WriteJSON(w, map[string]string{"error": "This group already exists"}, http.StatusBadRequest)
+			return
+		}
 		fmt.Println("inserting group err", err)
 		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
 		return
@@ -114,7 +118,7 @@ func InviteUser(w http.ResponseWriter, r *http.Request /* , groupID uint */) {
 		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest"}, http.StatusBadRequest)
 		return
 	}
-
+	fmt.Println(noti)
 	if !models.IsMember(noti.Actor_id, noti.Sender_id) {
 		utils.WriteJSON(w, map[string]string{"error": "you are not a member of the group"}, http.StatusBadRequest)
 		return
@@ -124,9 +128,9 @@ func InviteUser(w http.ResponseWriter, r *http.Request /* , groupID uint */) {
 		utils.WriteJSON(w, map[string]string{"error": "already a group member"}, 409)
 		return
 	}
+
 	noti.Message = "group invitation"
 	err := models.InsertNotification(noti)
-
 	// err := models.SaveInvitation(invitaion.GroupID, invitaion.InvitedBy, invitaion.UserId)
 	if err != nil {
 		log.Println("saving invitation", err)
@@ -134,8 +138,8 @@ func InviteUser(w http.ResponseWriter, r *http.Request /* , groupID uint */) {
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Invitation sent"})
+	Broadcast(noti.Target_id, noti)
+	utils.WriteJSON(w, map[string]string{"message": "Invitation sent"}, http.StatusCreated)
 }
 
 func InsertToGroupe(w http.ResponseWriter, r *http.Request) {
@@ -238,5 +242,4 @@ func EventRrspponce(w http.ResponseWriter, r *http.Request) {
 }
 
 func Event(noti utils.Notification) {
-
 }

@@ -31,7 +31,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, "internaInternal Server Error1", http.StatusInternalServerError)
 		return
 	}
-	if userData.ID > 10 {
+	if userData.ID > 11 {
 		if !utils.CheckPasswordHash(&password, &userData.Password) {
 			utils.WriteJSON(w, "Incorect password", http.StatusUnauthorized)
 			return
@@ -72,11 +72,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:  "token",
-		Path:  "/",
-		Value: userData.SessionId,
-		HttpOnly: true, // 🛡️ Protects from JavaScript access
-		Secure:   false, // ❗ Use true only in production over HTTPS
+		Name:     "token",
+		Path:     "/",
+		Value:    userData.SessionId,
+		HttpOnly: true,                 // 🛡️ Protects from JavaScript access
+		Secure:   false,                // ❗ Use true only in production over HTTPS
 		SameSite: http.SameSiteLaxMode, // or Strict/None
 	})
 	fmt.Println(w)

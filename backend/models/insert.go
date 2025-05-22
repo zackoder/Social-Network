@@ -1,13 +1,14 @@
 package models
 
 import (
+	"database/sql"
 	"fmt"
+	"log"
 
 	"social-network/utils"
 )
 
 func InsertUser(user utils.Regester) error {
-	fmt.Println("\n\n\nstart inserting\n\n\n")
 	insertuserquery := "INSERT INTO users (first_name, last_name, nickname, email, age, gender, password, avatar, AboutMe)  VALUES(?,?,?,?,?,?,?,?,?)"
 	if _, err := Db.Exec(insertuserquery, user.FirstName, user.LastName, user.NickName, user.Email, user.Age, user.Gender, user.Password, user.Avatar, user.About_Me); err != nil {
 		fmt.Println(err)
@@ -56,7 +57,6 @@ func InserOrUpdate(follower, followed string) (string, error) {
 }
 
 func InsertFollowreq(followed string) {
-
 }
 
 func InsertFollow(follower, followed string) error {
@@ -115,8 +115,19 @@ func InsertGroupMSG(msg utils.Message) error {
 }
 
 func InsertNotification(noti utils.Notification) error {
-	query := "INSERT INTO notifications (user_id, target_id, actor_id, message) VALUES (?,?,?,?)"
-	_, err := Db.Exec(query, noti.Sender_id, noti.Target_id, noti.Actor_id, noti.Message)
+	exists, err := CheckNoti(noti)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			log.Println("checking notification error", err)
+			return err
+		}
+	}
+	if exists {
+		err = UpdateNoti(noti)
+	} else {
+		query := "INSERT INTO notifications (user_id, target_id, actor_id, message) VALUES (?,?,?,?)"
+		_, err = Db.Exec(query, noti.Sender_id, noti.Target_id, noti.Actor_id, noti.Message)
+	}
 	return err
 }
 
@@ -129,9 +140,13 @@ func SaveInvitation(Groupe_id, sender_id, resever_id int) error {
 func InsserGroupe(title, description string, creator_id int) (int, error) {
 	Query := "INSERT INTO groups (name, description, group_oner) VALUES (?,?,?)"
 	res, err := Db.Exec(Query, title, description, creator_id)
+	if err != nil {
+		return 0, err
+	}
 	lastGroupInserted, _ := res.LastInsertId()
 	return int(lastGroupInserted), err
 }
+
 func InsserMemmberInGroupe(Groupe_id, User_id int, role string) error {
 	Quirie := "INSERT INTO group_members (group_id,user_id, role) VALUES (?, ?, ?)"
 	_, err := Db.Exec(Quirie, Groupe_id, User_id, role)
@@ -143,6 +158,7 @@ func InsserEventInDatabase(event utils.Event) error {
 	_, err := Db.Exec(Quirie, event.GroupID, event.Title, event.Description, event.EventTime, event.CreatedBy)
 	return err
 }
+
 func InsserResponceInDatabase(responce utils.EventResponse) error {
 	Quirie := "INSERT INTO event_responses (user_id,event_id,response) VALUES (?,?,?)"
 	_, err := Db.Exec(Quirie, responce.UserID, responce.EventID, responce.Response)
