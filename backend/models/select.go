@@ -213,9 +213,7 @@ func SearchGroupsInDatabase(tocken string) ([]utils.Groupe, error) {
 	return Groups, nil
 }
 
-func GetGroups(user_id int) []utils.Groupe {
-	var res []utils.Groupe
-
+func GetGroupsOfMember(user_id int) []utils.Groupe {
 	quirie0 := "SELECT group_id FROM group_members WHERE user_id = ?"
 	rows, err := Db.Query(quirie0, user_id)
 	if err != nil {
@@ -236,95 +234,12 @@ func GetGroups(user_id int) []utils.Groupe {
 		fmt.Println("Error with rows iteration:", err)
 		return nil
 	}
-
-	if len(groupIDs) == 0 {
-		return res
-	}
-
-	query := "SELECT  id,name,description,group_oner FROM groups WHERE id IN (?)"
-	query = fmt.Sprintf(query, strings.Join(strings.Split(fmt.Sprint(groupIDs), " "), ","))
-	row, err := Db.Query(query)
-	if err != nil {
-		fmt.Println("Error querying group names:", err)
-		return nil
-	}
-	defer row.Close()
-
-	for row.Next() {
-		var groupe utils.Groupe
-		if err := row.Scan(&groupe.Id,&groupe.Title,&groupe.Description,&groupe.CreatorId); err != nil {
-			fmt.Println("Error scanning group name:", err)
-			return nil
-		}
-		res = append(res, groupe)
-	}
-
-	if err := row.Err(); err != nil {
-		fmt.Println("Error with rows iteration:", err)
-		return nil
-	}
-
-	return res
+	return fetchGroupsInfo(groupIDs)
 }
 
-// func GroupsCreatedByUser(userId int)[]utils.Groupe{
-// 	var res []utils.Groupe
-// 	query :="SELECT group_id FROM group_members WHERE user_id = ? AND role = 'creator'"
-// 	rows, err := Db.Query(query, userId)
-// 	fmt.Println("err0",err)
-// 	if err != nil {
-// 		fmt.Println("Error querying group_ids for user:", err)
-// 		return nil
-// 	}
-// 	defer rows.Close()
-// 	var groupIDs []int
-// 	for rows.Next() {
-// 		var group_id int
-// 		if err := rows.Scan(&group_id); err != nil {
-// 			fmt.Println("Error scanning group_id:", err)
-// 			return nil
-// 		}
-// 		groupIDs = append(groupIDs, group_id)
-// 	}
-// 	if err := rows.Err(); err != nil {
-// 		fmt.Println("Error with rows iteration:", err)
-// 		return nil
-// 	}
-
-// 	if len(groupIDs) == 0 {
-// 		return res
-// 	}
-
-// 	query2 := "SELECT  id,name,description,group_oner FROM groups WHERE id IN (?)"
-// 	query = fmt.Sprintf(query2, strings.Join(strings.Split(fmt.Sprint(groupIDs), " "), ","))
-// 	row, err := Db.Query(query)
-// 	fmt.Println("err1",err)
-// 	if err != nil {
-// 		fmt.Println("Error querying group names:", err)
-// 		return nil
-// 	}
-// 	defer row.Close()
-
-// 	for row.Next() {
-// 		var groupe utils.Groupe
-// 		if err := row.Scan(&groupe.Id,&groupe.Title,&groupe.Description,&groupe.CreatorId); err != nil {
-// 			fmt.Println("Error scanning group :", err)
-// 			return nil
-// 		}
-// 		res = append(res, groupe)
-// 	}
-
-// 	if err := row.Err(); err != nil {
-// 		fmt.Println("Error with rows iteration:", err)
-// 		return nil
-// 	}
-
-// 	return res
-// }
 func GroupsCreatedByUser(userId int) []utils.Groupe {
 	var res []utils.Groupe
 
-	// 1) Récupérer les group_ids créés par l'utilisateur
 	query := "SELECT group_id FROM group_members WHERE user_id = ? AND role = 'creator'"
 	rows, err := Db.Query(query, userId)
 	if err != nil {
@@ -351,6 +266,16 @@ func GroupsCreatedByUser(userId int) []utils.Groupe {
 
 	if len(groupIDs) == 0 {
 		return res // pas de groupes trouvés, retourne vide
+	}
+
+	return fetchGroupsInfo(groupIDs)
+}
+
+func fetchGroupsInfo(groupIDs []int) []utils.Groupe {
+	var res []utils.Groupe
+
+	if len(groupIDs) == 0 {
+		return res
 	}
 
 	// 2) Construire dynamiquement la requête pour récupérer les groupes
@@ -389,6 +314,7 @@ func GroupsCreatedByUser(userId int) []utils.Groupe {
 
 	return res
 }
+
 func GetAllGroups() []utils.Groupe {
 	var res []utils.Groupe
 
@@ -417,7 +343,6 @@ func GetAllGroups() []utils.Groupe {
 
 	return res
 }
-
 
 func MyGroupes(user_id int) []string {
 	var res []string

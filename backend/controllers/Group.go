@@ -89,27 +89,29 @@ func AllGroups(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetGroupsJoined(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
-		return
-	}
 	cookie, err := r.Cookie("token")
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "You don't have access."}, http.StatusForbidden)
 		return
 	}
+	if r.Method != http.MethodGet {
+		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
+		return
+	}
+
 	userId, err := models.Get_session(cookie.Value)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Invalid session"}, http.StatusUnauthorized)
 		return
 	}
 
-	Groups := models.GetGroups(userId)
+	Groups := models.GetGroupsOfMember(userId)
+	fmt.Println(Groups)
+
 	utils.WriteJSON(w, Groups, 200)
 }
 
 func GetGroupsCreatedByUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("hi")
 	if r.Method != http.MethodGet {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
@@ -121,14 +123,14 @@ func GetGroupsCreatedByUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	userId, err := models.Get_session(cookie.Value)
-	fmt.Println(userId)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Invalid session"}, http.StatusUnauthorized)
 		return
 	}
-	Groups:= models.GroupsCreatedByUser(userId)
-	utils.WriteJSON(w, Groups, 200)
+	Groups := models.GroupsCreatedByUser(userId)
+	fmt.Println(Groups)
 
+	utils.WriteJSON(w, Groups, 200)
 }
 
 func SearchGroupsHandler(w http.ResponseWriter, r *http.Request) {
