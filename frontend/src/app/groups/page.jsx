@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react";
+import { useState , useEffect} from "react";
 import styles from "./groups.module.css";
 
 export default function Home() {
@@ -27,8 +27,12 @@ export default function Home() {
       setError(err.message || "Erreur inconnue");
     }
   };
+    useEffect(() => {
+    fetchGroups("/GetGroups");
+  }, []);
 
   return (
+    
     <div>
       <div className={styles.div0}>
         <a
