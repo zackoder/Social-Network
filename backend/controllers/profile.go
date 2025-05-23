@@ -60,6 +60,7 @@ func UserData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	cookie, _ := r.Cookie("token")
+	
 	var userD utils.UserD
 	err := models.Db.QueryRow(
 		`SELECT u.id, u.first_name, u.avatar
@@ -72,6 +73,5 @@ func UserData(w http.ResponseWriter, r *http.Request) {
 	if userD.Avatar != "" {
 		userD.Avatar = r.Host + userD.Avatar
 	}
-	fmt.Println(userD)
 	utils.WriteJSON(w, userD, 200)
 }

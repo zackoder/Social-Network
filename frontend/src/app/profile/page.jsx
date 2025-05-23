@@ -40,31 +40,45 @@ export default function ProfilePage() {
     try {
       // Fetch profile information
       console.log(
-        `${process.env.NEXT_PUBLIC_HOST}/api/getProfilePosts?id=${profileId}`
+        `Fetching profile data from: ${process.env.NEXT_PUBLIC_HOST}/api/registrationData?id=${profileId}`
       );
+
       const profileResponse = await fetch(
         `${process.env.NEXT_PUBLIC_HOST}/api/registrationData?id=${profileId}`,
-        {
-          credentials: "include",
-        }
+        { credentials: "include" }
       );
-      let dataxx = await profileResponse.json();
+
       if (!profileResponse.ok) {
-        throw new Error("failed to load data");
+        console.error(`Profile response error: ${profileResponse.status}`);
+        const errorText = await profileResponse.text();
+        console.error("Error response:", errorText);
+        throw new Error(`Failed to load profile data: ${profileResponse.status}`);
       }
 
-      if (profileResponse.ok) {
-        console.log(profileResponse);
-
-        const profileData = dataxx;
-        console.log(dataxx);
-        setProfile(profileData);
-        setIsPrivate(profileData.privacy === "private");
-        setIsOwnProfile(profileData.isOwnProfile);
-      } else {
-        console.error("Failed to fetch profile data");
+      // Check content type before trying to parse JSON
+      const contentType = profileResponse.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.error("Non-JSON profile response:", contentType);
+        const text = await profileResponse.text();
+        console.error("Response text:", text);
+        throw new Error("Invalid profile data format");
       }
-      // Fetch posts
+
+      const profileData = await profileResponse.json();
+      console.log("Profile data:", profileData);
+
+      if (!profileData || typeof profileData !== "object") {
+        throw new Error("Invalid profile data structure");
+      }
+
+      setProfile(profileData);
+      setIsPrivate(profileData.privacy === "private");
+      setIsOwnProfile(profileData.isOwnProfile);
+
+      // Fetch posts with similar safeguards
+      console.log(
+        `Fetching posts from: ${process.env.NEXT_PUBLIC_HOST}/api/getProfilePosts?id=${profileId}`
+      );
       const postsResponse = await fetch(
         `${process.env.NEXT_PUBLIC_HOST}/api/getProfilePosts?id=${profileId}`,
         {
@@ -74,9 +88,11 @@ export default function ProfilePage() {
 
       if (postsResponse.ok) {
         const postsData = await postsResponse.json();
-        setPosts(postsData);
+        // Ensure posts is always an array
+        setPosts(Array.isArray(postsData) ? postsData : []);
       } else {
         console.error("Failed to fetch posts");
+        setPosts([]); // Set empty array on error
       }
 
       // Fetch followers
@@ -89,9 +105,10 @@ export default function ProfilePage() {
 
       if (followersResponse.ok) {
         const followersData = await followersResponse.json();
-        setFollowers(followersData);
+        setFollowers(Array.isArray(followersData) ? followersData : []);
       } else {
         console.error("Failed to fetch followers");
+        setFollowers([]);
       }
 
       // Fetch following
@@ -104,12 +121,14 @@ export default function ProfilePage() {
 
       if (followingResponse.ok) {
         const followingData = await followingResponse.json();
-        setFollowing(followingData);
+        setFollowing(Array.isArray(followingData) ? followingData : []);
       } else {
         setError("Failed to fetch following");
+        setFollowing([]);
       }
     } catch (error) {
-      setError(error.message || "Error fetching profile data");
+      console.error("Error in profile data fetch:", error);
+      setError(error.message || "Error loading profile");
     } finally {
       setIsLoading(false);
     }
@@ -202,13 +221,13 @@ export default function ProfilePage() {
         </div>
 
         <div className={styles.follow}>
-          <div className={styles.followers } onClick={showFollowers}>
+          <div className={styles.followers} onClick={showFollowers}>
             <p>Followers</p>
-            <h3>{ "0" || followers.length}</h3>
+            <h3>{followers ? followers.length : "0"}</h3>
           </div>
           <div className={styles.following} onClick={showFollowing}>
             <p>Following</p>
-            <h3>{ "0" || following.length}</h3>
+            <h3>{following ? following.length : "0"}</h3>
           </div>
         </div>
       </header>
@@ -235,8 +254,9 @@ export default function ProfilePage() {
       <main>
         {activeTab === "posts" && (
           <div>
-            {posts.length > 0 ? (
-              posts.map((post) => <PostWrapper key={post.id} post={post} />)    
+            {/* Add null/undefined check before accessing length */}
+            {posts && posts.length > 0 ? (
+              posts.map((post) => <PostWrapper key={post.id} post={post} />)
             ) : (
               <div className={styles.noContent}>No posts to display</div>
             )}
