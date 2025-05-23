@@ -23,3 +23,9 @@ func RemoveSessionFromDB(token *http.Cookie) error {
 	_, err := Db.Exec(query, token)
 	return err
 }
+
+func DeleteNoti(noti_id int) error {
+	deleteNoti := "DELETE FROM notifications WHERE id = ?"
+	_, err := Db.Exec(deleteNoti, noti_id)
+	return err
+}
