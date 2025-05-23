@@ -21,16 +21,10 @@ func main() {
 	mux.Handle("/login", (http.HandlerFunc(controllers.Login)))
 	mux.Handle("/register", (http.HandlerFunc(controllers.Register)))
 
-
-
-
-
 	mux.Handle("POST /creategroup", (http.HandlerFunc(controllers.Creat_groupe)))
 	mux.HandleFunc("/JouindGroupe", controllers.Jouind_Groupe)
 	mux.HandleFunc("/GetPostsFromGroupe", controllers.Get_all_post)
 	mux.HandleFunc("/CreatEvent", controllers.CreatEvent)
-
-
 
 	mux.Handle("POST /addPost", midleware.AuthMiddleware(controllers.AddPost))
 	mux.Handle("POST /followReq", (http.HandlerFunc(controllers.HandleFollow)))
@@ -57,6 +51,10 @@ func main() {
 	// this endpoint is gonna be used to fetch the users for the post privacy
 	mux.HandleFunc("GET /api/getfollowers", midleware.AuthMiddleware(controllers.GetFollowers))
 	mux.HandleFunc("GET /api/registrationData", midleware.AuthMiddleware(controllers.GetRegistrationData))
+
+	// Notification handler
+	mux.Handle("GET /api/notifications", midleware.AuthMiddleware(controllers.GetNotifications))
+
 	// this endpoint is gonna be used to fetch the users for the chat pannel .
 	// the func GetFollowers and GetFollowers they look the same but they are not
 	mux.HandleFunc("GET /api/getuserfriends", midleware.AuthMiddleware(controllers.GetUsers))

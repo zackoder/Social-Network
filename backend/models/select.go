@@ -3,8 +3,8 @@ package models
 import (
 	"fmt"
 	"net/http"
-	"strings"
 	"social-network/utils"
+	"strings"
 )
 
 func QueryPosts(offset int, r *http.Request) []utils.Post {
@@ -77,7 +77,6 @@ func IsPrivateProfile(followed string) (bool, error) {
 	return privacy == "privet", nil
 }
 
-
 func CheckPostPrivacy(post string) (string, error) {
 	query := "SELECT post_privacy FROM posts WHERE id = ?"
 	var privacy string
@@ -85,11 +84,10 @@ func CheckPostPrivacy(post string) (string, error) {
 	if err != nil {
 		fmt.Println("is private post", err)
 		return "", err
-		
+
 	}
 	return privacy, nil
 }
-
 
 ///////////////////////////login///////////////////////////////////////////
 
@@ -173,17 +171,17 @@ func GetFollowers(userID int) ([]utils.Regester, error) {
 			fmt.Println(followerinfo.FirstName)
 			return nil, err
 		}
-		followersInfo = append(followersInfo,followerinfo)
+		followersInfo = append(followersInfo, followerinfo)
 	}
 	return followersInfo, nil
 }
 
 func GetRegistration(id string) (utils.Regester, error) {
 	query := `SELECT * FROM users WHERE id = ?`
-	
+
 	var data utils.Regester
 	var Id int
-	
+
 	err := Db.QueryRow(query, id).Scan(
 		&Id,
 		&data.NickName,
@@ -217,7 +215,7 @@ func GetPuclicPosts(userID int) ([]utils.Post, error) {
 		LIMIT ? OFFSET ?
 	`
 
-	rows, err := Db.Query(query, userID,10,0)
+	rows, err := Db.Query(query, userID, 10, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -226,7 +224,7 @@ func GetPuclicPosts(userID int) ([]utils.Post, error) {
 		var post utils.Post
 		// var createdAt int64
 		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content,
-			&post.Poster_id, &post.Poster_name, &post.Image , &post.CreatedAt)
+			&post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -251,7 +249,7 @@ func GetAllowedPosts(profileOwnerID int, viewerID int) ([]utils.Post, error) {
 		)
 		ORDER BY p.createdAt DESC
 		`
-		
+
 	rows, err := Db.Query(query, profileOwnerID, viewerID)
 	if err != nil {
 		// fmt.Println(err)
@@ -270,7 +268,7 @@ func GetAllowedPosts(profileOwnerID int, viewerID int) ([]utils.Post, error) {
 	return posts, nil
 }
 
-func GetUserFriends(userId int , host string) ([]utils.Regester, error) {
+func GetUserFriends(userId int, host string) ([]utils.Regester, error) {
 	var users []utils.Regester
 
 	query := `
@@ -304,10 +302,10 @@ func GetUserFriends(userId int , host string) ([]utils.Regester, error) {
 		if err != nil {
 			return nil, err
 		}
-		if u.Avatar != ""{
-			u.Avatar = host+ u.Avatar
+		if u.Avatar != "" {
+			u.Avatar = host + u.Avatar
 		}
-		 
+
 		users = append(users, u)
 	}
 	if err = rows.Err(); err != nil {
@@ -339,11 +337,11 @@ func IsMember(groupID, userID int) bool {
 		return false
 	}
 	defer rows.Close()
-	
+
 	if rows.Next() {
 		return true
 	}
-	
+
 	return false
 }
 
@@ -355,11 +353,11 @@ func InvitationExists(groupe_id, recever_id int) bool {
 		return false
 	}
 	defer rows.Close()
-	
+
 	if rows.Next() {
 		return false
 	}
-	
+
 	return true
 }
 
@@ -373,7 +371,7 @@ func SearchGroupsInDatabase(tocken string) ([]utils.Groupe, error) {
 	}
 	for rows.Next() {
 		var Groupe utils.Groupe
-		
+
 		err = rows.Scan(&Groupe.CreatorId, &Groupe.Title, &Groupe.Description)
 		if err != nil {
 			fmt.Println("error scaning the rows", err)
@@ -386,7 +384,7 @@ func SearchGroupsInDatabase(tocken string) ([]utils.Groupe, error) {
 
 func GetGroups(user_id int) []string {
 	var res []string
-	
+
 	quirie0 := "SELECT group_id FROM group_members WHERE user_id = ?"
 	rows, err := Db.Query(quirie0, user_id)
 	if err != nil {
@@ -407,11 +405,11 @@ func GetGroups(user_id int) []string {
 		fmt.Println("Error with rows iteration:", err)
 		return nil
 	}
-	
+
 	if len(groupIDs) == 0 {
 		return res
 	}
-	
+
 	query := "SELECT name FROM groups WHERE id IN (?)"
 	query = fmt.Sprintf(query, strings.Join(strings.Split(fmt.Sprint(groupIDs), " "), ","))
 	row, err := Db.Query(query)
@@ -420,7 +418,7 @@ func GetGroups(user_id int) []string {
 		return nil
 	}
 	defer row.Close()
-	
+
 	for row.Next() {
 		var groupName string
 		if err := row.Scan(&groupName); err != nil {
@@ -429,18 +427,18 @@ func GetGroups(user_id int) []string {
 		}
 		res = append(res, groupName)
 	}
-	
+
 	if err := row.Err(); err != nil {
 		fmt.Println("Error with rows iteration:", err)
 		return nil
 	}
-	
+
 	return res
 }
 
 func GetAllGroups() []string {
 	res := []string{}
-	
+
 	Quirie := "SELECT name FROM groups"
 	rows, err := Db.Query(Quirie)
 	if err != nil {
@@ -448,7 +446,7 @@ func GetAllGroups() []string {
 		return nil
 	}
 	defer rows.Close()
-	
+
 	for rows.Next() {
 		var groupName string
 		err := rows.Scan(&groupName)
@@ -458,12 +456,12 @@ func GetAllGroups() []string {
 		}
 		res = append(res, groupName)
 	}
-	
+
 	if err := rows.Err(); err != nil {
 		fmt.Println("Error iterating over rows:", err)
 		return nil
 	}
-	
+
 	return res
 }
 
@@ -489,7 +487,7 @@ func MyGroupes(user_id int) []string {
 		fmt.Println("Error with rows iteration:", err)
 		return nil
 	}
-	
+
 	if len(groupIDs) == 0 {
 		return res
 	}
@@ -501,7 +499,7 @@ func MyGroupes(user_id int) []string {
 		return nil
 	}
 	defer row.Close()
-	
+
 	for row.Next() {
 		var groupName string
 		if err := row.Scan(&groupName); err != nil {
@@ -510,14 +508,15 @@ func MyGroupes(user_id int) []string {
 		}
 		res = append(res, groupName)
 	}
-	
+
 	if err := row.Err(); err != nil {
 		fmt.Println("Error with rows iteration:", err)
 		return nil
 	}
-	
+
 	return res
 }
+
 // func GetReactionsCount(postID int) (map[string]int, error) {
 // 	query := `
 // 		SELECT reaction_type, COUNT(*) as count	FROM reactionsWHERE post_id = ?
@@ -542,7 +541,6 @@ func MyGroupes(user_id int) []string {
 // 	}
 // 	return summary, nil
 // }
-
 
 // func GetPublicAndAlmostPrivatePosts(profileOwnerID, viewerID int) ([]utils.Post, error) {
 // 	query := `
@@ -585,11 +583,47 @@ func MyGroupes(user_id int) []string {
 // 	return posts, nil
 // }
 
-
-
 func IsUserRegistered(userData *utils.User) (bool, error) {
 	var exists bool
 	query := `SELECT EXISTS(SELECT 1 FROM users WHERE email = ?);`
 	err := Db.QueryRow(query, userData.Email).Scan(&exists)
 	return exists, err
+}
+
+func GetNotifications(userId int, limit int, offset int) ([]utils.Notification, error) {
+	var notifications []utils.Notification
+
+	query := `SELECT id, user_id, actor_id, target_id, message, is_read, created_at 
+			  FROM notifications 
+			  WHERE user_id = ? 
+			  ORDER BY created_at DESC 
+			  LIMIT ? OFFSET ?`
+
+	rows, err := Db.Query(query, userId, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var notification utils.Notification
+		var isRead int
+		var createdAt string
+
+		err := rows.Scan(
+			&notification.Id,
+			&notification.Sender_id,
+			&notification.Actor_id,
+			&notification.Target_id,
+			&notification.Message,
+			&isRead,
+			&createdAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		notifications = append(notifications, notification)
+	}
+
+	return notifications, nil
 }
