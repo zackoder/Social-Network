@@ -99,6 +99,7 @@ type GroupInvitation struct {
 	CreatedAt time.Time
 }
 type Groupe struct {
+	Id    int
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	CreatorId   int    `json:"cretorid"`

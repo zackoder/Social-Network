@@ -7,13 +7,18 @@ export default function Home() {
   const [error, setError] = useState(null);
 
   const host = process.env.NEXT_PUBLIC_HOST;
+  
 
   const fetchMyGroups = async () => {
     setError(null);
     try {
-      const res = await fetch(`${host}/GetMyGroups`);
+      const res = await fetch(`${host}/GetMyGroups`, {
+        credentials:"include"
+      });
       if (!res.ok) throw new Error("Erreur lors du fetch de mes groupes");
       const data = await res.json();
+      console.log(data);
+      
       setGroups(data);
     } catch (err) {
       setError(err.message);
@@ -24,7 +29,10 @@ export default function Home() {
   const fetchJoinedGroups = async () => {
     setError(null);
     try {
-      const res = await fetch(`${host}/GetJoinedGroups`);
+      const res = await fetch(`${host}/GetJoinedGroups`,{
+        credentials:"include"
+
+      });
       if (!res.ok) throw new Error("Erreur lors du fetch des groupes rejoints");
       const data = await res.json();
       setGroups(data);
@@ -37,9 +45,15 @@ export default function Home() {
   const fetchAllGroups = async () => {
     setError(null);
     try {
-      const res = await fetch(`${host}/GetGroups`);
+      const res = await fetch(`${host}/GetGroups`,{
+        credentials:"include"
+      });
+      console.log(res);
+      
       if (!res.ok) throw new Error("Erreur lors du fetch des groupes");
       const data = await res.json();
+      console.log(data);
+      
       setGroups(data);
     } catch (err) {
       setError(err.message);
@@ -57,7 +71,7 @@ export default function Home() {
           Joined groups
         </a>
         <a href="#" className={styles.lien} onClick={fetchAllGroups}>
-          All the groups
+          All groups
         </a>
       </div>
 
@@ -67,7 +81,7 @@ export default function Home() {
           <ul>
             {groups.map((groupe, i) => (
               <li key={i}>
-                <p>{typeof groupe === "string" ? groupe : groupe.name}</p>
+                <p>{groupe.title}</p>
               </li>
             ))}
           </ul>

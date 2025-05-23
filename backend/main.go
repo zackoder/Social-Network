@@ -37,9 +37,9 @@ func main() {
 	mux.HandleFunc("/JouindGroupe", controllers.Jouind_Groupe)
 	mux.HandleFunc("/GetPostsFromGroupe", controllers.Get_all_post)
 	mux.HandleFunc("/CreatEvent", controllers.CreatEvent)
-	mux.HandleFunc("/GetGroups", controllers.AllGroups)
-	mux.HandleFunc("GetJoinedGroups",controllers.GetGroupsJoined)
-	
+	mux.Handle("GET /GetGroups", midleware.WithCORS(http.HandlerFunc(controllers.AllGroups)))
+	mux.Handle("/GetJoinedGroups",midleware.WithCORS(http.HandlerFunc(controllers.GetGroupsJoined)))
+	mux.Handle("/GetMyGroups",midleware.WithCORS(http.HandlerFunc(controllers.GetGroupsCreatedByUser)))
 
 	mux.HandleFunc("GET /uploads/", controllers.HandelPics)
 	mux.Handle("/api/posts", midleware.WithCORS(http.HandlerFunc(controllers.Posts)))
