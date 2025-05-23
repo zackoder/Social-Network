@@ -42,7 +42,7 @@ func NotiResp(w http.ResponseWriter, r *http.Request) {
 	}
 	resp := noti.Message
 	models.SelectOneNoti(&noti)
-	if resp != "rejected" || resp != "accepted" {
+	if resp != "rejected" && resp != "accepted" {
 		utils.WriteJSON(w, map[string]string{"error": "Bad Request"}, http.StatusBadRequest)
 		return
 	}
