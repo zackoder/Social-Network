@@ -1,10 +1,11 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, {useContext, useState, useEffect } from "react";
 // import styles from "./contactprivate.module.css"
+import { DataContext } from "@/contexts/dataContext";
 
 export default function ContactsPrivate() {
   const [selectedContacts, setSelectedContacts] = useState([]);
-  const [selectedContactsIds, setSelectedContactsIds] = useState([]);
+  const {setSelectedContactsIds} = useContext(DataContext);
   const [contacts, setContacts] = useState([]);
   const host = process.env.NEXT_PUBLIC_HOST;
   useEffect(() => {
@@ -36,7 +37,10 @@ export default function ContactsPrivate() {
     prev.includes(id) ? prev.filter((n)=> n !== id) : [...prev,id]
   )
   };
-  console.log("ksdjfhksdfhksjdhf gjhsdfgkjshdfgkjhsdf", selectedContactsIds);
+
+  //  useEffect(() => {
+  //   setSelectedContactsIds(selectedContacts); // send updated selection to parent
+  // }, [selectedContacts]);
   
   
 

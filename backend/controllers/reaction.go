@@ -93,7 +93,7 @@ func AddReaction(w http.ResponseWriter, r *http.Request, userId int) {
 
 	// Set the generated ID and return the reaction
 	reaction.Id = reactionID
-
+	fmt.Println(reaction)
 	utils.WriteJSON(w, reaction, http.StatusOK)
 }
 

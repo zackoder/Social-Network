@@ -1,11 +1,12 @@
 "use client"
 import { FaCloudUploadAlt } from "react-icons/fa";
-import { use, useState } from "react";
+import { use, useState, useContext } from "react";
 import "./createPost.modules.css"
 import { getData } from "../post/post";
 import { useRef } from "react";
 import ContactsPrivate from "../contactprivate/contactprivate";
 import { isAuthenticated } from "@/app/page";
+import { DataContext } from "@/contexts/dataContext";
 
 export default function CreatePost({ onPostCreated }) {
 
@@ -13,6 +14,8 @@ export default function CreatePost({ onPostCreated }) {
   let [title, setTitle] = useState("")
   let [content, setContent] = useState("")
   let [image, setImage] = useState("")
+  const {selectedContactsIds} = useContext(DataContext)
+  let friends = selectedContactsIds
   const fileInputRef = useRef(null)
   const host = process.env.NEXT_PUBLIC_HOST
 
@@ -22,7 +25,8 @@ export default function CreatePost({ onPostCreated }) {
     const postData = {
       privacy,
       title,
-      content
+      content,
+      friends
     };
 
     formData.append('postData', JSON.stringify(postData));
@@ -48,6 +52,7 @@ export default function CreatePost({ onPostCreated }) {
         setTitle("");
         setContent("");
         setImage("");
+        setAllowedIds([]);
       }
 
       // Reset file input
