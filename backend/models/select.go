@@ -409,3 +409,21 @@ func SelectNotifications(user_id int) ([]utils.Notification, error) {
 	defer rows.Close()
 	return notis, nil
 }
+
+func SelectOneNoti(noti *utils.Notification) {
+	queryNoti := "SELECT message, target_id, actor_id, user_id FROM notifications WHERE id = ?"
+	err := Db.QueryRow(queryNoti, noti.Id).Scan(&noti.Message, &noti.Target_id, &noti.Actor_id, &noti.Sender_id)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func GetGroupOwner(group utils.Groupe_member) int {
+	var owner int
+	selectGroupOwner := `SELECT group_oner FROM groups WHERE id = ?`
+	err := Db.QueryRow(selectGroupOwner, group.Groupe_id).Scan(&owner)
+	if err != nil {
+		log.Println("getting group owner id error", err)
+	}
+	return owner
+}

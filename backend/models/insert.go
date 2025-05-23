@@ -128,6 +128,7 @@ func InsertNotification(noti utils.Notification) error {
 		query := "INSERT INTO notifications (user_id, target_id, actor_id, message) VALUES (?,?,?,?)"
 		_, err = Db.Exec(query, noti.Sender_id, noti.Target_id, noti.Actor_id, noti.Message)
 	}
+	fmt.Println(noti, err)
 	return err
 }
 

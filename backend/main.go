@@ -62,7 +62,8 @@ func main() {
 	mux.HandleFunc("GET /api/registrationData", controllers.GetRegistrationData)
 	mux.Handle("/userData", http.HandlerFunc(controllers.UserData))
 
-	mux.Handle("/notifications", http.HandlerFunc(controllers.GetNotifications))
+	mux.Handle("/getNotifications", http.HandlerFunc(controllers.GetNotifications))
+	mux.Handle("/notiResp", http.HandlerFunc(controllers.NotiResp))
 	// mux.Handle("/private-messages", http.HandlerFunc(controllers.GetNotifications))
 
 	fmt.Println("localhost:8080")

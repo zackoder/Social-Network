@@ -72,17 +72,12 @@ func Jouind_Groupe(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "you are already a member of this group"}, 403)
 		return
 	}
-
-	err = models.InsserMemmberInGroupe(requist.Groupe_id, requist.User_id, "member")
-	if err != nil {
-		if strings.Contains(err.Error(), "FOREIGN KEY") {
-			utils.WriteJSON(w, map[string]string{"error": "Check your data"}, http.StatusBadRequest)
-			return
-		}
-		log.Println("inserting a member to a group", err)
-		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
-		return
-	}
+	var noti utils.Notification
+	noti.Target_id = models.GetGroupOwner(requist)
+	noti.Actor_id = requist.Groupe_id
+	noti.Sender_id = requist.User_id
+	noti.Message = "join request"
+	models.InsertNotification(noti)
 	utils.WriteJSON(w, map[string]string{"prossotion": "seccesfel"}, http.StatusOK)
 }
 
@@ -205,7 +200,7 @@ func CreatEvent(w http.ResponseWriter, r *http.Request) {
 	var notification utils.Notification
 	err := models.InsserEventInDatabase(event)
 	notification.Message = "join group request"
-	notification.Actor_id = 5
+	notification.Actor_id = 1
 	err = models.InsertNotification(notification)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
