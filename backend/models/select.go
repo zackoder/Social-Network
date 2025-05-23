@@ -384,9 +384,10 @@ func CheckNoti(noti utils.Notification) (bool, error) {
             actor_id = ?
             AND target_id = ?
             AND message = ?
+			AND user_id = ?
     );
 	`
-	err := Db.QueryRow(checknoti, noti.Actor_id, noti.Target_id, noti.Message).Scan(&exists)
+	err := Db.QueryRow(checknoti, noti.Actor_id, noti.Target_id, noti.Message, noti.Sender_id).Scan(&exists)
 	return exists, err
 }
 
