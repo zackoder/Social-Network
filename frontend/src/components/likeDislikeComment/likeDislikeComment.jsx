@@ -10,12 +10,38 @@ import React, { useEffect, useRef, useState } from 'react';
 export default function LikeDislikeComment({postId}) {
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
+  const [likeNumber, setLikeNbr] = useState(0);
+  const [disLikeNumber, setDisLikeNbr] = useState(0);
   const [comment, setComment] = useState('');
   const [image, setImage] = useState("");
   const [submittedComment, setSubmittedComment] = useState('');
   const fileInputRef = useRef(null);
   const host = process.env.NEXT_PUBLIC_HOST
-
+  
+  const getReactions = async (postId) => {
+    try {
+    const response = await fetch(`${host}/getReactions?postId=${postId}`, {
+      credentials: "include",
+    });
+    const data = await response.json();    
+    setDisLikeNbr(data.counts.dislike);
+    setLikeNbr(data.counts.like);
+   
+    const userReaction = data.userReaction;
+    if (!userReaction || !userReaction.reactionType) {
+      setLiked(false);
+      setDisliked(false);
+    } else if (userReaction.reactionType === "like") {
+      setLiked(true);
+      setDisliked(false);
+    } else if (userReaction.reactionType === "dislike") {
+      setLiked(false);
+      setDisliked(true);
+    }
+  } catch (error) {
+    console.error("Failed to fetch user reaction:", error);
+  }
+  };
 
   const  handleLike =  async () => {
     try {
@@ -29,16 +55,21 @@ export default function LikeDislikeComment({postId}) {
       } 
       const data = await response.json()
       // check status
+      
       if (await data.message == "Reaction updated" && await data.reaction.reactionType == "like"){
           setLiked(true);
           setDisliked(false);
-      } else if (data.message === 'Reaction removed') {
-        setLiked(false);
-        setDisliked(false);
-      } else {
-        setLiked(true);
-        setDisliked(false);
-      }
+          // setLikeNbr(likeNumber+1)
+          // setDisLikeNbr(disLikeNumber-1) 
+        } else if (data.message === 'Reaction removed') {
+          // setLikeNbr(likeNumber-1)
+          setLiked(false);
+          setDisliked(false);
+        } else {
+          // setLikeNbr(likeNumber+1)  
+          setLiked(true);
+          setDisliked(false);
+        }
       // data.message 
       // umdate or remove
 
@@ -46,6 +77,10 @@ export default function LikeDislikeComment({postId}) {
       console.log();
       
     }
+   await getReactions(postId);
+
+    setLiked(!liked)
+    if (disliked){setDisliked(false)}
   };
 	// Id           int    `json:"id"`
 	// PostId       int    `json:"postId"`
@@ -63,10 +98,12 @@ export default function LikeDislikeComment({postId}) {
         throw new Error(error);
       } 
       const data = await response.json()
+      
       // check status
       if (await data.message == "Reaction updated" && await data.reaction.reactionType == "dislike"){
           setLiked(false);
           setDisliked(true);
+        
       } else if (data.message === 'Reaction removed') {
         setLiked(false);
         setDisliked(false);
@@ -81,35 +118,12 @@ export default function LikeDislikeComment({postId}) {
       console.log();
       
     }
-
-
+    await getReactions(postId);
 
     setDisliked(!disliked);
-    if (liked) setLiked(false);
+    if (liked){setLiked(false)} 
   };
-  
-    const getReactions = async (postId) => {
-      try {
-      const response = await fetch(`${host}/getReactions?postId=${postId}`, {
-        credentials: "include",
-      });
-      const data = await response.json();
-      const userReaction = data.userReaction;
-      if (!userReaction || !userReaction.reactionType) {
-        setLiked(false);
-        setDisliked(false);
-      } else if (userReaction.reactionType === "like") {
-        setLiked(true);
-        setDisliked(false);
-      } else if (userReaction.reactionType === "dislike") {
-        setLiked(false);
-        setDisliked(true);
-      }
-    } catch (error) {
-      console.error("Failed to fetch user reaction:", error);
-    }
-  };
-  
+ 
     useEffect(()=> {
           getReactions(postId)
     }, [])
@@ -150,20 +164,19 @@ export default function LikeDislikeComment({postId}) {
     //end point
   };
   return (
-
     //className={styles.reactionContainer}
     <div style={{ minWidth: '100%', margin: '5px auto' }}>
       <div className="buttons" style={{ fontSize: '24px', marginBottom: '10px' }}>
         {/* className={styles.button} */}
         <button onClick={handleLike} style={{ color: liked ? 'var(--color-primary)' : 'gray', fontSize: '18px', backgroundColor: 'transparent', border: 'none' }}>
-          <BiLike /> <span>Like</span>
+          <BiLike /> <span>Like  {likeNumber}</span>
         </button>
         <button
           // className={styles.button}
           onClick={handleDislike}
           style={{ color: disliked ? 'red' : 'gray', fontSize: '18px', backgroundColor: 'transparent', border: 'none' }}
         >
-          <BiDislike /> <span>Dislike</span>
+          <BiDislike /> <span>Dislike  {disLikeNumber}</span>
         </button>
       </div>
 

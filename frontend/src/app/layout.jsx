@@ -3,10 +3,11 @@ import "./globals.css";
 
 import Navbar from "@/components/navbar/navbar";
 import Footer from "@/components/footer/footer";
-import {Montserrat} from "next/font/google";
+import { Montserrat } from "next/font/google";
 import WebsocketInitializer from "@/components/websocket/websocketInitializer";
 import { headers } from "next/headers";
 import ConditionalNavbar from "@/components/navbar/ConditionalNavbar";
+import { DataProvider } from "@/contexts/dataContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,8 +20,8 @@ const geistMono = Geist_Mono({
 });
 
 const bodyFont = Montserrat({
-  subsets: ['latin'],
-  weight: ['500', '700']
+  subsets: ["latin"],
+  weight: ["500", "700"],
 });
 
 export const metadata = {
@@ -35,13 +36,15 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${bodyFont.className}`}>
-        <div className="container">
-          <WebsocketInitializer />
-          {/* {!isAuthPage && <Navbar/>} */}
-          <ConditionalNavbar />
-          {children}
-          <Footer/>
-        </div>
+        <DataProvider>
+          <div className="container">
+            <WebsocketInitializer />
+            {/* {!isAuthPage && <Navbar/>} */}
+            <ConditionalNavbar />
+            {children}
+            <Footer />
+          </div>
+        </DataProvider>
       </body>
     </html>
   );

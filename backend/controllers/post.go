@@ -14,14 +14,14 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
+// cookie, err := r.Cookie("token")
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		utils.WriteJSON(w, map[string]string{"error": "Unauthorized"}, http.StatusUnauthorized)
+// 		return
+// 	}
 
-	// cookie, err := r.Cookie("token")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	utils.WriteJSON(w, map[string]string{"error": "Unauthorized"}, http.StatusUnauthorized)
-	// 	return
-	// }
-
+	
 	var post utils.Post
 	// fmt.Println(cookie.Value)
 	// post.Poster_id, err = models.Get_session(cookie.Value)
@@ -30,13 +30,10 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 	// 	utils.WriteJSON(w, map[string]string{"error": "Unauthorized aras lfta"}, http.StatusUnauthorized)
 	// 	return
 	// }
+	post.Poster_id = userId
 
-	// fmt.Println(post.Poster_id)
+	fmt.Println(post.Poster_id)
 	host := r.Host
-	// if _, exists := r.Form["postData"]; !exists {
-
-	// 	return
-	// }
 	postData := r.FormValue("postData")
 	filepath, err := utils.UploadImage(r)
 	if err != nil {
