@@ -70,9 +70,13 @@ func Jouind_Groupe(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Bad Request"}, http.StatusBadRequest)
 		return
 	}
-
 	if models.IsMember(requist.Groupe_id, requist.User_id) {
 		utils.WriteJSON(w, map[string]string{"error": "you are already a member of this group"}, 403)
+		return
+	}
+	
+	if !models.CheckGroup(requist.Groupe_id) {
+		utils.WriteJSON(w, map[string]string{"error": "Group not found"}, http.StatusNotFound)
 		return
 	}
 	var noti utils.Notification
@@ -80,8 +84,19 @@ func Jouind_Groupe(w http.ResponseWriter, r *http.Request) {
 	noti.Actor_id = requist.Groupe_id
 	noti.Sender_id = requist.User_id
 	noti.Message = "join request"
-	models.InsertNotification(noti)
-	utils.WriteJSON(w, map[string]string{"prossotion": "seccesfel"}, http.StatusOK)
+	err = models.InsertNotification(noti)
+	if err != nil {
+		log.Println("error", err)
+		if err.Error() != "" && strings.Contains(err.Error(), "FOREIGN KEY") {
+			utils.WriteJSON(w, map[string]string{"error": "check your data"}, http.StatusBadRequest)
+		} else {
+			utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
+			log.Println(err)
+		}
+		return
+	}
+	fmt.Println("function stoped here")
+	utils.WriteJSON(w, map[string]string{"prossotion": "succeeded"}, http.StatusOK)
 }
 
 // fetch('/api/searchGroups?query=tech')
@@ -181,7 +196,7 @@ func Get_all_post(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, Posts_groupe, http.StatusOK)
 }
 
-func CreatEvent(w http.ResponseWriter, r *http.Request) {
+func CreatEvent(w http.ResponseWriter, r *http.Request, userId int) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)
 		return
