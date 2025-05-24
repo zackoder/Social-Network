@@ -154,10 +154,11 @@ func InsserMemmberInGroupe(Groupe_id, User_id int, role string) error {
 	return err
 }
 
-func InsserEventInDatabase(event utils.Event) error {
+func InsserEventInDatabase(event utils.Event) (int, error) {
 	Quirie := "INSERT INTO events (group_id,title,description,event_time,created_by) VALUES (?,?,?,?)"
-	_, err := Db.Exec(Quirie, event.GroupID, event.Title, event.Description, event.EventTime, event.CreatedBy)
-	return err
+	res, err := Db.Exec(Quirie, event.GroupID, event.Title, event.Description, event.EventTime, event.CreatedBy)
+	lastid, _ := res.LastInsertId()
+	return int(lastid), err
 }
 
 func InsserResponceInDatabase(responce utils.EventResponse) error {

@@ -24,6 +24,7 @@ exec bash
 # Start backend in another new terminal
 gnome-terminal -- bash -c "
 cd backend
+go install github.com/zzwx/fresh@latest
 export PATH=\"\$PATH:\$HOME/go/bin\"
 source ~/.bashrc
 fresh -g

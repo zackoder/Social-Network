@@ -36,10 +36,10 @@ func main() {
 	mux.Handle("POST /updatePrivacy", http.HandlerFunc(controllers.UpdatePrivacy))
 	mux.Handle("POST /creategroup", http.HandlerFunc(controllers.Creat_groupe))
 	mux.Handle("/JouindGroupe", http.HandlerFunc(controllers.Jouind_Groupe))
-	mux.Handle("/groupInvitarion", http.HandlerFunc(controllers.InviteUser))
-
-	mux.HandleFunc("/GetPostsFromGroupe", controllers.Get_all_post)
 	mux.HandleFunc("/CreatEvent", controllers.CreatEvent)
+	
+	mux.Handle("/groupInvitarion", http.HandlerFunc(controllers.InviteUser))
+	mux.HandleFunc("/GetPostsFromGroupe", controllers.Get_all_post)
 
 	mux.Handle("POST /api/logout", http.HandlerFunc(controllers.LogoutHandler))
 
@@ -47,7 +47,7 @@ func main() {
 	mux.Handle("/api/posts", http.HandlerFunc(controllers.Posts))
 	mux.HandleFunc("GET /api/getProfilePosts", controllers.GetProfilePosts)
 	mux.HandleFunc("GET /group", controllers.Group)
-	// mux.Handle("/event-resp", (http.HandlerFunc(connections.EventResponse)))
+	mux.Handle("/event-resp", (http.HandlerFunc(controllers.EventResponse)))
 	mux.HandleFunc("/ws", controllers.Websocket)
 
 	// Comment handlers

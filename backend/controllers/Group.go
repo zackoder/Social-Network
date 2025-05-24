@@ -15,6 +15,9 @@ import (
 func Group(w http.ResponseWriter, r *http.Request) {
 }
 
+func EventResponse(w http.ResponseWriter, r *http.Request) {
+}
+
 func Creat_groupe(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
@@ -183,24 +186,29 @@ func CreatEvent(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
+
+	var notification utils.Notification
 	var event utils.Event
-	if err := json.NewDecoder(r.Body).Decode(&event); err != nil {
+	err := json.NewDecoder(r.Body).Decode(&event)
+	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest"}, http.StatusBadRequest)
 		return
 	}
+	notification.Target_id = event.GroupID
 
 	if len(event.Title) > 25 || len(event.Description) > 100 || len(strings.TrimSpace(event.Description)) < 2 || len(strings.TrimSpace(event.Title)) < 2 {
 		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest"}, http.StatusBadRequest)
 		return
 	}
+
 	if !models.IsMember(event.GroupID, event.CreatedBy) {
 		utils.WriteJSON(w, map[string]string{"error": "Access denied: you must be a member of the group to creat event."}, 403)
 		return
 	}
-	var notification utils.Notification
-	err := models.InsserEventInDatabase(event)
-	notification.Message = "join group request"
-	notification.Actor_id = 1
+
+	notification.Actor_id, err = models.InsserEventInDatabase(event)
+	notification.Message = "event"
+	log.Println(notification)
 	err = models.InsertNotification(notification)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
