@@ -3,7 +3,6 @@ package controllers
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -13,32 +12,20 @@ import (
 	"social-network/utils"
 )
 
-func GetNotifications(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("token")
-	if err != nil {
-		utils.WriteJSON(w, map[string]string{"error": "Unauthorized"}, http.StatusUnauthorized)
-		return
-	}
-	user_id, _ := models.Get_session(cookie.Value)
-	notifications, err := models.SelectNotifications(user_id)
+func GetNotifications(w http.ResponseWriter, r *http.Request, userId int) {
+	notifications, err := models.SelectNotifications(userId)
 	if err != nil {
 		log.Println(err)
 	}
 	utils.WriteJSON(w, notifications, 200)
 }
 
-func NotiResp(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("token")
-	if err != nil {
-		utils.WriteJSON(w, map[string]string{"error": "Unauthorized"}, http.StatusUnauthorized)
-		return
-	}
-
+func NotiResp(w http.ResponseWriter, r *http.Request, userId int) {
 	var noti utils.Notification
-	fmt.Println(cookie.Value)
-	err = json.NewDecoder(r.Body).Decode(&noti)
+	err := json.NewDecoder(r.Body).Decode(&noti)
 	if err != nil {
 		log.Println("decoding json", err)
+		return
 	}
 	resp := noti.Message
 	models.SelectOneNoti(&noti)

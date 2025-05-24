@@ -1,9 +1,7 @@
 package models
 
 import (
-	"database/sql"
 	"fmt"
-	"log"
 
 	"social-network/utils"
 )
@@ -115,20 +113,15 @@ func InsertGroupMSG(msg utils.Message) error {
 }
 
 func InsertNotification(noti utils.Notification) error {
-	exists, err := CheckNoti(noti)
-	if err != nil {
-		if err != sql.ErrNoRows {
-			log.Println("checking notification error", err)
-			return err
-		}
-	}
-	if exists {
-		err = UpdateNoti(noti)
+	var oldNoti utils.Notification
+	SelectOneNoti(&oldNoti)
+	var err error
+	if oldNoti.Id != 0 {
+		err = UpdateNoti(oldNoti, noti)
 	} else {
 		query := "INSERT INTO notifications (user_id, target_id, actor_id, message) VALUES (?,?,?,?)"
 		_, err = Db.Exec(query, noti.Sender_id, noti.Target_id, noti.Actor_id, noti.Message)
 	}
-	fmt.Println(noti, err)
 	return err
 }
 
