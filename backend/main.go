@@ -36,8 +36,8 @@ func main() {
 	mux.Handle("POST /updatePrivacy", http.HandlerFunc(controllers.UpdatePrivacy))
 	mux.Handle("POST /creategroup", http.HandlerFunc(controllers.Creat_groupe))
 	mux.Handle("/JouindGroupe", http.HandlerFunc(controllers.Jouind_Groupe))
-	mux.HandleFunc("/CreatEvent", controllers.CreatEvent)
-	
+	mux.Handle("/CreatEvent", midleware.AuthMiddleware(controllers.CreatEvent))
+
 	mux.Handle("/groupInvitarion", http.HandlerFunc(controllers.InviteUser))
 	mux.HandleFunc("/GetPostsFromGroupe", controllers.Get_all_post)
 
@@ -62,8 +62,8 @@ func main() {
 	mux.HandleFunc("GET /api/registrationData", controllers.GetRegistrationData)
 	mux.Handle("/userData", http.HandlerFunc(controllers.UserData))
 
-	mux.Handle("/getNotifications", http.HandlerFunc(controllers.GetNotifications))
-	mux.Handle("/notiResp", http.HandlerFunc(controllers.NotiResp))
+	mux.Handle("/getNotifications", midleware.AuthMiddleware(controllers.GetNotifications))
+	mux.Handle("/notiResp", midleware.AuthMiddleware(controllers.NotiResp))
 	// mux.Handle("/private-messages", http.HandlerFunc(controllers.GetNotifications))
 
 	fmt.Println("localhost:8080")

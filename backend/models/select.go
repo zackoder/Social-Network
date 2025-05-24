@@ -370,27 +370,6 @@ func MyGroupes(user_id int) []string {
 	return res
 }
 
-// checking if the notification already sent
-func CheckNoti(noti utils.Notification) (bool, error) {
-	var exists bool
-	checknoti := `
-		SELECT
-    EXISTS (
-        SELECT
-            1
-        FROM
-            notifications
-        WHERE
-            actor_id = ?
-            AND target_id = ?
-            AND message = ?
-			AND user_id = ?
-    );
-	`
-	err := Db.QueryRow(checknoti, noti.Actor_id, noti.Target_id, noti.Message, noti.Sender_id).Scan(&exists)
-	return exists, err
-}
-
 func SelectNotifications(user_id int) ([]utils.Notification, error) {
 	var notis []utils.Notification
 	quetyNotifications := `SELECT id, user_id, actor_id, target_id, message FROM notifications WHERE target_id = ?`
@@ -427,4 +406,12 @@ func GetGroupOwner(group utils.Groupe_member) int {
 		log.Println("getting group owner id error", err)
 	}
 	return owner
+}
+
+func CheckGroup(group_id int) bool {
+	var exists bool
+	getGroup := "SELECT EXISTS(SELECT 1 FROM groups WHERE id = ?)"
+	err := Db.QueryRow(getGroup, group_id).Scan(&exists)
+	log.Println(err)
+	return exists
 }

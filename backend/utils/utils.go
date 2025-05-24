@@ -106,6 +106,7 @@ type Groupe struct {
 	Description string `json:"description"`
 	CreatorId   int    `json:"cretorid"`
 }
+
 type Groupe_member struct {
 	User_id   int `json:"user_id"`
 	Groupe_id int `json:"groupe_id"`

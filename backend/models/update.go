@@ -19,12 +19,12 @@ func UpdateProfile(id int) string {
 	return ""
 }
 
-func UpdateNoti(noti utils.Notification) error {
+func UpdateNoti(oldNoti, noti utils.Notification) error {
 	updatenoti := `
 		UPDATE notifications 
-		SET user_id = ?
-		WHERE actor_id = ? AND target_id = ? AND message = ?;
+		SET user_id = ?, actor_id = ? AND target_id = ?
+		WHERE id = ?;
 	`
-	_, err := Db.Exec(updatenoti, noti.Sender_id, noti.Actor_id, noti.Target_id, noti.Message)
+	_, err := Db.Exec(updatenoti, noti.Sender_id, noti.Actor_id, noti.Target_id, oldNoti.Id)
 	return err
 }

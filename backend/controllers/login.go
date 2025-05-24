@@ -31,7 +31,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, "internaInternal Server Error1", http.StatusInternalServerError)
 		return
 	}
-	if userData.ID > 11 {
+	if userData.ID > 10 {
 		if !utils.CheckPasswordHash(&password, &userData.Password) {
 			utils.WriteJSON(w, "Incorect password", http.StatusUnauthorized)
 			return
@@ -57,6 +57,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	
 	userData.SessionId, err = utils.GenerateSessionID()
 	if err != nil {
 		fmt.Println(err)
