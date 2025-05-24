@@ -206,13 +206,13 @@ func CreatEvent(w http.ResponseWriter, r *http.Request, userId int) {
 	var event utils.Event
 	err := json.NewDecoder(r.Body).Decode(&event)
 	if err != nil {
-		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest"}, http.StatusBadRequest)
+		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest1"}, http.StatusBadRequest)
 		return
 	}
 	notification.Target_id = event.GroupID
 
 	if len(event.Title) > 25 || len(event.Description) > 100 || len(strings.TrimSpace(event.Description)) < 2 || len(strings.TrimSpace(event.Title)) < 2 {
-		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest"}, http.StatusBadRequest)
+		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest2"}, http.StatusBadRequest)
 		return
 	}
 
@@ -241,7 +241,7 @@ func EventRrspponce(w http.ResponseWriter, r *http.Request) {
 	}
 	var responce utils.EventResponse
 	if err := json.NewDecoder(r.Body).Decode(&responce); err != nil {
-		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest"}, http.StatusBadRequest)
+		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest 3"}, http.StatusBadRequest)
 		return
 	}
 
