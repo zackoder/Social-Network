@@ -1,10 +1,9 @@
 package utils
 
 import (
-	"strings"
-
 	"net/http"
 	"regexp"
+	"strings"
 
 	"github.com/gofrs/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -56,4 +55,8 @@ func ClearSession(w http.ResponseWriter) {
 		MaxAge: -1,
 	}
 	http.SetCookie(w, cookie)
+}
+
+func HandleEvent(noti Notification) {
+	
 }
