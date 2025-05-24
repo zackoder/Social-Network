@@ -18,7 +18,7 @@ func main() {
 	models.Db = db.InitDB()
 	defer models.Db.Close()
 	mux := http.NewServeMux()
-	mux.Handle("/login", (http.HandlerFunc(controllers.Login)))
+	mux.HandleFunc("/login", (controllers.Login))
 	mux.Handle("/register", (http.HandlerFunc(controllers.Register)))
 
 	mux.Handle("POST /creategroup", (http.HandlerFunc(controllers.Creat_groupe)))
