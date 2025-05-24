@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import styles from "./contacts.module.css";
+import { Router } from "next/navigation";
+import { isAuthenticated } from "@/app/page";
 
 export default function Contacts({ onContactClick, activeContactId }) {
   const [contacts, setContacts] = useState([]);
@@ -15,14 +17,21 @@ export default function Contacts({ onContactClick, activeContactId }) {
         const response = await fetch(`${host}/api/getuserfriends`, {
           credentials: "include",
         });
+        // const rout = Router()
+        // rout.push("/login")
+        // console.log(response);
         const data = await response.json();
-        setContacts(data);
-        if (data &&data.error) {
-          throw new Error(data.error);
+        if (!response.ok) {
+          isAuthenticated(response.status , data.error)
+          return
         }
-        console.log(data);
+        
+        setContacts(data);
+        // if (data &&data.error) {
+        //   throw new Error(data.error);
+        // }
       } catch (error) {
-        console.error("Failed to fetch contacts:", error);
+        console.log("Failed to fetch contacts:", error);
       }
     };
     fetchContacts();
@@ -30,7 +39,8 @@ export default function Contacts({ onContactClick, activeContactId }) {
   if (!contacts || contacts.length == 0) {
     return;
   }
-
+  console.log(contacts);
+  
   return (
     <div className={styles.container}>
       {contacts.map((contact) => (

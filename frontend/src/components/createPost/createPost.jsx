@@ -45,7 +45,6 @@ export default function CreatePost({ onPostCreated }) {
 
       if (!response.ok) {
         isAuthenticated(response.status, newPost.error);
-        throw new Error(newPost.error);
       } else {
         // Reset form
         setPrivacy("public");
