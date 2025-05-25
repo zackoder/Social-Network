@@ -5,10 +5,15 @@ import styles from "./groups.module.css";
 export default function Home() {
   const [groups, setGroups] = useState([]);
   const [error, setError] = useState(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
 
   const host = process.env.NEXT_PUBLIC_HOST;
+  
 
   const fetchGroups = async (url) => {
+
     setError(null);
     try {
       const res = await fetch(`${host}${url}`, {
@@ -30,6 +35,27 @@ export default function Home() {
     useEffect(() => {
     fetchGroups("/GetGroups");
   }, []);
+   const handleCreateGroup = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${host}/creategroup`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title, description }),
+      });
+      if (!res.ok) throw new Error("Group creation failed");
+      const newGroup = await res.json();
+      setGroups((prev) => [newGroup, ...prev]);
+      setIsPopupOpen(false);
+      setTitle("");
+      setDescription("");
+    } catch (err) {
+      alert(err.message || "Error creating group");
+    }
+  };
 
   return (
     
@@ -65,7 +91,43 @@ export default function Home() {
         >
           All groups
         </a>
+        <div className={styles.div3}>
+          <button
+           className={styles.button} 
+           onClick={() => {
+             console.log("Popup ouverte !");
+             setIsPopupOpen(true);
+          }}>Creat groupe</button>
+        </div>
       </div>
+        {/* POPUP MODAL */}
+      {isPopupOpen && (
+  <div className={styles.modalOverlay} onClick={() => setIsPopupOpen(false)}>
+    <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <h2>Create a group</h2>
+      <form onSubmit={handleCreateGroup}>
+        <label>Title :</label>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
+        <label>Description :</label>
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          required
+        ></textarea>
+        <div className={styles.actions}>
+          <button type="submit" className={styles.submitBtn}>Create</button>
+          <button type="button" onClick={() => setIsPopupOpen(false)} className={styles.cancelBtn}>Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
 
       <div className={styles.contenu} style={{ marginTop: "20px" }}>
         {error && <p style={{ color: "red" }}>{error}</p>}
