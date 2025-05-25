@@ -77,7 +77,7 @@ export default function ButtonFollow({ profileId }) {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_HOST}/HandleFollow?follower=${currentUserId}&followed=${profileId}`,
+        `${process.env.NEXT_PUBLIC_HOST}/followReq?follower=${currentUserId}&followed=${profileId}`,
         {
           method: "POST",
           credentials: "include",

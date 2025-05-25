@@ -52,7 +52,9 @@ export default function ProfilePage() {
         console.error(`Profile response error: ${profileResponse.status}`);
         const errorText = await profileResponse.text();
         console.error("Error response:", errorText);
-        throw new Error(`Failed to load profile data: ${profileResponse.status}`);
+        throw new Error(
+          `Failed to load profile data: ${profileResponse.status}`
+        );
       }
 
       // Check content type before trying to parse JSON
