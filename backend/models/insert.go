@@ -104,6 +104,7 @@ func InsserGroupe(title, description string, creator_id int) (int,error) {
 	Query := "INSERT INTO groups (name, description, group_oner) VALUES (?,?,?)"
 	res, err := Db.Exec(Query, title, description, creator_id)
 	id, err := res.LastInsertId()
+	fmt.Println("errggggggggggggggggggggggggggg",err)
 	if err != nil {
 		return 0, err
 	}
