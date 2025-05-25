@@ -10,21 +10,6 @@ import (
 )
  
  
-/*else if profilePrivacy && isFollower {
-   // if the  profile is public we show all posts exept the privet ones and the almostPrivet posts
-   // we check them one by one we fetch them in case the visiter is a follower .
-   publicAnAlmstPublicPosts, err := models.GetPublicAndAlmostPrivatePosts(profileOwnerID, userId)
-   if err != nil {
-	   utils.WriteJSON(w, map[string]string{"error": "Failed to fetch posts"}, http.StatusInternalServerError)
-	   return
-   }
-   utils.WriteJSON(w, publicAnAlmstPublicPosts, 200)
-   return
-}
-else if  !isFollower {
-   utils.WriteJSON(w, map[string]string{"error": "This profile is private"}, http.StatusForbidden)
-   return
-}*/
 
 func GetProfilePosts(w http.ResponseWriter, r *http.Request, userId int) {
 	profileOwnerIDStr := r.URL.Query().Get("id")
@@ -53,13 +38,13 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request, userId int) {
 		return
 	}
 	fmt.Println("this is the profile privacy", profilePrivacy)
-
+	
 	profileOwnerID, err := strconv.Atoi(profileOwnerIDStr)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Invalid profile ID"}, http.StatusBadRequest)
 		return
 	}
-
+	
 	isFollower, err := models.IsFollower(profileOwnerID, userId)
 	// if the profile is private we use the func IsFollower to chekck the list of followers if the visiter is amog the follower
 	// we show him the public posts + the almost privet posts
@@ -68,7 +53,7 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request, userId int) {
 		utils.WriteJSON(w, map[string]string{"error": "Failed to check follower status"}, http.StatusInternalServerError)
 		return
 	}
-
+	
 	if !profilePrivacy && !isFollower {
 		publicPosts, err := models.GetPuclicPosts(profileOwnerID)
 		if err != nil {
@@ -76,7 +61,22 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request, userId int) {
 		}
 		utils.WriteJSON(w, publicPosts, 200)
 	}
-
+	/*else if profilePrivacy && isFollower {
+	   // if the  profile is public we show all posts exept the privet ones and the almostPrivet posts
+	   // we check them one by one we fetch them in case the visiter is a follower .
+	   publicAnAlmstPublicPosts, err := models.GetPublicAndAlmostPrivatePosts(profileOwnerID, userId)
+	   if err != nil {
+		   utils.WriteJSON(w, map[string]string{"error": "Failed to fetch posts"}, http.StatusInternalServerError)
+		   return
+	   }
+	   utils.WriteJSON(w, publicAnAlmstPublicPosts, 200)
+	   return
+	}
+	else if  !isFollower {
+	   utils.WriteJSON(w, map[string]string{"error": "This profile is private"}, http.StatusForbidden)
+	   return
+	}*/
+	
 	// here we fetch the public and almost privet posts and the ones only for people that are allowed to see them by
 	// checking the the user id across the privet post viewrs that stors the post
 	// with people allowed to see it
