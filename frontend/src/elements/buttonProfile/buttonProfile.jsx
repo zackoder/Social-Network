@@ -53,11 +53,7 @@ export default function ButtonProfile() {
 
         // Check multiple possible ID field names
         const userId =
-          data.Id ||
-          data.id ||
-          data.ID ||
-          data.userId ||
-          data.user_id;
+          data.Id || data.id || data.ID || data.userId || data.user_id;
         if (!userId) {
           console.warn("User data does not contain ID field:", data);
           throw new Error("User ID missing from response");

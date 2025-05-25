@@ -9,6 +9,7 @@ import (
 )
 
 func HandleFollow(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("1231321231")
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Not allowed"}, http.StatusMethodNotAllowed)
 		return
@@ -59,10 +60,12 @@ func UserData(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Not allowed"}, http.StatusMethodNotAllowed)
 		return
 	}
-	cookie, _ := r.Cookie("token")
-	
+	cookie, err := r.Cookie("token")
+	if err != nil {
+		fmt.Println(err)
+	}
 	var userD utils.UserD
-	err := models.Db.QueryRow(
+	err = models.Db.QueryRow(
 		`SELECT u.id, u.first_name, u.avatar
             FROM users u 
             JOIN sessions s on s.id = u.id 
