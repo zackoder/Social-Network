@@ -15,19 +15,31 @@ func Group(w http.ResponseWriter, r *http.Request) {
 }
 
 func Creat_groupe(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("token")
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "You don't have access."}, http.StatusForbidden)
+		return
+	}
 	fmt.Println("hihi")
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
+	userId, err := models.Get_session(cookie.Value)
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "Invalid session"}, http.StatusUnauthorized)
+		return
+	}
 
 	var Groupe utils.Groupe
-	err := json.NewDecoder(r.Body).Decode(&Groupe)
+	err = json.NewDecoder(r.Body).Decode(&Groupe)
+	fmt.Println("datagroupe",Groupe)
 	if err != nil {
 		fmt.Println("hoho")
 		utils.WriteJSON(w, map[string]string{"error": "Bad Request"}, http.StatusBadRequest)
 		return
 	}
+	Groupe.CreatorId=userId
 
 	fmt.Println(len(Groupe.Title), len(Groupe.Description))
 
@@ -40,6 +52,7 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "invalid group discription"}, http.StatusBadRequest)
 		return
 	}
+	fmt.Println("okok")
 
 	err = models.InsserGroupe(Groupe.Title, Groupe.Description, Groupe.CreatorId)
 	if err != nil {
