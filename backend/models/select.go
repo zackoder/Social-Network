@@ -76,7 +76,7 @@ func IsPrivateProfile(followed string) (bool, error) {
 		return false, err
 	}
 	fmt.Println(privacy)
-	return privacy == "privet", nil
+	return privacy == "private", nil
 }
 
 func CheckPostPrivacy(post string) (string, error) {
