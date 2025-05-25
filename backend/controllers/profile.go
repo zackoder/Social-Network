@@ -9,15 +9,14 @@ import (
 	"social-network/utils"
 )
 
-func HandleFollow(w http.ResponseWriter, r *http.Request) {
+func HandleFollow(w http.ResponseWriter, r *http.Request, follower int) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Not allowed"}, http.StatusMethodNotAllowed)
 		return
 	}
 	var noti utils.Notification
-	follower := r.URL.Query().Get("follower")
 	followed := r.URL.Query().Get("followed")
-	noti.Sender_id, _ = strconv.Atoi(follower)
+	noti.Sender_id = follower
 	noti.Target_id, _ = strconv.Atoi(followed)
 	noti.Message = "follow request"
 	privacy, err := models.IsPrivateProfile(followed)

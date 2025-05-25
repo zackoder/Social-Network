@@ -33,31 +33,31 @@ func InsertFriends(id int, friendes []int) {
 	}
 }
 
-func InserOrUpdate(follower, followed string) (string, error) {
-	privacy, err := IsPrivateProfile(followed)
-	if err != nil {
-		return "", err
-	}
+// func InserOrUpdate(follower, followed string) (string, error) {
+// 	privacy, err := IsPrivateProfile(followed)
+// 	if err != nil {
+// 		return "", err
+// 	}
 
-	if !privacy {
-		if err := InsertFollow(follower, followed); err != nil {
-			if err := Deletfollow(follower, followed); err != nil {
-				fmt.Println(err)
-				return "", err
-			}
-			fmt.Println(err)
-			return "unfollow seccessfully", nil
-		}
-		return "following seccessfully", nil
-	}
-	InsertFollowreq(followed)
-	return "follow request sent", nil
-}
+// 	if !privacy {
+// 		if err := InsertFollow(follower, followed); err != nil {
+// 			if err := Deletfollow(follower, followed); err != nil {
+// 				fmt.Println(err)
+// 				return "", err
+// 			}
+// 			fmt.Println(err)
+// 			return "unfollow seccessfully", nil
+// 		}
+// 		return "following seccessfully", nil
+// 	}
+// 	InsertFollowreq(followed)
+// 	return "follow request sent", nil
+// }
 
 func InsertFollowreq(followed string) {
 }
 
-func InsertFollow(follower, followed string) error {
+func InsertFollow(follower int, followed string) error {
 	inserQuery := "INSERT INTO followers (follower_id, followed_id) VALUES (?,?)"
 	_, err := Db.Exec(inserQuery, follower, followed)
 	return err
