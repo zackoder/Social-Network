@@ -62,7 +62,7 @@ func NotiResp(w http.ResponseWriter, r *http.Request, userId int) {
 			}
 		}
 	} else if noti.Message == "follow request" {
-		err := models.InsertFollow(strconv.Itoa(noti.Actor_id), strconv.Itoa(noti.Target_id))
+		err := models.InsertFollow(noti.Actor_id, strconv.Itoa(noti.Target_id))
 		if err != nil {
 			log.Println(err)
 		}

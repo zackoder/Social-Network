@@ -6,7 +6,7 @@ import (
 	"social-network/utils"
 )
 
-func Deletfollow(follower, followed string) error {
+func Deletfollow(follower int, followed string) error {
 	deleteQuery := "DELETE FROM followers WHERE follower_id = ? AND followed_id = ?"
 	_, err := Db.Exec(deleteQuery, follower, followed)
 	return err
