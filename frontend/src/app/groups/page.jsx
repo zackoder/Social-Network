@@ -48,10 +48,11 @@ export default function Home() {
       });
       if (!res.ok) throw new Error("Group creation failed");
       const newGroup = await res.json();
-      setGroups((prev) => [newGroup, ...prev]);
       setIsPopupOpen(false);
       setTitle("");
       setDescription("");
+      setGroups((prev) => [...prev, newGroup]);
+
     } catch (err) {
       alert(err.message || "Error creating group");
     }
