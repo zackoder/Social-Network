@@ -100,15 +100,20 @@ func SaveInvitation(Groupe_id, sender_id, resever_id int) error {
 	return err
 }
 
-func InsserGroupe(title, description string, creator_id int) error {
+func InsserGroupe(title, description string, creator_id int) (int,error) {
 	Query := "INSERT INTO groups (name, description, group_oner) VALUES (?,?,?)"
-	_, err := Db.Exec(Query, title, description, creator_id)
-	return err
+	res, err := Db.Exec(Query, title, description, creator_id)
+	id, err := res.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	return int(id), nil
 }
 
-func InsserMemmberInGroupe(Groupe_id, User_id int) error {
-	Quirie := "INSERT INTO group_members (groupe_id,user_id) VALUES (?,?)"
-	_, err := Db.Exec(Quirie, Groupe_id, User_id)
+func InsserMemmberInGroupe(Groupe_id, User_id int,role string) error {
+	Quirie := "INSERT INTO group_members (group_id,user_id,role) VALUES (?,?,?)"
+	_, err := Db.Exec(Quirie, Groupe_id, User_id,role)
+	fmt.Println("errrrrrrrrrrrrr",err)
 	return err
 }
 
