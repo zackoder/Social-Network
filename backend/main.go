@@ -51,7 +51,7 @@ func main() {
 	// this endpoint is gonna be used to fetch the users for the post privacy
 	mux.HandleFunc("GET /api/getfollowers", midleware.AuthMiddleware(controllers.GetFollowers))
 	mux.HandleFunc("GET /api/registrationData", midleware.AuthMiddleware(controllers.GetRegistrationData))
-
+	mux.HandleFunc("GET /userData",(controllers.UserData))
 	// Notification handler
 	mux.Handle("GET /api/notifications", midleware.AuthMiddleware(controllers.GetNotifications))
 

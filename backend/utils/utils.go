@@ -123,3 +123,10 @@ type EventResponse struct {
 	GroupeId int    `json:"groupe_id"`
 	Response string `json:"responce"`
 }
+
+
+type UserD struct {
+	Id        int    ` json:"id"`
+	Firstname string `json:"firstName"`
+	Avatar    string `json:"avatar"`
+}
