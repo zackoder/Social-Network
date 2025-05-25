@@ -43,7 +43,7 @@ func main() {
 
 	mux.HandleFunc("GET /uploads/", controllers.HandelPics)
 	mux.Handle("/api/posts", midleware.WithCORS(http.HandlerFunc(controllers.Posts)))
-	mux.HandleFunc("GET /group/{GroupName}", controllers.Group)
+	//mux.HandleFunc("GET /group/{GroupName}", controllers.Group)
 	mux.HandleFunc("/ws", controllers.Websocket)
 
 	// Comment handlers
