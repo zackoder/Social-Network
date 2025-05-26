@@ -17,6 +17,10 @@ export default function Contacts({ onContactClick, activeContactId }) {
           credentials: "include",
         });
         const data = await response.json();
+        if (!response.ok){
+          isAuthenticated(response.status, data.error);
+          return;
+        }
         setContacts(data);
         if (data &&data.error) {
           console.log(data.error);
@@ -36,7 +40,7 @@ export default function Contacts({ onContactClick, activeContactId }) {
 
   return (
     <div className={styles.container}>
-      {contacts.map((contact) => (
+      {Array.isArray(contacts) && contacts.map((contact) => (
         <div
           key={contact.id}
           className={`${styles.profile} ${

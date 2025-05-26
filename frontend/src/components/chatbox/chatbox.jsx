@@ -84,6 +84,9 @@ export default function ChatBox({ contact, onClickClose }) {
           typeof event.data === "string"
             ? JSON.parse(event.data)
             : parseBinaryMessage(event.data);
+        console.log("data", data);
+        console.log("event", event);
+        
 
       } catch (err) {
         console.error("Failed to parse message:", event.data);
@@ -138,7 +141,7 @@ export default function ChatBox({ contact, onClickClose }) {
         type: "message",
         content: message,
         token: "online",
-        
+
       };
 
       // Optimistic update

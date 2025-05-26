@@ -35,7 +35,7 @@
 //         return <p>No posts yet.</p>;
 //     }
 //     // console.log("posts", posts);
-    
+
 //     return (
 //         <div className={styles.container}>
 //             {posts.map((post) => (
@@ -99,6 +99,10 @@ function GetData() {
     console.log("response ------", response.ok);
     if (!response.ok) {
       console.log("Failed to Fetch Data");
+      if (!response.ok) {
+        isAuthenticated(response.status, data.error);
+        return;
+      }
     }
     return response.json();
   });
