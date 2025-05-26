@@ -7,6 +7,7 @@ import styles from "./profile.module.css";
 import Image from "next/image";
 import Post from "@/components/post/post";
 import { FaLock, FaLockOpen } from "react-icons/fa";
+import { isAuthenticated } from "../page";
 
 // Create a non-async wrapper for Post
 function PostWrapper({ post }) {
@@ -21,12 +22,13 @@ export default function ProfilePage() {
   const [posts, setPosts] = useState([]);
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
-  const [isOwnProfile, setIsOwnProfile] = useState(false);
-  const [isPrivate, setIsPrivate] = useState(false);
+  // const [isOwnProfile, setIsOwnProfile] = useState(false);
+  const [isPrivate, setIsPrivate] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("posts");
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState({ title: "", data: [] });
+  const host = process.env.NEXT_PUBLIC_HOST
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -39,80 +41,59 @@ export default function ProfilePage() {
     setIsLoading(true);
     try {
       // Fetch profile information
-      console.log(
-        `Fetching profile data from: ${process.env.NEXT_PUBLIC_HOST}/api/registrationData?id=${profileId}`
-      );
-
       const profileResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_HOST}/api/registrationData?id=${profileId}`,
+        `${host}/api/registrationData?id=${profileId}`,
         { credentials: "include" }
       );
-
-      if (!profileResponse.ok) {
-        console.error(`Profile response error: ${profileResponse.status}`);
-        const errorText = await profileResponse.text();
-        console.error("Error response:", errorText);
-        throw new Error(
-          `Failed to load profile data: ${profileResponse.status}`
-        );
-      }
-
-      // Check content type before trying to parse JSON
-      const contentType = profileResponse.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        console.error("Non-JSON profile response:", contentType);
-        const text = await profileResponse.text();
-        console.error("Response text:", text);
-        throw new Error("Invalid profile data format");
-      }
-
       const profileData = await profileResponse.json();
-      console.log("Profile data:", profileData);
-
-      if (!profileData || typeof profileData !== "object") {
-        throw new Error("Invalid profile data structure");
+      
+      if (!profileResponse.ok) {
+        console.log(`Profile response error: ${profileResponse.status}`);
+        isAuthenticated(profileResponse.status, profileData.error)
       }
 
-      setProfile(profileData);
-      setIsPrivate(profileData.privacy === "private");
-      setIsOwnProfile(profileData.isOwnProfile);
+      
+      console.log("Profile data:", profileData);
+      setProfile(profileData.registration_data);
+      setIsPrivate(profileData.profile_status);
+      console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk",profileData.profile_status);
+      
+      // setIsOwnProfile(profileData.isOwnProfile);
 
       // Fetch posts with similar safeguards
-      console.log(
-        `Fetching posts from: ${process.env.NEXT_PUBLIC_HOST}/api/getProfilePosts?id=${profileId}`
-      );
+      
       const postsResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_HOST}/api/getProfilePosts?id=${profileId}`,
+        `${host}/api/getProfilePosts?id=${profileId}`,
         {
           credentials: "include",
         }
       );
+      const posts = await postsResponse.json()
 
-      if (postsResponse.ok) {
-        const postsData = await postsResponse.json();
+     console.log("this is for posts", posts);
+     
         // Ensure posts is always an array
-        setPosts(Array.isArray(postsData) ? postsData : []);
-      } else {
-        console.error("Failed to fetch posts");
-        setPosts([]); // Set empty array on error
-      }
+        setPosts(Array.isArray(posts) ? posts : []);
+        // console.error("Failed to fetch posts");
+        // setPosts([]); // Set empty array on error
 
       // Fetch followers
       const followersResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_HOST}/api/getfollowers?id=${profileId}`,
+        `${host}/api/getfollowers?id=${profileId}`,
         {
           credentials: "include",
         }
       );
+      const followersData = await followersResponse.json();
 
       if (followersResponse.ok) {
-        const followersData = await followersResponse.json();
         setFollowers(Array.isArray(followersData) ? followersData : []);
       } else {
-        console.error("Failed to fetch followers");
+        // console.error("Failed to fetch followers" , error);
         setFollowers([]);
       }
-
+       console.log("followersResponse.ok", followersResponse);
+ 
       // Fetch following
       const followingResponse = await fetch(
         `${process.env.NEXT_PUBLIC_HOST}/api/followers?id=${profileId}`,
@@ -128,8 +109,9 @@ export default function ProfilePage() {
         setError("Failed to fetch following");
         setFollowing([]);
       }
+      console.log("followersResponse.ok", followingResponse);
     } catch (error) {
-      console.error("Error in profile data fetch:", error);
+      // console.error("Error in profile data fetch:", error);
       setError(error.message || "Error loading profile");
     } finally {
       setIsLoading(false);
@@ -139,24 +121,24 @@ export default function ProfilePage() {
   const handlePrivacyToggle = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_HOST}/api/togglePrivacy`,
+        `${host}/api/updatePrivacy`,
         {
           method: "POST",
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ isPrivate: !isPrivate }),
+          body: JSON.stringify({ isPrivate: isPrivate }),
         }
       );
 
       if (response.ok) {
-        setIsPrivate(!isPrivate);
+        // setIsPrivate(!isPrivate);
       } else {
-        console.error("Failed to update privacy settings");
+      console.log("Failed to update privacy settings");
       }
     } catch (error) {
-      console.error("Error updating privacy settings", error);
+      console.log("Error updating privacy settings", error);
     }
   };
 
@@ -203,9 +185,9 @@ export default function ProfilePage() {
             {profile.nickName && <p>@{profile.nickName}</p>}
             <p>{profile.aboutMe}</p>
 
-            {isOwnProfile ? (
+            {isPrivate ?(isPrivate ? "private": "public" (
               <div className={styles.privacyToggle}>
-                <span>{isPrivate ? <FaLock /> : <FaLockOpen />}</span>
+                <span>{isPrivate /* {? <FaLock /> : <FaLockOpen />} */}</span>
                 <label className={styles.toggleSwitch}>
                   <input
                     type="checkbox"
@@ -216,7 +198,7 @@ export default function ProfilePage() {
                 </label>
                 <span>{isPrivate ? "Private Profile" : "Public Profile"}</span>
               </div>
-            ) : (
+            )) : (
               <ButtonFollow profileId={profileId} />
             )}
           </div>

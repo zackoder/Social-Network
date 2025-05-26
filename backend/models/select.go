@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"social-network/utils"
@@ -67,7 +68,6 @@ func GetProfilePost(user_id, offset int) ([]utils.Post, error) {
 }
 
 func IsPrivateProfile(followed string) (bool, error) {
-	fmt.Println("is private profile", followed)
 	query := "SELECT privacy FROM users WHERE id = ?"
 	var privacy string
 	err := Db.QueryRow(query, followed).Scan(&privacy)
@@ -75,7 +75,6 @@ func IsPrivateProfile(followed string) (bool, error) {
 		fmt.Println(err)
 		return false, err
 	}
-	fmt.Println(privacy)
 	return privacy == "private", nil
 }
 
@@ -177,7 +176,29 @@ func GetFollowers(userID int) ([]utils.Regester, error) {
 	}
 	return followersInfo, nil
 }
+func GetFollowings(userID int) ([]utils.Regester,error) {
+		query := `SELECT  f.followed_id, u.first_name FROM followers f 
+	JOIN users u 
+	ON f.followed_id = u.id 
+	WHERE f.follower_id  = ? `
+	rows, err := Db.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	var followersInfo []utils.Regester
 
+	for rows.Next() {
+		var followerinfo utils.Regester
+		if err := rows.Scan(&followerinfo.ID, &followerinfo.FirstName); err != nil {
+			fmt.Println(followerinfo.ID)
+			fmt.Println(followerinfo.FirstName)
+			return nil, err
+		}
+		followersInfo = append(followersInfo, followerinfo)
+	}
+	return followersInfo, nil
+
+}
 func GetRegistration(id string) (utils.Regester, error) {
 	query := `SELECT * FROM users WHERE id = ?`
 
@@ -203,23 +224,24 @@ func GetRegistration(id string) (utils.Regester, error) {
 	data.Password = ""
 	return data, nil
 }
-  func GetFollowStatus(profileowner, userId int) (bool)  {
+
+func GetFollowStatus(profileowner, userId int) bool {
 	var exists bool
- 	query := `SELECT EXISTS(SELECT 1 FROM notifications WHERE message = 'follow request' AND actor_id = ? AND target_id = ?) `
-	err := Db.QueryRow(query,userId, profileowner).Scan(&exists)
-	if err != nil{
-		if err == sql.ErrNoRows{
+	query := `SELECT EXISTS(SELECT 1 FROM notifications WHERE message = 'follow request' AND actor_id = ? AND target_id = ?) `
+	err := Db.QueryRow(query, userId, profileowner).Scan(&exists)
+	if err != nil {
+		if err == sql.ErrNoRows {
 			return false
-		}else{
+		} else {
 			fmt.Println(err)
 		}
-	}	
+	}
 	return exists
+}
 
-  }
 func GetProfileStatus(profileowner, userId int) (string, error) {
 	if profileowner == userId {
-		private, err := IsPrivateProfile(string(userId))
+		private, err := IsPrivateProfile(strconv.Itoa(userId))
 		if private {
 			return "private", err
 		} else {
@@ -229,13 +251,12 @@ func GetProfileStatus(profileowner, userId int) (string, error) {
 		follower, err := IsFollower(profileowner, userId)
 		if follower {
 			return "unfollow", err
-		}else if GetFollowStatus(profileowner,userId) {
+		} else if GetFollowStatus(profileowner, userId) {
 			return "follow sent", nil
 		} else {
 			return "follow", err
 		}
 	}
-
 }
 
 func GetPuclicPosts(userID int) ([]utils.Post, error) {

@@ -2,6 +2,7 @@
 import React, {useContext, useState, useEffect } from "react";
 // import styles from "./contactprivate.module.css"
 import { DataContext } from "@/contexts/dataContext";
+import { isAuthenticated } from "@/app/page";
 
 export default function ContactsPrivate() {
   const [selectedContacts, setSelectedContacts] = useState([]);
@@ -22,6 +23,7 @@ export default function ContactsPrivate() {
         }
       } catch (error) {
         console.error("we can't fetch follower", error);
+        isAuthenticated(response.status, "you should login first")
       }
     };
     fetchFollowers();
