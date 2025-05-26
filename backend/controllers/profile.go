@@ -48,8 +48,8 @@ func HandleFollow(w http.ResponseWriter, r *http.Request, follower int) {
 }
 
 func UpdatePrivacy(w http.ResponseWriter, r *http.Request, user_id int) {
-	test := models.UpdateProfile(user_id)
-	utils.WriteJSON(w, map[string]string{"": test}, 200)
+	privacy := models.UpdateProfile(user_id)
+	utils.WriteJSON(w, map[string]string{"profile_status": privacy}, 200)
 }
 
 func UserData(w http.ResponseWriter, r *http.Request) {

@@ -49,6 +49,10 @@ func AddPost(w http.ResponseWriter, r *http.Request, user_id int) {
 		post.Image = "/uploads/defaulte.jpg"
 	}
 
+	user, _ := models.GetUserById(user_id)
+	post.Poster_name = user.FirstName
+	post.Avatar = host + user.Avatar
+
 	post.Id, err = models.InsertPost(post)
 	if err != nil {
 		utils.RemoveIMG(filepath)
