@@ -96,7 +96,7 @@ export default function ProfilePage() {
  
       // Fetch following
       const followingResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_HOST}/api/followers?id=${profileId}`,
+        `${process.env.NEXT_PUBLIC_HOST}/api/getfollowinglist?id=${profileId}`,
         {
           credentials: "include",
         }
@@ -185,7 +185,7 @@ export default function ProfilePage() {
             {profile.nickName && <p>@{profile.nickName}</p>}
             <p>{profile.aboutMe}</p>
 
-            {isPrivate ?(isPrivate ? "private": "public" (
+            {isPrivate ?/* (isPrivate === "private" ? "private" : "public" ( */
               <div className={styles.privacyToggle}>
                 <span>{isPrivate /* {? <FaLock /> : <FaLockOpen />} */}</span>
                 <label className={styles.toggleSwitch}>
@@ -198,7 +198,7 @@ export default function ProfilePage() {
                 </label>
                 <span>{isPrivate ? "Private Profile" : "Public Profile"}</span>
               </div>
-            )) : (
+            /* )) */ : (
               <ButtonFollow profileId={profileId} />
             )}
           </div>

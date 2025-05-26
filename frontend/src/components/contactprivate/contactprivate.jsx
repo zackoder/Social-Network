@@ -19,7 +19,9 @@ export default function ContactsPrivate() {
         setContacts(data)
         // selectedContacts(data);
         if (data && data.error) {          
-          throw new Error(data.error);
+          // throw new Error(data.error);
+          console.log(data.error);
+          
         }
       } catch (error) {
         console.error("we can't fetch follower", error);
@@ -28,7 +30,7 @@ export default function ContactsPrivate() {
     };
     fetchFollowers();
   }, []);
-  if (!contacts || contacts.length == 0) {
+  if (!contacts || contacts.length === 0) {
     return;
   }
   const handleCheckboxChange = (name, id) => {
@@ -44,8 +46,6 @@ export default function ContactsPrivate() {
   //   setSelectedContactsIds(selectedContacts); // send updated selection to parent
   // }, [selectedContacts]);
   
-  
-
   return (
     <div style={{ position: "relative", width: "200px" }}>
       <div
@@ -74,7 +74,8 @@ export default function ContactsPrivate() {
           overflowY: "scroll",
         }}
       >
-        {contacts.map((contact) => (          
+        
+        {Array.isArray(contacts) && contacts.map((contact) => (          
           <label key={contact.id} style={{ display: "block" }}>
             {console.log("contact", contact)}
             <input
