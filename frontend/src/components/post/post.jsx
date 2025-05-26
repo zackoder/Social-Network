@@ -137,7 +137,7 @@ export default function Post({ post }) {
       {posts.map((post) => (
         <div className={styles.post} key={post.id}>
           <div className={styles.header}>
-            <Link href={`/profile?id=${post.poster}&profile=${post.name}`}>
+            <Link href={`/profile?id=${post.poster}&profile=${post.first_name}`}>
               <div className={styles.containerHeader}>
                 <div className={styles.imageContainer}></div>
                 <h2>{post.first_name}</h2>

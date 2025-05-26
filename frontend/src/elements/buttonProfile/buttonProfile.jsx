@@ -15,7 +15,6 @@ export default function ButtonProfile() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_HOST}/userData`,
           {
@@ -50,7 +49,8 @@ export default function ButtonProfile() {
         }
 
         // Check multiple possible ID field names
-        const userId = data.id ;
+        const userId = data.id;
+        localStorage.setItem("user-id", userId);
         if (!userId) {
           console.warn("User data does not contain ID field:", data);
         }
@@ -82,7 +82,7 @@ export default function ButtonProfile() {
 
     // Look for ID in different possible case formats
     const userId = userData.id;
-     
+
     if (userId) {
       console.log(`Navigating to profile with ID: ${userId}`);
       router.push(`/profile?id=${userId}`);
