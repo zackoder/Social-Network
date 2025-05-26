@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"social-network/models"
 	"social-network/utils"
@@ -22,6 +23,19 @@ func AddPost(w http.ResponseWriter, r *http.Request, user_id int) {
 	host := r.Host
 
 	postData := r.FormValue("postData")
+
+	err := json.Unmarshal([]byte(postData), &post)
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "internal server error\nparsing post"}, http.StatusInternalServerError)
+		fmt.Println("unmarshal err:", err)
+		return
+	}
+
+	if strings.TrimSpace(post.Title) == "" || strings.TrimSpace(post.Content) == "" {
+		utils.WriteJSON(w, map[string]string{"error": "title or content is empty"}, http.StatusBadRequest)
+		return
+	}
+
 	filepath, err := utils.UploadImage(r)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": err.Error()}, http.StatusInternalServerError)
@@ -29,32 +43,24 @@ func AddPost(w http.ResponseWriter, r *http.Request, user_id int) {
 		return
 	}
 
-	err = json.Unmarshal([]byte(postData), &post)
-	if err != nil {
-		utils.WriteJSON(w, map[string]string{"error": "internal server error\nparsing post"}, http.StatusInternalServerError)
-		fmt.Println("unmarshal err:", err)
-		return
+	post.Image = filepath
+
+	if filepath == "" {
+		post.Image = "/uploads/defaulte.jpg"
 	}
 
-	if filepath != "" {
-		post.Image = filepath
-	}
-	
 	post.Id, err = models.InsertPost(post)
 	if err != nil {
+		utils.RemoveIMG(filepath)
 		utils.WriteJSON(w, map[string]string{"error": "internal server error\ninserting post"}, http.StatusInternalServerError)
 		return
 	}
-	
+
 	if len(post.Friendes) != 0 {
 		models.InsertFriends(post.Id, post.Friendes)
 		post.Friendes = []int{}
 	}
-
-	if filepath != "" {
-		post.Image = host + filepath
-	}
-
+	post.Image = host + post.Image
 	utils.WriteJSON(w, post, 200)
 }
 

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"strings"
 
 	"social-network/models"
@@ -23,18 +22,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// fmt.Println("form data", r.Form["userData"])
-
 	userData := r.FormValue("userData")
-	filePath, err := utils.UploadImage(r)
-	fmt.Println(filePath)
-	if err != nil {
-		if err.Error() != "nothing" {
-			fmt.Println(err)
-			utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusMethodNotAllowed)
-			return
-		}
-	}
 
 	var regesterreq utils.Regester
 	if err := json.Unmarshal([]byte(userData), &regesterreq); err != nil {
@@ -42,14 +30,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println("afin asi lmhdi")
-	fmt.Println(regesterreq, "5555")
 
-	if filePath == "" {
-		filePath = "/uploads/defaulte.jpg"
-	}
-
-	regesterreq.Avatar = filePath
 	if regesterreq.NickName == "" {
 		regesterreq.NickName = nil
 	}
@@ -73,6 +54,18 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	regesterreq.Password = hashedPss
+	filePath, err := utils.UploadImage(r)
+	if err != nil {
+		fmt.Println(err)
+		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusMethodNotAllowed)
+		return
+	}
+
+	regesterreq.Avatar = filePath
+
+	if filePath == "" {
+		regesterreq.Avatar = "/uploads/defaulte.jpg"
+	}
 
 	err = models.InsertUser(regesterreq)
 	if err != nil {
@@ -84,12 +77,10 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		} else {
 			utils.WriteJSON(w, map[string]string{"error": "Fail to register user"}, http.StatusNotAcceptable)
 		}
-		if err := os.Remove(filePath); err != nil {
-			fmt.Println("removing error:", err)
-		}
+		utils.RemoveIMG(filePath)
 		fmt.Println(err)
 		return
 	}
-	fmt.Println("endded")
+
 	utils.WriteJSON(w, map[string]string{"success": "ok"}, http.StatusOK)
 }

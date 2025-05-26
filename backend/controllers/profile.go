@@ -47,10 +47,9 @@ func HandleFollow(w http.ResponseWriter, r *http.Request, follower int) {
 	}
 }
 
-func UpdatePrivacy(w http.ResponseWriter, r *http.Request) {
-	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
-	test := models.UpdateProfile(id)
-	utils.WriteJSON(w, map[string]string{"test": test}, 200)
+func UpdatePrivacy(w http.ResponseWriter, r *http.Request, user_id int) {
+	test := models.UpdateProfile(user_id)
+	utils.WriteJSON(w, map[string]string{"": test}, 200)
 }
 
 func UserData(w http.ResponseWriter, r *http.Request) {
