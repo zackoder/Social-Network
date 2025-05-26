@@ -10,42 +10,25 @@ import (
 	"social-network/utils"
 )
 
-func AddPost(w http.ResponseWriter, r *http.Request) {
+func AddPost(w http.ResponseWriter, r *http.Request, user_id int) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
 
-	cookie, err := r.Cookie("token")
-	if err != nil {
-		fmt.Println(err)
-		utils.WriteJSON(w, map[string]string{"error": "Unauthorized"}, http.StatusUnauthorized)
-		return
-	}
-
 	var post utils.Post
-	post.Poster_id, err = models.Get_session(cookie.Value)
-	if err != nil {
-		fmt.Println(err)
-		utils.WriteJSON(w, map[string]string{"error": "Unauthorized aras lfta"}, http.StatusUnauthorized)
-		return
-	}
+	post.Poster_id = user_id
 
 	host := r.Host
-	// if _, exists := r.Form["postData"]; !exists {
 
-	// 	return
-	// }
 	postData := r.FormValue("postData")
-	filepath := ""
-	filepath, err = utils.UploadImage(r)
+	filepath, err := utils.UploadImage(r)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": err.Error()}, http.StatusInternalServerError)
 		fmt.Println("Upload Image error:", err)
 		return
 	}
 
-	fmt.Println("post data", postData)
 	err = json.Unmarshal([]byte(postData), &post)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "internal server error\nparsing post"}, http.StatusInternalServerError)
@@ -53,22 +36,16 @@ func AddPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// post.Poster_id, _ = strconv.Atoi(r.URL.Query().Get("id"))
-	// if post.Poster_id == 0 {
-	// 	post.Poster_id = 1
-	// }
-	fmt.Println("post", r.URL.Query().Get("id"))
-
 	if filepath != "" {
 		post.Image = filepath
 	}
-	fmt.Println(post.Poster_id)
+	
 	post.Id, err = models.InsertPost(post)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "internal server error\ninserting post"}, http.StatusInternalServerError)
 		return
 	}
-
+	
 	if len(post.Friendes) != 0 {
 		models.InsertFriends(post.Id, post.Friendes)
 		post.Friendes = []int{}
