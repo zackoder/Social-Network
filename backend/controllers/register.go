@@ -45,6 +45,10 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("afin asi lmhdi")
 	fmt.Println(regesterreq, "5555")
 
+	if filePath == "" {
+		filePath = "/uploads/defaulte.jpg"
+	}
+
 	regesterreq.Avatar = filePath
 	if regesterreq.NickName == "" {
 		regesterreq.NickName = nil

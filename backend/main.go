@@ -31,7 +31,7 @@ func main() {
 	mux.Handle("/login", http.HandlerFunc(controllers.Login))
 	mux.Handle("/register", http.HandlerFunc(controllers.Register))
 
-	mux.Handle("POST /addPost", http.HandlerFunc(controllers.AddPost))
+	mux.Handle("POST /addPost", midleware.AuthMiddleware(controllers.AddPost))
 	mux.Handle("POST /followReq", midleware.AuthMiddleware(controllers.HandleFollow))
 	mux.Handle("POST /updatePrivacy", http.HandlerFunc(controllers.UpdatePrivacy))
 	mux.Handle("POST /creategroup", http.HandlerFunc(controllers.Creat_groupe))
