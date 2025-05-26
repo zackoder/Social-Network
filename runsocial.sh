@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ ! -e "./frontend/.env" ]; then 
-    echo "NEXT_PUBLIC_HOST=http://localhoset:8080" >> .env
+    echo "NEXT_PUBLIC_HOST=http://localhost:8080" >> ./frontend/.env
 fi
 
 # cd frontend 
