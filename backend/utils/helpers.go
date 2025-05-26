@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"fmt"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
 
@@ -15,6 +17,15 @@ func Hashpass(password string) string {
 		return ""
 	}
 	return string(hashedPasswd)
+}
+
+func RemoveIMG(filepath string) {
+	if filepath == "" {
+		return
+	}
+	if err := os.Remove(filepath); err != nil {
+		fmt.Println("removing error:", err)
+	}
 }
 
 func CheckExtension(FileExtension string) bool {
@@ -58,5 +69,5 @@ func ClearSession(w http.ResponseWriter) {
 }
 
 func HandleEvent(noti Notification) {
-	
+
 }

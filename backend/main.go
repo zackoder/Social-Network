@@ -28,12 +28,12 @@ func main() {
 		tmp.Execute(w, nil)
 	})))
 
-	mux.Handle("/login", http.HandlerFunc(controllers.Login))
-	mux.Handle("/register", http.HandlerFunc(controllers.Register))
+	mux.HandleFunc("/login", controllers.Login)
+	mux.HandleFunc("/register", controllers.Register)
 
+	mux.Handle("POST /updatePrivacy", midleware.AuthMiddleware(controllers.UpdatePrivacy))
 	mux.Handle("POST /addPost", midleware.AuthMiddleware(controllers.AddPost))
 	mux.Handle("POST /followReq", midleware.AuthMiddleware(controllers.HandleFollow))
-	mux.Handle("POST /updatePrivacy", http.HandlerFunc(controllers.UpdatePrivacy))
 	mux.Handle("POST /creategroup", http.HandlerFunc(controllers.Creat_groupe))
 	mux.Handle("/JouindGroupe", http.HandlerFunc(controllers.Jouind_Groupe))
 	mux.Handle("/CreatEvent", midleware.AuthMiddleware(controllers.CreatEvent))
