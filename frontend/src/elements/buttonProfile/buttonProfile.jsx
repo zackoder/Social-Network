@@ -15,10 +15,7 @@ export default function ButtonProfile() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        console.log(
-          "Fetching user data from:",
-          `${process.env.NEXT_PUBLIC_HOST}/userData`
-        );
+        
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_HOST}/userData`,
           {
@@ -32,7 +29,6 @@ export default function ButtonProfile() {
             router.push("/login");
             return;
           }
-          throw new Error(`Failed to fetch user data: ${response.status}`);
         }
 
         // Handle different response content types
@@ -45,6 +41,7 @@ export default function ButtonProfile() {
         }
 
         const data = await response.json();
+
         console.log("User data received:", data);
 
         if (!data || Object.keys(data).length === 0) {

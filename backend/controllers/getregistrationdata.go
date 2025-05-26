@@ -24,7 +24,6 @@ func GetRegistrationData(w http.ResponseWriter, r *http.Request,userID int)  {
 	profileId := strconv.Itoa(userID)
 	registrationData , err := models.GetRegistration(profileOwnerIDStr) 
 	profileStasus,err:= models.GetProfileStatus(profileOwnerInt, userID)
-
 	if err != nil {
 		if err == sql.ErrNoRows {
 			utils.WriteJSON(w, map[string]string{"error": "User Not Found"},http.StatusNotFound)
@@ -38,7 +37,7 @@ func GetRegistrationData(w http.ResponseWriter, r *http.Request,userID int)  {
 	if registrationData.Avatar != ""{
 		registrationData.Avatar = r.Host + registrationData.Avatar
 	}
-	Response["registration data"] = registrationData 
-	Response["profile status"] = profileStasus 
+	Response["registration_data"] = registrationData 
+	Response["profile_status"] = profileStasus 
 	utils.WriteJSON(w,Response,200)
 }

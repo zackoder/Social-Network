@@ -28,7 +28,7 @@ func main() {
 
 	mux.Handle("POST /addPost", midleware.AuthMiddleware(controllers.AddPost))
 	mux.Handle("POST /followReq", (http.HandlerFunc(controllers.HandleFollow)))
-	mux.Handle("POST /updatePrivacy", (http.HandlerFunc(controllers.UpdatePrivacy)))
+	mux.Handle("POST /api/updatePrivacy", (http.HandlerFunc(controllers.UpdatePrivacy)))
 	// mux.Handle("POST /creategroup", (http.HandlerFunc(controllers.CreateGroup)))
 	// mux.Handle("POST /joinReq",(http.HandlerFunc(controllers.JoinReq)))
 	mux.Handle("POST /api/logout", midleware.AuthMiddleware(controllers.LogoutHandler))
@@ -50,6 +50,7 @@ func main() {
 	// note for walid
 	// this endpoint is gonna be used to fetch the users for the post privacy
 	mux.HandleFunc("GET /api/getfollowers", midleware.AuthMiddleware(controllers.GetFollowers))
+	mux.HandleFunc("GET /api/followers", controllers.Getfollowings)
 	mux.HandleFunc("GET /api/registrationData", midleware.AuthMiddleware(controllers.GetRegistrationData))
 	mux.HandleFunc("GET /userData",(controllers.UserData))
 	// Notification handler
