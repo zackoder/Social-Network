@@ -28,6 +28,7 @@ type Post struct {
 	Id          int       `json:"id"`
 	Privacy     string    `json:"privacy"`
 	Poster_id   int       `json:"poster"`
+	Avatar      string    `json:"avatar"`
 	Poster_name string    `json:"first_name"`
 	Title       string    `json:"title"`
 	Content     string    `json:"content"`
@@ -105,10 +106,12 @@ type Groupe struct {
 	Description string `json:"description"`
 	CreatorId   int    `json:"cretorid"`
 }
+
 type Groupe_member struct {
 	User_id   int `json:"user_id"`
 	Groupe_id int `json:"groupe_id"`
 }
+
 type Event struct {
 	GroupID     int       `json:"groupe_id"`
 	Title       string    `json:"title"`
@@ -124,9 +127,9 @@ type EventResponse struct {
 	Response string `json:"responce"`
 }
 
-
 type UserD struct {
 	Id        int    ` json:"id"`
 	Firstname string `json:"firstName"`
 	Avatar    string `json:"avatar"`
 }
+ 
