@@ -1,6 +1,7 @@
 "use client"
-import { useState , useEffect} from "react";
+import { useState, useEffect } from "react";
 import styles from "./groups.module.css";
+import Link from "next/link";
 
 export default function Home() {
   const [groups, setGroups] = useState([]);
@@ -10,7 +11,9 @@ export default function Home() {
   const [description, setDescription] = useState("");
 
   const host = process.env.NEXT_PUBLIC_HOST;
-  
+
+
+
 
   const fetchGroups = async (url) => {
 
@@ -23,6 +26,7 @@ export default function Home() {
       const data = await res.json();
       if (!data || data.length === 0) {
         setGroups([]);
+        
         setError("No available Groups");
         return;
       }
@@ -32,10 +36,10 @@ export default function Home() {
       setError(err.message || "Erreur inconnue");
     }
   };
-    useEffect(() => {
+  useEffect(() => {
     fetchGroups("/GetGroups");
   }, []);
-   const handleCreateGroup = async (e) => {
+  const handleCreateGroup = async (e) => {
     e.preventDefault();
     try {
       const res = await fetch(`${host}/creategroup`, {
@@ -57,9 +61,18 @@ export default function Home() {
       alert(err.message || "Error creating group");
     }
   };
+  const addclass = (e) => {
+    const lient = document.querySelectorAll('.lien');
+
+    lient.forEach((lien) => {
+      lien.classList.remove("active");
+    });
+    e.target.classList.add("active");
+  }
+
 
   return (
-    
+
     <div>
       <div className={styles.div0}>
         <a
@@ -67,6 +80,7 @@ export default function Home() {
           className={styles.lien}
           onClick={(e) => {
             e.preventDefault();
+            addclass(e)
             fetchGroups("/GetMyGroups");
           }}
         >
@@ -77,57 +91,59 @@ export default function Home() {
           className={styles.lien}
           onClick={(e) => {
             e.preventDefault();
-            fetchGroups("/GetJoinedGroups");
+            addclass(e)
+            fetchGroups("/GetGroups");
           }}
         >
-          Joined groups
+          All groups
         </a>
         <a
           href="#"
           className={styles.lien}
           onClick={(e) => {
             e.preventDefault();
-            fetchGroups("/GetGroups");
+            addclass(e)
+            fetchGroups("/GetJoinedGroups");
           }}
         >
-          All groups
+          Joined groups
         </a>
         <div className={styles.div3}>
           <button
-           className={styles.button} 
-           onClick={() => {
-             console.log("Popup ouverte !");
-             setIsPopupOpen(true);
-          }}>Creat groupe</button>
+            className={styles.button}
+            onClick={() => {
+              console.log("Popup ouverte !");
+              setIsPopupOpen(true);
+            }}>Creat groupe</button>
         </div>
       </div>
-        {/* POPUP MODAL */}
+      {/* POPUP MODAL */}
       {isPopupOpen && (
-  <div className={styles.modalOverlay} onClick={() => setIsPopupOpen(false)}>
-    <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-      <h2>Create a group</h2>
-      <form onSubmit={handleCreateGroup}>
-        <label>Title :</label>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
-        <label>Description :</label>
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        ></textarea>
-        <div className={styles.actions}>
-          <button type="submit" className={styles.submitBtn}>Create</button>
-          <button type="button" onClick={() => setIsPopupOpen(false)} className={styles.cancelBtn}>Cancel</button>
+        <div className={styles.modalOverlay} onClick={() => setIsPopupOpen(false)}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <h2>Create a group</h2>
+            <form onSubmit={handleCreateGroup}>
+              <label>Title :</label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+              />
+              <label>Description :</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              ></textarea>
+              <div className={styles.actions}>
+                <button type="submit" className={styles.submitBtn}>Create</button>
+                <button type="button" onClick={() => setIsPopupOpen(false)} className={styles.cancelBtn}>Cancel</button>
+              </div>
+            </form>
+          </div>
         </div>
-      </form>
-    </div>
-  </div>
-)}
+      )}
 
 
       <div className={styles.contenu} style={{ marginTop: "20px" }}>
@@ -137,7 +153,9 @@ export default function Home() {
           <ul>
             {groups.map((groupe, i) => (
               <li key={i}>
-                <p>{groupe.title}</p>
+                <Link href={`/groups/${groupe.Id}`}>
+                  <p>{groupe.title}</p>
+                </Link>
               </li>
             ))}
           </ul>
