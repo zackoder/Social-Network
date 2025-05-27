@@ -29,6 +29,7 @@ export default function ButtonProfile() {
             return;
           }
         }
+        // isAuthenticated(response.status, data.error);
 
         // Handle different response content types
         const contentType = response.headers.get("content-type");
@@ -57,7 +58,8 @@ export default function ButtonProfile() {
 
         setUserData(data);
       } catch (err) {
-        isAuthenticated(response.status, data.error);
+        console.log(err);
+        
       } finally {
         setIsLoading(false);
       }
