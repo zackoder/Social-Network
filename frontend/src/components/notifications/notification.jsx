@@ -17,6 +17,34 @@ export default function Notification() {
         }
     };
 
+
+
+
+    //   const getImageLink = async (path) => {
+//     try {
+//       const res = await fetch(`http://localhost:3000/images/${path}.png`);
+//       if (res.ok) {
+//         const blob = await res.blob();
+//         const imageURL = URL.createObjectURL(blob);
+//         return imageURL;
+//       } else {
+//         throw new Error(`Failed to fetch image: ${res.status}`);
+//       }
+//     } catch (error) {
+//       console.error("Error fetching image:", error);
+//       return null;
+//     }
+//   };
+
+//   useEffect(() => {
+//     links.map( (link) => {
+//         console.log("sssss hada ana",link);
+//     //   const url = getImageLink(link.title);
+//       link.title = url;
+      
+//     });
+//   });
+
     return (
         <div className={styles.links}>
             {links.map(link => (
