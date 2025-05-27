@@ -32,6 +32,7 @@ func HandleFollow(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"resp": "unfollowed seccessfoly"}, 200)
 		return
 	}
+	fmt.Println(privacy)
 	if !privacy {
 		err := models.InsertFollow(follower, followed)
 		if err != nil {

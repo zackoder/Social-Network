@@ -2,6 +2,7 @@
 import React, {useContext, useState, useEffect } from "react";
 // import styles from "./contactprivate.module.css"
 import { DataContext } from "@/contexts/dataContext";
+import { isAuthenticated } from "@/app/page";
 
 export default function ContactsPrivate() {
   const [selectedContacts, setSelectedContacts] = useState([]);
@@ -24,11 +25,12 @@ export default function ContactsPrivate() {
         }
       } catch (error) {
         console.error("we can't fetch follower", error);
+        isAuthenticated(response.status, "you should login first")
       }
     };
     fetchFollowers();
   }, []);
-  if (!contacts || contacts.length == 0) {
+  if (!contacts || contacts.length === 0) {
     return;
   }
   const handleCheckboxChange = (name, id) => {
@@ -44,8 +46,6 @@ export default function ContactsPrivate() {
   //   setSelectedContactsIds(selectedContacts); // send updated selection to parent
   // }, [selectedContacts]);
   
-  
-
   return (
     <div style={{ position: "relative", width: "200px" }}>
       <div
@@ -74,7 +74,8 @@ export default function ContactsPrivate() {
           overflowY: "scroll",
         }}
       >
-        {contacts.map((contact) => (          
+        
+        {Array.isArray(contacts) && contacts.map((contact) => (          
           <label key={contact.id} style={{ display: "block" }}>
             {console.log("contact", contact)}
             <input

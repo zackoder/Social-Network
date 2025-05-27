@@ -28,12 +28,12 @@ func main() {
 
 	mux.Handle("POST /addPost", midleware.AuthMiddleware(controllers.AddPost))
 	mux.Handle("POST /followReq", (http.HandlerFunc(controllers.HandleFollow)))
-	mux.Handle("POST /updatePrivacy", (http.HandlerFunc(controllers.UpdatePrivacy)))
+	mux.Handle("POST /api/updatePrivacy", (http.HandlerFunc(controllers.UpdatePrivacy)))
 	// mux.Handle("POST /creategroup", (http.HandlerFunc(controllers.CreateGroup)))
 	// mux.Handle("POST /joinReq",(http.HandlerFunc(controllers.JoinReq)))
 	mux.Handle("POST /api/logout", midleware.AuthMiddleware(controllers.LogoutHandler))
 	mux.HandleFunc("GET /uploads/", controllers.HandelPics)
-	mux.HandleFunc("/ws", controllers.Websocket)
+	mux.Handle("/ws", midleware.AuthMiddleware(controllers.Websocket))
 
 	// Comment handlers
 	mux.Handle("POST /addComment", midleware.AuthMiddleware(controllers.AddComment))
@@ -50,8 +50,9 @@ func main() {
 	// note for walid
 	// this endpoint is gonna be used to fetch the users for the post privacy
 	mux.HandleFunc("GET /api/getfollowers", midleware.AuthMiddleware(controllers.GetFollowers))
+	mux.HandleFunc("GET /api/getfollowinglist", controllers.Getfollowings)
 	mux.HandleFunc("GET /api/registrationData", midleware.AuthMiddleware(controllers.GetRegistrationData))
-
+	mux.HandleFunc("GET /userData", (controllers.UserData))
 	// Notification handler
 	mux.Handle("GET /api/notifications", midleware.AuthMiddleware(controllers.GetNotifications))
 
