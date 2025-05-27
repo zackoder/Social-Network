@@ -13,6 +13,7 @@
   width: 350px;
   text-decoration: none;
   color:#06d6a0;
+ 
   background-color: #453f3f;
   box-shadow: rgba(0, 0, 0, 0.25) -3px 0px 10px inset;
   font-size: 18px;
@@ -27,7 +28,6 @@
 
 /* Effet au survol des liens */
 .lien:hover {
- 
   color: #fff;
 }
 
@@ -49,7 +49,7 @@ margin: 0 auto;
 
 .active {
   background-color: #007BFF;
-  width: 50px;
+  color: white;
 }
 /*******************************************Creat groupe button******************************************************************************************/
 
