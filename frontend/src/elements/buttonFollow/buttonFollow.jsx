@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import styles from "./buttonFollow.module.css";
+import { isAuthenticated } from "@/app/page";
 import { FaUserPlus, FaUserCheck, FaUserClock } from "react-icons/fa";
 
 export default function ButtonFollow({ profileId }) {
@@ -10,20 +11,17 @@ export default function ButtonFollow({ profileId }) {
   const [currentUserId, setCurrentUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const host = process.env.NEXT_PUBLIC_HOST
   // Fetch current user data when component mounts
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_HOST}/api/registrationData`,
-          {
+        const response = await fetch(`${host}/userData`,{
             credentials: "include",
           }
         );
 
         if (!response.ok) {
-          // throw new Error("Failed to fetch current user");
         }
 
         const data = await response.json();
@@ -35,7 +33,7 @@ export default function ButtonFollow({ profileId }) {
         }
       } catch (err) {
         console.error("Error fetching current user:", err);
-        setError(err.message);
+        isAuthenticated(response.status,"you should login first")
       } finally {
         setIsLoading(false);
       }
@@ -76,8 +74,7 @@ export default function ButtonFollow({ profileId }) {
     }
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_HOST}/HandleFollow?follower=${currentUserId}&followed=${profileId}`,
+      const response = await fetch(`${host}/followReq?follower=${currentUserId}&followed=${profileId}`,
         {
           method: "POST",
           credentials: "include",
@@ -100,7 +97,7 @@ export default function ButtonFollow({ profileId }) {
           `Failed to update follow status: ${response.status} ${response.statusText}`,
           responseData
         );
-        // throw new Error("Failed to update follow status");
+    
       }
 
       // Handle the response
@@ -117,10 +114,11 @@ export default function ButtonFollow({ profileId }) {
       } else {
         // The response wasn't JSON, toggle the state based on previous state
         setIsFollowing(!isFollowing);
-      }seccessfoly
+      }
     } catch (err) {
       console.error("Error toggling follow status:", err);
-      setError(err.message);
+        isAuthenticated(response.status, "you should login first")
+    
     }
   };
 

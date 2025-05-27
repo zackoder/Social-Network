@@ -1,10 +1,13 @@
 package models
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
-	"social-network/utils"
+	"strconv"
 	"strings"
+
+	"social-network/utils"
 )
 
 func QueryPosts(offset int, r *http.Request) []utils.Post {
@@ -65,7 +68,6 @@ func GetProfilePost(user_id, offset int) ([]utils.Post, error) {
 }
 
 func IsPrivateProfile(followed string) (bool, error) {
-	fmt.Println("is private profile", followed)
 	query := "SELECT privacy FROM users WHERE id = ?"
 	var privacy string
 	err := Db.QueryRow(query, followed).Scan(&privacy)
@@ -73,8 +75,7 @@ func IsPrivateProfile(followed string) (bool, error) {
 		fmt.Println(err)
 		return false, err
 	}
-	fmt.Println(privacy)
-	return privacy == "privet", nil
+	return privacy == "private", nil
 }
 
 func CheckPostPrivacy(post string) (string, error) {
@@ -175,7 +176,29 @@ func GetFollowers(userID int) ([]utils.Regester, error) {
 	}
 	return followersInfo, nil
 }
+func GetFollowings(userID int) ([]utils.Regester,error) {
+		query := `SELECT  f.followed_id, u.first_name FROM followers f 
+	JOIN users u 
+	ON f.followed_id = u.id 
+	WHERE f.follower_id  = ? `
+	rows, err := Db.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	var followersInfo []utils.Regester
 
+	for rows.Next() {
+		var followerinfo utils.Regester
+		if err := rows.Scan(&followerinfo.ID, &followerinfo.FirstName); err != nil {
+			fmt.Println(followerinfo.ID)
+			fmt.Println(followerinfo.FirstName)
+			return nil, err
+		}
+		followersInfo = append(followersInfo, followerinfo)
+	}
+	return followersInfo, nil
+
+}
 func GetRegistration(id string) (utils.Regester, error) {
 	query := `SELECT * FROM users WHERE id = ?`
 
@@ -201,6 +224,41 @@ func GetRegistration(id string) (utils.Regester, error) {
 	data.Password = ""
 	return data, nil
 }
+
+func GetFollowStatus(profileowner, userId int) bool {
+	var exists bool
+	query := `SELECT EXISTS(SELECT 1 FROM notifications WHERE message = 'follow request' AND actor_id = ? AND target_id = ?) `
+	err := Db.QueryRow(query, userId, profileowner).Scan(&exists)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false
+		} else {
+			fmt.Println(err)
+		}
+	}
+	return exists
+}
+
+func GetProfileStatus(profileowner, userId int) (string, error) {
+	if profileowner == userId {
+		private, err := IsPrivateProfile(strconv.Itoa(userId))
+		if private {
+			return "private", err
+		} else {
+			return "public", err
+		}
+	} else {
+		follower, err := IsFollower(profileowner, userId)
+		if follower {
+			return "unfollow", err
+		} else if GetFollowStatus(profileowner, userId) {
+			return "follow sent", nil
+		} else {
+			return "follow", err
+		}
+	}
+}
+
 func GetPuclicPosts(userID int) ([]utils.Post, error) {
 	var publicPosts []utils.Post
 	query := `
@@ -265,6 +323,69 @@ func GetAllowedPosts(profileOwnerID int, viewerID int) ([]utils.Post, error) {
 		}
 		posts = append(posts, post)
 	}
+	return posts, nil
+}
+
+func GetAllowedPostsForFeed(profileOwnerIDs []int, viewerID int) ([]utils.Post, error) {
+	if len(profileOwnerIDs) == 0 {
+		return []utils.Post{}, nil // No user IDs means no posts
+	}
+
+	// Create placeholders (?, ?, ?) and args for user IDs
+	placeholders := make([]string, len(profileOwnerIDs))
+	args := make([]interface{}, len(profileOwnerIDs)+1)
+	for i, id := range profileOwnerIDs {
+		placeholders[i] = "?"
+		args[i] = id
+	}
+	args[len(profileOwnerIDs)] = viewerID // for ppv.friend_id = ?
+
+	userFilter := strings.Join(placeholders, ", ")
+
+	query := fmt.Sprintf(`
+		SELECT DISTINCT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt
+		FROM posts p
+		JOIN users u ON p.user_id = u.id
+		LEFT JOIN friends ppv ON p.id = ppv.post_id
+		WHERE p.user_id IN (%s)
+		AND (
+			p.post_privacy = 'public'
+			OR (p.post_privacy = 'almostPrivate')
+			OR (p.post_privacy = 'private' AND ppv.friend_id = ?)
+		)
+		ORDER BY p.createdAt DESC
+	`, userFilter)
+
+	rows, err := Db.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var posts []utils.Post
+	for rows.Next() {
+		var post utils.Post
+		err := rows.Scan(
+			&post.Id,
+			&post.Privacy,
+			&post.Title,
+			&post.Content,
+			&post.Poster_id,
+			&post.Poster_name,
+			&post.Image,
+			&post.CreatedAt,
+		)
+		if err != nil {
+			fmt.Println("scan error:", err)
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return posts, nil
 }
 

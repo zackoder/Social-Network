@@ -82,7 +82,7 @@ type Session struct {
 
 type Message struct {
 	Sender_id   int    `json:"sender_id"`
-	Reciever_id int    `json:"reciever_id"`
+	Reciever_id int    `json:"receiver_id"`
 	Type        string `json:"type"`
 	Group_id    int    `json:"group_id"`
 	Content     string `json:"content"`
@@ -122,4 +122,11 @@ type EventResponse struct {
 	EventID  int    `json:"event_id"`
 	GroupeId int    `json:"groupe_id"`
 	Response string `json:"responce"`
+}
+
+
+type UserD struct {
+	Id        int    ` json:"id"`
+	Firstname string `json:"firstName"`
+	Avatar    string `json:"avatar"`
 }

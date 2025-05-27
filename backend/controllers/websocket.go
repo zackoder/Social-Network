@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 
 	"social-network/models"
 	"social-network/utils"
@@ -22,21 +21,20 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
-func Websocket(w http.ResponseWriter, r *http.Request) {
+func Websocket(w http.ResponseWriter, r *http.Request, user_id int) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println("WebSocket upgrade failed:", err)
 		return
 	}
 	defer conn.Close()
-
-	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
-	client := utils.CreateClient(conn, Manager, id, "online")
+	cookie, _ := r.Cookie("token")
+	client := utils.CreateClient(conn, Manager, user_id, cookie.Value)
 	Manager.AddClient(client)
 	defer Manager.RemoveClient(client)
 
-	if groups := models.GetClientGroups(id); len(groups) > 0 {
-		go Manager.StoreGroups(groups, id)
+	if groups := models.GetClientGroups(user_id); len(groups) > 0 {
+		go Manager.StoreGroups(groups, user_id)
 	}
 
 	for {
@@ -56,7 +54,7 @@ func handleMessage(msgType int, payload []byte, host string, client *utils.Clien
 	var err error
 	var msg utils.Message
 	var errMsg utils.Err
-
+	log.Println(msgType)
 	switch msgType {
 	case websocket.BinaryMessage:
 		msg, err = utils.UploadMsgImg(payload)
@@ -75,6 +73,7 @@ func handleMessage(msgType int, payload []byte, host string, client *utils.Clien
 	default:
 		return
 	}
+	log.Println("lhsdfljslfkdj", msg.Reciever_id)
 
 	if msg.Reciever_id != 0 {
 		broadcastPrivateMessage(msg, host)
@@ -87,17 +86,19 @@ func handleMessage(msgType int, payload []byte, host string, client *utils.Clien
 }
 
 func broadcastPrivateMessage(msg utils.Message, host string) {
+	log.Println("wslt lhna")
+
 	errMsg := utils.Err{}
 
 	if ok, err := models.FriendsChecker(msg.Sender_id, msg.Reciever_id); err != nil || !ok {
-		if err := os.Remove("."+msg.Filename); err != nil {
+		if err := os.Remove("." + msg.Filename); err != nil {
 			fmt.Println(err)
 		}
 		errMsg.Error = "you need to follow the receiver first"
 		broadcastError(errMsg, msg.Sender_id)
 		return
 	}
-
+	log.Println(msg)
 	models.InsertMsg(msg)
 	if msg.Filename != "" {
 		msg.Filename = host + msg.Filename

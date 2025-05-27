@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { isAuthenticated } from "@/app/page";
 import styles from "./contacts.module.css";
 
 export default function Contacts({ onContactClick, activeContactId }) {
@@ -24,6 +25,8 @@ export default function Contacts({ onContactClick, activeContactId }) {
         console.log(data);
       } catch (error) {
         console.error("Failed to fetch contacts:", error);
+        isAuthenticated(response.status, "you should login first")
+        
       }
     };
     fetchContacts();
