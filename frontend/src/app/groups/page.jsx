@@ -71,9 +71,9 @@ export default function Home() {
     
 
     lients.forEach((lien) => {
-      lien.classList.remove("active");
+      lien.classList.remove(`${styles.active}`);
     });
-    e.target.classList.add("active");
+    e.target.classList.add(`${styles.active}`);
   }
 
 

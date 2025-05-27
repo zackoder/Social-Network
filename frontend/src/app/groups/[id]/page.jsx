@@ -1,14 +1,33 @@
+"use client"
+import styles from "./id.module.css"
+
 export default function GroupPage({ params }) {
   // params est injecté automatiquement en mode serveur dans /app
-  const groupId = params.id;
   console.log(params);
 
 
   return (
-    <div>
-      <h1>Page du groupe</h1>
+    <div className={styles.parant}>
 
-      <p>ID du groupe : {groupId}</p>
-    </div>
+         <div className={styles.left}>
+      
+         </div>
+         <div className={styles.divcentral}>
+              <div className={styles.supp}>
+
+              </div>
+              <div className={styles.moyyen}>
+
+              </div>
+              <div className={styles.infer}>
+        
+              </div>
+      
+           </div>
+          <div className={styles.right}>
+      
+          </div>
+   </div>
+    
   );
 }
