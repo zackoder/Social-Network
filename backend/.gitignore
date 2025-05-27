@@ -1,4 +1,4 @@
 *.db
 /uploads/
 *.txt
-backend/tmp/
+/tmp/
