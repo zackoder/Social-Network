@@ -13,6 +13,7 @@ export default function Signup() {
     age: "",
     nickname: "",
     aboutMe: "",
+    gender: "male", // Add default gender value
   });
   const [avatar, setAvatar] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,11 +33,16 @@ export default function Signup() {
       return "Nickname must be under 10 characters.";
     if (!emailRegex.test(formData.email))
       return "Please enter a valid email address.";
+    if (formData.password.length < 6)
+      return "Password must be at least 6 characters.";
+    if (formData.password !== formData.confirmPassword)
+      return "Passwords do not match.";
     if (!formData.age) return "Please enter your date of birth.";
     if (new Date(formData.age) > new Date())
       return "Date of birth cannot be in the future.";
     if (formData.aboutMe.length > 130)
       return "About Me must be under 130 characters.";
+    if (!formData.gender) return "Please select a gender.";
     return "";
   };
 
@@ -87,6 +93,7 @@ export default function Signup() {
         age: "",
         nickname: "",
         aboutMe: "",
+        gender: "male", // Reset gender to default value
       });
       setAvatar(null);
     } catch {
@@ -222,6 +229,34 @@ export default function Signup() {
               accept="image/*"
               onChange={(e) => setAvatar(e.target.files[0])}
             />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="gender">Gender</label>
+            <div className="gender-options">
+              <label className="gender-option">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="male"
+                  checked={formData.gender === "male"}
+                  onChange={handleChange}
+                  required
+                />
+                <span>Male</span>
+              </label>
+              <label className="gender-option">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="female"
+                  checked={formData.gender === "female"}
+                  onChange={handleChange}
+                  required
+                />
+                <span>Female</span>
+              </label>
+            </div>
           </div>
 
           <button type="submit" className="signup-button" disabled={isLoading}>
