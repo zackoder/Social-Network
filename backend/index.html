@@ -9,11 +9,11 @@
     </style>
     <textarea id="log" rows="10" cols="50" readonly></textarea><br />
 
-      <form class="msgform">
-        <input type="text" id="msgInput" placeholder="Type a message..." />
-        <input type="file" />
-        <button type="submit">Send</button>
-      </form>
+    <form class="msgform">
+      <input type="text" id="msgInput" placeholder="Type a message..." />
+      <input type="file" />
+      <button type="submit">Send</button>
+    </form>
     <br /><br />
     <form class="groupform">
       <input type="text" id="groupInput" placeholder="Type a message..." />
@@ -30,7 +30,11 @@
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({ content: "hello there", title: `hi${i}` }),
+              body: JSON.stringify({
+                description: "hello there",
+                title: `hi${i}`,
+                cretorid: i + 1,
+              }),
             });
 
             let data = await res.json(); // <-- call it with ()

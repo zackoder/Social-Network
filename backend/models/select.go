@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -451,40 +452,18 @@ func CheckSender(group_id, sender_id int) bool {
 }
 
 func IsMember(groupID, userID int) bool {
-	query := "SELECT 1 FROM group_members WHERE user_id = ? AND group_id = ? LIMIT 1"
-	rows, err := Db.Query(query, userID, groupID)
+	var exists bool
+	query := "SELECT EXISTS(SELECT 1 FROM group_members WHERE group_id = ? AND user_id = ?)"
+	err := Db.QueryRow(query, groupID, userID).Scan(&exists)
 	if err != nil {
 		fmt.Println("Query error:", err)
-		return false
 	}
-	defer rows.Close()
-
-	if rows.Next() {
-		return true
-	}
-
-	return false
-}
-
-func InvitationExists(groupe_id, recever_id int) bool {
-	query := "SELECT 1 FROM invitation WHERE  groupe_id=? AND  recever_id=?"
-	rows, err := Db.Query(query, groupe_id, recever_id)
-	if err != nil {
-		fmt.Println("Query error:", err)
-		return false
-	}
-	defer rows.Close()
-
-	if rows.Next() {
-		return false
-	}
-
-	return true
+	return exists
 }
 
 func SearchGroupsInDatabase(tocken string) ([]utils.Groupe, error) {
 	var Groups []utils.Groupe
-	quirie := `SELECT * FROM groups WHERE title = ?`
+	quirie := `SELECT * FROM groups WHERE title LIKE %?%`
 	rows, err := Db.Query(quirie, tocken)
 	if err != nil {
 		fmt.Println("Error querying Groups", err)
@@ -636,6 +615,52 @@ func MyGroupes(user_id int) []string {
 	}
 
 	return res
+}
+
+func SelectNotifications(user_id int) ([]utils.Notification, error) {
+	var notis []utils.Notification
+	quetyNotifications := `SELECT id, user_id, actor_id, target_id, message FROM notifications WHERE target_id = ?`
+	rows, err := Db.Query(quetyNotifications, user_id)
+	if err != nil {
+		return notis, err
+	}
+
+	for rows.Next() {
+		var noti utils.Notification
+		if err := rows.Scan(&noti.Id, &noti.Sender_id, &noti.Actor_id, &noti.Target_id, &noti.Message); err != nil {
+			log.Println("scaning notifacations error:", err)
+		}
+		notis = append(notis, noti)
+	}
+
+	defer rows.Close()
+	return notis, nil
+}
+
+func SelectOneNoti(noti *utils.Notification) {
+	queryNoti := "SELECT message, target_id, actor_id, user_id FROM notifications WHERE id = ?"
+	err := Db.QueryRow(queryNoti, noti.Id).Scan(&noti.Message, &noti.Target_id, &noti.Actor_id, &noti.Sender_id)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func GetGroupOwner(group utils.Groupe_member) int {
+	var owner int
+	selectGroupOwner := `SELECT group_oner FROM groups WHERE id = ?`
+	err := Db.QueryRow(selectGroupOwner, group.Groupe_id).Scan(&owner)
+	if err != nil {
+		log.Println("getting group owner id error", err)
+	}
+	return owner
+}
+
+func CheckGroup(group_id int) bool {
+	var exists bool
+	getGroup := "SELECT EXISTS(SELECT 1 FROM groups WHERE id = ?)"
+	err := Db.QueryRow(getGroup, group_id).Scan(&exists)
+	log.Println(err)
+	return exists
 }
 
 // func GetReactionsCount(postID int) (map[string]int, error) {

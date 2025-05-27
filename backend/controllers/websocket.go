@@ -60,13 +60,13 @@ func handleMessage(msgType int, payload []byte, host string, client *utils.Clien
 		msg, err = utils.UploadMsgImg(payload)
 		if err != nil {
 			errMsg.Error = err.Error()
-			broadcastError(errMsg, client.Client_id)
+			Broadcast(client.Client_id, errMsg)
 			return
 		}
 	case websocket.TextMessage:
 		if err := json.Unmarshal(payload, &msg); err != nil {
 			errMsg.Error = "failed to parse your data"
-			broadcastError(errMsg, client.Client_id)
+			Broadcast(client.Client_id, errMsg)
 			log.Println("JSON Unmarshal error:", err)
 			return
 		}
@@ -76,18 +76,16 @@ func handleMessage(msgType int, payload []byte, host string, client *utils.Clien
 	log.Println("lhsdfljslfkdj", msg.Reciever_id)
 
 	if msg.Reciever_id != 0 {
-		broadcastPrivateMessage(msg, host)
+		BroadcastPrivateMessage(msg, host)
 	} else if msg.Group_id != 0 {
-		if err := broadcastGroupMessage(msg, host); err != nil {
+		if err := BroadcastGroupMessage(msg, host); err != nil {
 			errMsg.Error = err.Error()
-			broadcastError(errMsg, msg.Sender_id)
+			Broadcast(msg.Sender_id, errMsg)
 		}
 	}
 }
 
-func broadcastPrivateMessage(msg utils.Message, host string) {
-	log.Println("wslt lhna")
-
+func BroadcastPrivateMessage(msg utils.Message, host string) {
 	errMsg := utils.Err{}
 
 	if ok, err := models.FriendsChecker(msg.Sender_id, msg.Reciever_id); err != nil || !ok {
@@ -95,7 +93,7 @@ func broadcastPrivateMessage(msg utils.Message, host string) {
 			fmt.Println(err)
 		}
 		errMsg.Error = "you need to follow the receiver first"
-		broadcastError(errMsg, msg.Sender_id)
+		Broadcast(msg.Sender_id, errMsg)
 		return
 	}
 	log.Println(msg)
@@ -103,46 +101,26 @@ func broadcastPrivateMessage(msg utils.Message, host string) {
 	if msg.Filename != "" {
 		msg.Filename = host + msg.Filename
 	}
-	broadcastMessage(msg.Reciever_id, msg)
-	broadcastMessage(msg.Sender_id, msg)
+	Broadcast(msg.Reciever_id, msg)
+	Broadcast(msg.Sender_id, msg)
 }
 
-func broadcastGroupMessage(msg utils.Message, host string) error {
+func BroadcastGroupMessage(msg utils.Message, host string) error {
 	if !models.CheckSender(msg.Group_id, msg.Sender_id) {
 		return fmt.Errorf("you need to be a group member first")
 	}
 	for _, receiverID := range Manager.Groups[msg.Group_id] {
-		broadcastMessage(receiverID, msg)
+		Broadcast(receiverID, msg)
 	}
 	models.InsertGroupMSG(msg)
 	return nil
 }
 
-func broadcastMessage(receiverID int, msg utils.Message) {
+func Broadcast(receiverID int, msg any) {
 	if connections, exists := Manager.UsersList[receiverID]; exists {
 		for _, conn := range connections {
 			if err := conn.Connection.WriteJSON(msg); err != nil {
 				log.Println("WriteJSON failed:", err)
-			}
-		}
-	}
-}
-
-func broadcastError(errMsg utils.Err, receiverID int) {
-	if connections, exists := Manager.UsersList[receiverID]; exists {
-		for _, conn := range connections {
-			if err := conn.Connection.WriteJSON(errMsg); err != nil {
-				log.Println("Error broadcast failed:", err)
-			}
-		}
-	}
-}
-
-func BroadcastNotification(noti utils.Notification) {
-	if targets, online := Manager.UsersList[noti.Target_id]; online {
-		for _, conn := range targets {
-			if err := conn.Connection.WriteJSON(noti); err != nil {
-				log.Println("Notification broadcast failed:", err)
 			}
 		}
 	}

@@ -11,12 +11,12 @@ export default function ButtonProfile() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
-
+  const host = process.env.NEXT_PUBLIC_HOST
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_HOST}/userData`,
+          `${host}/userData`,
           {
             credentials: "include",
           }
@@ -29,16 +29,9 @@ export default function ButtonProfile() {
             return;
           }
         }
-
+        
         // Handle different response content types
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          console.error("Non-JSON response received:", contentType);
-          const text = await response.text();
-          console.error("Response text:", text);
-          throw new Error("Received non-JSON response from server");
-        }
-
+      
         const data = await response.json();
 
         console.log("User data received:", data);
@@ -50,6 +43,8 @@ export default function ButtonProfile() {
 
         // Check multiple possible ID field names
         const userId = data.id;
+        console.log(userId);
+        
         localStorage.setItem("user-id", userId);
         if (!userId) {
           console.warn("User data does not contain ID field:", data);
