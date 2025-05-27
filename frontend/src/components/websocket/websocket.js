@@ -8,7 +8,7 @@ export function Websocket() {
     }
     websocketConnection = new Promise((resolve, reject) => {
         // Create WebSocket connection.
-        socket = new WebSocket("ws://localhost:8080/ws?id=1");
+        socket = new WebSocket("ws://localhost:8080/ws");
 
         // Connection opened
         socket.addEventListener("open", (event) => {
