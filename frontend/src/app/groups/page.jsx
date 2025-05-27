@@ -31,6 +31,8 @@ export default function Home() {
         return;
       }
       setGroups(data);
+      
+     
     } catch (err) {
       setGroups([]);
       setError(err.message || "Erreur inconnue");
@@ -52,19 +54,23 @@ export default function Home() {
       });
       if (!res.ok) throw new Error("Group creation failed");
       const newGroup = await res.json();
+
       setIsPopupOpen(false);
       setTitle("");
       setDescription("");
       setGroups((prev) => [...prev, newGroup]);
+      setError("")
 
     } catch (err) {
       alert(err.message || "Error creating group");
     }
   };
   const addclass = (e) => {
-    const lient = document.querySelectorAll('.lien');
+    const lients = document.querySelectorAll(`.${styles.lien}`);
+    console.log(lients);
+    
 
-    lient.forEach((lien) => {
+    lients.forEach((lien) => {
       lien.classList.remove("active");
     });
     e.target.classList.add("active");
@@ -160,7 +166,7 @@ export default function Home() {
             ))}
           </ul>
         ) : (
-          !error && <p>Aucun groupe à afficher.</p>
+          !error && <p>No groups to display.</p>
         )}
       </div>
     </div>
