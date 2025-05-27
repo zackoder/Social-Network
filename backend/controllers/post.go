@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"social-network/models"
 	"social-network/utils"
@@ -14,27 +15,22 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
-// cookie, err := r.Cookie("token")
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		utils.WriteJSON(w, map[string]string{"error": "Unauthorized"}, http.StatusUnauthorized)
-// 		return
-// 	}
-
-	
 	var post utils.Post
-	// fmt.Println(cookie.Value)
-	// post.Poster_id, err = models.Get_session(cookie.Value)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	utils.WriteJSON(w, map[string]string{"error": "Unauthorized aras lfta"}, http.StatusUnauthorized)
-	// 	return
-	// }
 	post.Poster_id = userId
-
-	fmt.Println(post.Poster_id)
 	host := r.Host
 	postData := r.FormValue("postData")
+	err := json.Unmarshal([]byte(postData), &post)
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "internal server error\nparsing post"}, http.StatusInternalServerError)
+		fmt.Println("unmarshal err:", err)
+		return
+	}
+
+	if strings.TrimSpace(post.Title) == "" || strings.TrimSpace(post.Content) == "" {
+		utils.WriteJSON(w, map[string]string{"error": "title or content is empty"}, http.StatusBadRequest)
+		return
+	}
+
 	filepath, err := utils.UploadImage(r)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": err.Error()}, http.StatusInternalServerError)
@@ -42,14 +38,16 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 		return
 	}
 
-	fmt.Println("post data", postData)
-	err = json.Unmarshal([]byte(postData), &post)
-	if err != nil {
-		utils.WriteJSON(w, map[string]string{"error": "internal server error\nparsing post"}, http.StatusInternalServerError)
-		fmt.Println("unmarshal err:", err)
-		return
+	post.Image = filepath
+
+	if filepath == "" {
+		post.Image = "/uploads/defaulte.jpg"
 	}
- 
+
+	user, _ := models.GetUserById(userId)
+	post.Poster_name = user.FirstName
+	post.Avatar = host + user.Avatar
+
 	fmt.Println("post", r.URL.Query().Get("id"))
 
 	if filepath != "" {
@@ -58,6 +56,7 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 	fmt.Println(post.Poster_id)
 	post.Id, err = models.InsertPost(post)
 	if err != nil {
+		utils.RemoveIMG(filepath)
 		utils.WriteJSON(w, map[string]string{"error": "internal server error\ninserting post"}, http.StatusInternalServerError)
 		return
 	}
@@ -66,11 +65,7 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 		models.InsertFriends(post.Id, post.Friendes)
 		post.Friendes = []int{}
 	}
-
-	if filepath != "" {
-		post.Image = host + filepath
-	}
-
+	post.Image = host + post.Image
 	utils.WriteJSON(w, post, 200)
 }
 
@@ -117,5 +112,3 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 // 		}
 // 	}
 // }
-
-	 

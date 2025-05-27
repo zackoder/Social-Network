@@ -1,59 +1,82 @@
 package controllers
 
 import (
+	"database/sql"
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
+	"strconv"
+	"strings"
+
 	"social-network/models"
 	"social-network/utils"
-	"strconv"
 )
 
-// GetNotifications fetches notifications for a user with pagination support
-func GetNotifications(w http.ResponseWriter, r *http.Request, userID int) {
-
-	// Parse pagination parameters
-	limitStr := r.URL.Query().Get("limit")
-	offsetStr := r.URL.Query().Get("offset")
-
-	// Default values
-	limit := 5
-	offset := 0
-
-	// Parse limit if provided
-	if limitStr != "" {
-		parsedLimit, err := strconv.Atoi(limitStr)
-		if err == nil && parsedLimit > 0 {
-			limit = parsedLimit
-		}
-	}
-
-	// Parse offset if provided
-	if offsetStr != "" {
-		parsedOffset, err := strconv.Atoi(offsetStr)
-		if err == nil && parsedOffset >= 0 {
-			offset = parsedOffset
-		}
-	}
-
-	// Get notifications from the database
-	notifications, err := models.GetNotifications(userID, limit, offset)
+func GetNotifications(w http.ResponseWriter, r *http.Request, userId int) {
+	notifications, err := models.SelectNotifications(userId)
 	if err != nil {
-		fmt.Println("Error fetching notifications:", err)
-		http.Error(w, "Failed to fetch notifications", http.StatusInternalServerError)
+		log.Println(err)
+	}
+	utils.WriteJSON(w, notifications, 200)
+}
+
+func NotiResp(w http.ResponseWriter, r *http.Request, userId int) {
+	var noti utils.Notification
+	err := json.NewDecoder(r.Body).Decode(&noti)
+	if err != nil {
+		log.Println("decoding json", err)
 		return
 	}
-
-	// Set content type and serialize the response
-	w.Header().Set("Content-Type", "application/json")
-
-	response := struct {
-		Notifications []utils.Notification `json:"notifications"`
-		HasMore       bool                 `json:"hasMore"`
-	}{
-		Notifications: notifications,
-		HasMore:       len(notifications) == limit, // If we got exactly the requested limit, there may be more
+	resp := noti.Message
+	models.SelectOneNoti(&noti)
+	if noti.Message == "event" {
+		log.Println("this is an event")
+		utils.HandleEvent(noti)
+		return
 	}
-
-	json.NewEncoder(w).Encode(response)
+	if resp != "rejected" && resp != "accepted" {
+		utils.WriteJSON(w, map[string]string{"error": "Bad Request"}, http.StatusBadRequest)
+		return
+	}
+	if resp == "rejected" {
+		err = models.DeleteNoti(noti.Id)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				utils.WriteJSON(w, map[string]string{"error": "there is no such notification"}, http.StatusBadRequest)
+				return
+			}
+			log.Println(err)
+		}
+		return
+	}
+	log.Println(noti)
+	if noti.Message == "group invitation" {
+		err := models.InsserMemmberInGroupe(noti.Actor_id, noti.Target_id, "member")
+		if err != nil {
+			if strings.Contains(err.Error(), "UNIQUE") {
+				utils.WriteJSON(w, map[string]string{"error": "you are already a member of that group"}, http.StatusBadRequest)
+			} else {
+				utils.WriteJSON(w, map[string]string{"error": "internal server error"}, http.StatusInternalServerError)
+				log.Println("inserting member error", err)
+				return
+			}
+		}
+	} else if noti.Message == "follow request" {
+		err := models.InsertFollow(noti.Actor_id, strconv.Itoa(noti.Target_id))
+		if err != nil {
+			log.Println(err)
+		}
+	} else if noti.Message == "join request" {
+		err := models.InsserMemmberInGroupe(noti.Actor_id, noti.Sender_id, "member")
+		if err != nil {
+			if strings.Contains(err.Error(), "UNIQUE") {
+				utils.WriteJSON(w, map[string]string{"error": "you are already a member of that group"}, http.StatusBadRequest)
+			} else {
+				utils.WriteJSON(w, map[string]string{"error": "internal server error"}, http.StatusInternalServerError)
+				log.Println("inserting member error", err)
+				return
+			}
+		}
+	}
+	models.DeleteNoti(noti.Id)
 }

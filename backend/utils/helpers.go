@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"fmt"
 	"net/http"
+	"os"
 	"regexp"
 	"slices"
 	"strings"
@@ -16,6 +18,15 @@ func Hashpass(password string) string {
 		return ""
 	}
 	return string(hashedPasswd)
+}
+
+func RemoveIMG(filepath string) {
+	if filepath == "" {
+		return
+	}
+	if err := os.Remove(filepath); err != nil {
+		fmt.Println("removing error:", err)
+	}
 }
 
 func CheckExtension(FileExtension string) bool {
@@ -35,8 +46,6 @@ func IsValidEmail(email *string) bool {
 	return re.MatchString(*email)
 }
 
- 
- 
 func ClearSession(w http.ResponseWriter) {
 	cookie := &http.Cookie{
 		Name:   "token",
@@ -66,7 +75,6 @@ func CheckPasswordHash(password, hash *string) bool {
 	return err == nil
 }
 
- 
 func CheckName(name string) bool {
 	re, err := regexp.Compile(`^[a-zA-Z\s]{4,30}$`)
 	if err != nil {
@@ -94,4 +102,7 @@ func CheckNickName(nickname string) bool {
 		return false
 	}
 	return re.MatchString(nickname)
+}
+
+func HandleEvent(noti Notification) {
 }

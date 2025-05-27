@@ -110,19 +110,19 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !utils.CheckAge(userData.Age) {
-		utils.WriteJSON(w, map[string]string{"message": "nvalid age"}, http.StatusBadRequest)
+		utils.WriteJSON(w, map[string]string{"message": "Invalid age"}, http.StatusBadRequest)
 
 		return
 	}
 
 	if !utils.CheckGender(userData.Gender) {
-		utils.WriteJSON(w, map[string]string{"message": "nvalid gender"}, http.StatusBadRequest)
+		utils.WriteJSON(w, map[string]string{"message": "Invalid gender"}, http.StatusBadRequest)
 
 		return
 	}
 
 	if !utils.IsValidEmail(&userData.Email) {
-		utils.WriteJSON(w,map[string]string{"message":  "nvalid emai"}, http.StatusBadRequest)
+		utils.WriteJSON(w,map[string]string{"message":  "Invalid emai"}, http.StatusBadRequest)
 
 		return
 	}
@@ -165,7 +165,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	userData.SessionId, err = utils.GenerateSessionID()
 	if err != nil {
 		utils.WriteJSON(w,map[string]string{"message":  "internaInternal Server Error"}, http.StatusInternalServerError)
-
 		return
 	}
 

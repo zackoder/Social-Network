@@ -7,7 +7,7 @@ fi
 # cd frontend 
 # npm i
 
-# cd ../backend
+# cd ../backend	Poster_name string    `json:"name"`
 # export PATH="$PATH:$HOME/go/bin"
 # source ~/.bashrc
 # fresh -g

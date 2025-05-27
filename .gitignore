@@ -1,6 +1,13 @@
+<<<<<<< HEAD
  
 frontend/node_modules
 frontend/.next
 *.env
  
 backend/tmp/runner-build
+=======
+frontend/node_modules
+frontend/.next
+*.env
+.fresh.yaml
+>>>>>>> origin/zack

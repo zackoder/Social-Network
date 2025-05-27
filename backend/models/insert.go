@@ -7,25 +7,26 @@ import (
 	"social-network/utils"
 )
 
-func InsertUser(user utils.User) (int, error ){
-	insertuserquery := "INSERT INTO users (first_name, last_name, nickname, email, age, gender, password, avatar, AboutMe)  VALUES(?,?,?,?,?,?,?,?,?)"
-	 result,err := Db.Exec(insertuserquery, user.FirstName, user.LastName, user.Nickname, user.Email, user.Age, user.Gender, user.Password, user.Avatar, user.AboutMe);
-	 if err != nil{
-		 fmt.Println(err)
-		 return 0, err
-		}
-		user.ID,_ = result.LastInsertId()
-	return  int(user.ID),nil
-}
+//	func InsertUser(user utils.User) (int, error ){
+//		insertuserquery := "INSERT INTO users (first_name, last_name, nickname, email, age, gender, password, avatar, AboutMe)  VALUES(?,?,?,?,?,?,?,?,?)"
+//		 result,err := Db.Exec(insertuserquery, user.FirstName, user.LastName, user.Nickname, user.Email, user.Age, user.Gender, user.Password, user.Avatar, user.AboutMe);
+//		 if err != nil{
+//			 fmt.Println(err)
+//			 return 0, err
+//			}
+//			user.ID,_ = result.LastInsertId()
+//		return  int(user.ID),nil
+//	}
 func RegisterUser(user *utils.User) error {
 	insertuserquery := "INSERT INTO users (first_name, last_name, nickname, email, age, gender, password, avatar, AboutMe)  VALUES(?,?,?,?,?,?,?,?,?)"
-	 result,err := Db.Exec(insertuserquery, user.FirstName, user.LastName, user.Nickname, user.Email, user.Age, user.Gender, user.Password, user.Avatar, user.AboutMe);
+	result, err := Db.Exec(insertuserquery, user.FirstName, user.LastName, user.Nickname, user.Email, user.Age, user.Gender, user.Password, user.Avatar, user.AboutMe)
 	if err != nil {
 		return err
 	}
 	user.ID, err = result.LastInsertId()
 	return err
 }
+
 func InsertPost(post utils.Post) (int, error) {
 	insetpostQuery := "INSERT INTO posts (post_privacy, title, content, user_id, imagePath, createdAt) VALUES (?,?,?,?,?,strftime('%s', 'now'))"
 	res, err := Db.Exec(insetpostQuery, post.Privacy, post.Title, post.Content, post.Poster_id, post.Image)
@@ -44,35 +45,55 @@ func InsertFriends(id int, friendes []int) {
 	}
 }
 
-func InserOrUpdate(follower, followed string) (string, error) {
-	privacy, err := IsPrivateProfile(followed)
-	if err != nil {
-		return "", err
-	}
-	if !privacy {
+// func InserOrUpdate(follower, followed string) (string, error) {
+// 	privacy, err := IsPrivateProfile(followed)
+// 	if err != nil {
+// 		return "", err
+// 	}
 
-		if err := InsertFollow(follower, followed); err != nil {
-			if err := Deletfollow(follower, followed); err != nil {
-				fmt.Println(err)
-				return "", err
-			}
-			fmt.Println(err)
-			return "unfollow seccessfully", nil
-		}
-		return "following seccessfully", nil
-	}
-	InsertFollowreq(followed)
-	return "follow request sent", nil
-}
+// 	if !privacy {
+// 		if err := InsertFollow(follower, followed); err != nil {
+// 			if err := Deletfollow(follower, followed); err != nil {
+// 				fmt.Println(err)
+// 				return "", err
+// 			}
+// 			fmt.Println(err)
+// 			return "unfollow seccessfully", nil
+// 		}
+// 		return "following seccessfully", nil
+// 	}
+// 	InsertFollowreq(followed)
+// 	return "follow request sent", nil
+// }
 
-func InsertFollow(follower, followed string) error {
+// func InserOrUpdate(follower, followed string) (string, error) {
+// 	privacy, err := IsPrivateProfile(followed)
+// 	if err != nil {
+// 		return "", err
+// 	}
+// 	if !privacy {
+
+// 		if err := InsertFollow(follower, followed); err != nil {
+// 			if err := Deletfollow(follower, followed); err != nil {
+// 				fmt.Println(err)
+// 				return "", err
+// 			}
+// 			fmt.Println(err)
+// 			return "unfollow seccessfully", nil
+// 		}
+// 		return "following seccessfully", nil
+// 	}
+// 	InsertFollowreq(followed)
+// 	return "follow request sent", nil
+// }
+
+func InsertFollow(follower int, followed string) error {
 	inserQuery := "INSERT INTO followers (follower_id, followed_id) VALUES (?,?)"
 	_, err := Db.Exec(inserQuery, follower, followed)
 	return err
 }
 
 func InsertFollowreq(followed string) {
-
 }
 
 func InsertNewGroup(group *utils.NewGroup, user_id int) error {
@@ -126,37 +147,54 @@ func InsertGroupMSG(msg utils.Message) error {
 }
 
 func InsertNotification(noti utils.Notification) error {
-	query := "INSERT INTO notifications (user_id, target_id, actor_id, message) VALUES (?,?,?,?)"
-	_, err := Db.Exec(query, noti.Sender_id, noti.Target_id, noti.Actor_id, noti.Message)
+	var oldNoti utils.Notification
+	SelectOneNoti(&oldNoti)
+	var err error
+	if oldNoti.Id != 0 {
+		err = UpdateNoti(oldNoti, noti)
+	} else {
+		query := "INSERT INTO notifications (user_id, target_id, actor_id, message) VALUES (?,?,?,?)"
+		_, err = Db.Exec(query, noti.Sender_id, noti.Target_id, noti.Actor_id, noti.Message)
+	}
 	return err
 }
 
 func SaveInvitation(Groupe_id, sender_id, resever_id int) error {
-	Quirie := "INSER INTO invitation (sender_id,recever_id,groupe_id) VALUES(?,?)"
+	Quirie := "INSERT INTO invitation (sender_id,recever_id,groupe_id) VALUES(?,?,?)"
 	_, err := Db.Exec(Quirie, sender_id, resever_id, Groupe_id)
 	return err
 }
-func InsserGroupe(title, description string, creator_id int) error {
-	Query := "INSERT INTO groups (title,description,creatorId) VALUES (?,?,?)"
-	_, err := Db.Exec(Query, title, description, creator_id)
+
+func InsserGroupe(title, description string, creator_id int) (int, error) {
+	Query := "INSERT INTO groups (name, description, group_oner) VALUES (?,?,?)"
+	res, err := Db.Exec(Query, title, description, creator_id)
+	if err != nil {
+		return 0, err
+	}
+	lastGroupInserted, _ := res.LastInsertId()
+	return int(lastGroupInserted), err
+}
+
+func InsserMemmberInGroupe(Groupe_id, User_id int, role string) error {
+	Quirie := "INSERT INTO group_members (group_id,user_id, role) VALUES (?, ?, ?)"
+	_, err := Db.Exec(Quirie, Groupe_id, User_id, role)
 	return err
 }
-func InsserMemmberInGroupe(Groupe_id, User_id int) error {
-	Quirie := "INSERT INTO group_members (groupe_id,user_id) VALUES (?,?)"
-	_, err := Db.Exec(Quirie, Groupe_id, User_id)
-	return err
+
+func InsserEventInDatabase(event utils.Event) (int, error) {
+	Quirie := "INSERT INTO events (group_id,title,description,event_time,created_by) VALUES (?,?,?,?)"
+	res, err := Db.Exec(Quirie, event.GroupID, event.Title, event.Description, event.EventTime, event.CreatedBy)
+	lastid, _ := res.LastInsertId()
+	return int(lastid), err
 }
-func InsserEventInDatabase(event utils.Event)error{
-Quirie := "INSERT INTO events (group_id,title,description,event_time,created_by) VALUES (?,?,?,?)"
-_,err := Db.Exec(Quirie,event.GroupID,event.Title,event.Description,event.EventTime,event.CreatedBy)
-return err 
-}
-func InsserResponceInDatabase(responce utils.EventResponse)error {
+
+func InsserResponceInDatabase(responce utils.EventResponse) error {
 	Quirie := "INSERT INTO event_responses (user_id,event_id,response) VALUES (?,?,?)"
-_,err := Db.Exec(Quirie,responce.UserID,responce.EventID,responce.Response)
-return err 
+	_, err := Db.Exec(Quirie, responce.UserID, responce.EventID, responce.Response)
+	return err
 }
-// this function is not used yet it supposed to insert people who can see the private posts into DB. 
+
+// this function is not used yet it supposed to insert people who can see the private posts into DB.
 func AddPrivateViewers(postID int, viewerIDs []int) error {
 	query := `INSERT INTO friends (post_id, friend_id) VALUES (?, ?)`
 
