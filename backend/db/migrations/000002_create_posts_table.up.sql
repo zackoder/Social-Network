@@ -5,6 +5,9 @@ CREATE TABLE posts (
     content TEXT NOT NULL,
     user_id INTEGER NOT NULL,
     imagePath TEXT,
+    group_id INTEGER
     createdAt INTEGER,
+    
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE
 );
