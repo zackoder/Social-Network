@@ -395,3 +395,10 @@ func MyGroupes(user_id int) []string {
 
 	return res
 }
+
+func GetOneGroup(group_id int) (utils.Groupe, error) {
+	query := "SELECT g.name, g.description, u.first_name, u.last_name FROM groups g JOIN users u on g.group_oner = u.id WHERE g.id = ?"
+	var group utils.Groupe
+	err := Db.QueryRow(query, group_id).Scan(&group.Title, &group.Description, &group.FirstName, &group.LasttName)
+	return group, err
+}
