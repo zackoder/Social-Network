@@ -9,9 +9,6 @@ import (
 	"strconv"
 )
 
-
-
-
 func GetRegistrationData(w http.ResponseWriter, r *http.Request,userID int)  {
 	Response := map[string]any{}
 	profileOwnerIDStr := r.URL.Query().Get("id")
