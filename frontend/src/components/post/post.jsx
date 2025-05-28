@@ -172,7 +172,6 @@ export default function Post({ post }) {
 
           <div className={styles.reaction}>
             <LikeDislikeComment postId={post.id} />
-            <button className="comment"> show comments </button>
           </div>
         </div>
       ))}
