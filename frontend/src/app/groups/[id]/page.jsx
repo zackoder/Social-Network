@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 export default function GroupPage() {
   const params = useParams();  // récupère params dynamiques
   const { id } = params;       // ici id correspond au nom du fichier dynamique [id]
+  const posts =[]
   console.log({ id });
 
   const host = process.env.NEXT_PUBLIC_HOST;
@@ -24,7 +25,7 @@ export default function GroupPage() {
         })
         const data = await resp.json()
         setgroupdata(data)
-      } catch {
+      } catch {         
 
       }
     }
@@ -40,12 +41,25 @@ export default function GroupPage() {
       <div className={styles.left}></div>
       <div className={styles.divcentral}>
         <div className={styles.supp}>
-          <h1>{groupData.title}</h1>
-          <p>{groupData.description}</p>
-          <small>Créateur : {groupData.first_name} {groupData.last_name}</small>
+          <h1 className={styles.header}>{groupData.title}</h1>
+          <p className={styles.description}> description: {groupData.description}</p>
+          <small className={styles.creator}>Creator : {groupData.first_name} {groupData.last_name}</small>
         </div>
-        <div className={styles.moyyen}></div>
-        <div className={styles.infer}></div>
+        <div className={styles.moyyen}>
+             <div className={styles.postsContainer}>
+                       {posts.map((post) => (
+                            <div key={post.id} className={styles.postCard}>
+                            <small className={styles.postDate}>{post.date}</small>
+             </div>
+                        ))}
+         </div>
+              <div>
+
+                 
+                                           
+              </div>
+        </div>
+      <div className={styles.infer}></div>
       </div>
       <div className={styles.right}></div>
     </div>
