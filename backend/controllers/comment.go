@@ -3,10 +3,12 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"strconv"
+
 	"social-network/models"
 	"social-network/utils"
-	"strconv"
 )
 
 // UserProfileInfo holds user avatar and name information
@@ -78,7 +80,7 @@ func AddComment(w http.ResponseWriter, r *http.Request, userID int) {
 
 	// Set the user ID from the session
 	comment.UserId = userID
-	fmt.Println("comment", comment.UserId, comment.Content,comment.PostId)
+	fmt.Println("comment", comment.UserId, comment.Content, comment.PostId)
 	// Check if post exists
 	postExists, err := models.PostExists(comment.PostId)
 	if err != nil || !postExists {
@@ -145,7 +147,7 @@ func GetComments(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Post ID is required"}, http.StatusBadRequest)
 		return
 	}
-
+	log.Println("working")
 	postId, err := strconv.Atoi(postIdStr)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Invalid post ID"}, http.StatusBadRequest)

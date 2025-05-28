@@ -89,3 +89,7 @@
 .reaction .comment span{
     margin-bottom: 2px;
 }
+
+.btnShowcomment{
+    display: block;
+}
