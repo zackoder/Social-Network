@@ -14,13 +14,8 @@ func GetFollowers(w http.ResponseWriter, r *http.Request, userID int) {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowed"}, http.StatusMethodNotAllowed)
 		return
 	}
-	userId, err := strconv.Atoi(r.URL.Query().Get("id"))
-	if err != nil {
-		fmt.Println("we cant convert the id")
-		utils.WriteJSON(w, map[string]string{"error": "data not available "}, http.StatusBadRequest)
-		return
-	}
-	followers, err := models.GetFollowers(userId)
+
+	followers, err := models.GetFollowers(userID)
 	fmt.Println(followers)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "We Can't Fetsh Followers List"}, http.StatusInternalServerError)
