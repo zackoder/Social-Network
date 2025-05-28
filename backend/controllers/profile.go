@@ -53,21 +53,16 @@ func UpdatePrivacy(w http.ResponseWriter, r *http.Request, user_id int) {
 	utils.WriteJSON(w, map[string]string{"profile_status": privacy}, 200)
 }
 
-func UserData(w http.ResponseWriter, r *http.Request) {
+func UserData(w http.ResponseWriter, r *http.Request, user_id int) {
 	if r.Method != http.MethodGet {
 		utils.WriteJSON(w, map[string]string{"error": "Not allowed"}, http.StatusMethodNotAllowed)
 		return
 	}
-	cookie, _ := r.Cookie("token")
 	var userD utils.UserD
-	err := models.Db.QueryRow(
-		`SELECT u.id, u.first_name, u.avatar
-            FROM users u 
-            JOIN sessions s on u.id = u.id 
-            WHERE token = ?`, cookie.Value).Scan(&userD.Id, &userD.Firstname, &userD.Avatar)
-	if err != nil {
-		fmt.Println(err)
-	}
+	user, _ := models.GetUserById(user_id)
+	userD.Firstname = user.FirstName
+	userD.Id = user_id
+	userD.Avatar = user.Avatar
 	if userD.Avatar != "" {
 		userD.Avatar = r.Host + userD.Avatar
 	}

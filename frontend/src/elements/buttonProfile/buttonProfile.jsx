@@ -34,8 +34,6 @@ export default function ButtonProfile() {
       
         const data = await response.json();
 
-        console.log("User data received:", data);
-
         if (!data || Object.keys(data).length === 0) {
           console.error("Empty user data received");
           throw new Error("Invalid user data");
@@ -43,16 +41,15 @@ export default function ButtonProfile() {
 
         // Check multiple possible ID field names
         const userId = data.id;
-        console.log(userId);
         
         localStorage.setItem("user-id", userId);
         if (!userId) {
           console.warn("User data does not contain ID field:", data);
         }
-
         setUserData(data);
       } catch (err) {
-        isAuthenticated(response.status, data.error);
+        console.log(err);
+        
       } finally {
         setIsLoading(false);
       }
