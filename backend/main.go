@@ -38,12 +38,13 @@ func main() {
 	mux.HandleFunc("/GetPostsFromGroupe", controllers.Get_all_post)
 	mux.HandleFunc("/CreatEvent", controllers.CreatEvent)
 	mux.Handle("GET /GetGroups", midleware.WithCORS(http.HandlerFunc(controllers.AllGroups)))
-	mux.Handle("/GetJoinedGroups",midleware.WithCORS(http.HandlerFunc(controllers.GetGroupsJoined)))
-	mux.Handle("/GetMyGroups",midleware.WithCORS(http.HandlerFunc(controllers.GetGroupsCreatedByUser)))
-
+	mux.Handle("/GetJoinedGroups", midleware.WithCORS(http.HandlerFunc(controllers.GetGroupsJoined)))
+	mux.Handle("/GetMyGroups", midleware.WithCORS(http.HandlerFunc(controllers.GetGroupsCreatedByUser)))
+	mux.Handle("/group", midleware.AuthMiddleware(controllers.GetGroup))
+	// /group/
 	mux.HandleFunc("GET /uploads/", controllers.HandelPics)
 	mux.Handle("/api/posts", midleware.WithCORS(http.HandlerFunc(controllers.Posts)))
-	//mux.HandleFunc("GET /group/{GroupName}", controllers.Group)
+	// mux.HandleFunc("GET /group/{GroupName}", controllers.Group)
 	mux.HandleFunc("/ws", controllers.Websocket)
 
 	// Comment handlers
@@ -54,5 +55,5 @@ func main() {
 	mux.Handle("POST /addReaction", midleware.WithCORS(http.HandlerFunc(controllers.AddReaction)))
 	mux.Handle("GET /getReactions", midleware.WithCORS(http.HandlerFunc(controllers.GetReactions)))
 
-	http.ListenAndServe(":8080", mux)
+	http.ListenAndServe(":8080", midleware.WithCORS(mux))
 }

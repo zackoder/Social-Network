@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -11,29 +13,26 @@ import (
 	"social-network/utils"
 )
 
-
-
-
 func Creat_groupe(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
 	fmt.Println("hihi")
-	user_id,err := GetUserIdByCookie(r)
-	 if err != nil {
+	user_id, err := GetUserIdByCookie(r)
+	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "You don't have access."}, http.StatusForbidden)
-		return 
+		return
 	}
 	var Groupe utils.Groupe
 	err = json.NewDecoder(r.Body).Decode(&Groupe)
-	fmt.Println("datagroupe",Groupe)
+	fmt.Println("datagroupe", Groupe)
 	if err != nil {
 		fmt.Println("hoho")
 		utils.WriteJSON(w, map[string]string{"error": "Bad Request"}, http.StatusBadRequest)
 		return
 	}
-	Groupe.CreatorId=user_id
+	Groupe.CreatorId = user_id
 
 	fmt.Println(len(Groupe.Title), len(Groupe.Description))
 
@@ -47,14 +46,14 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	groupe_id,err := models.InsserGroupe(Groupe.Title, Groupe.Description, Groupe.CreatorId)
-	err = models.InsserMemmberInGroupe(groupe_id, user_id,"creator")
+	groupe_id, err := models.InsserGroupe(Groupe.Title, Groupe.Description, Groupe.CreatorId)
+	err = models.InsserMemmberInGroupe(groupe_id, user_id, "creator")
 	if err != nil {
 		fmt.Println(err)
 		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
 		return
 	}
-	utils.WriteJSON(w,Groupe, http.StatusOK)
+	utils.WriteJSON(w, Groupe, http.StatusOK)
 	return
 }
 
@@ -72,7 +71,7 @@ func Jouind_Groupe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !models.IsMember(requist.Groupe_id, requist.User_id) {
-		err = models.InsserMemmberInGroupe(requist.Groupe_id, requist.User_id,"member")
+		err = models.InsserMemmberInGroupe(requist.Groupe_id, requist.User_id, "member")
 		fmt.Println(err)
 		if err != nil {
 			utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
@@ -284,15 +283,34 @@ func EventRrspponce(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{"message": "The answer was successfully added"})
 }
 
-
-func GetUserIdByCookie(r *http.Request)(int,error){
+func GetUserIdByCookie(r *http.Request) (int, error) {
 	cookie, err0 := r.Cookie("token")
-    if err0 != nil {
-		return 0,err0
+	if err0 != nil {
+		return 0, err0
 	}
-	userId,err := models.Get_session(cookie.Value)
+	userId, err := models.Get_session(cookie.Value)
 	if err != nil {
-		return 0,err
+		return 0, err
 	}
-	return userId,nil
-} 
+	return userId, nil
+}
+
+func GetGroup(w http.ResponseWriter, r *http.Request, user_id int) {
+	group_id, err := strconv.Atoi(r.URL.Query().Get("groupId"))
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "invalid data"}, http.StatusNotFound)
+		return
+	}
+	group, err := models.GetOneGroup(group_id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			utils.WriteJSON(w, map[string]string{"error": "Forbidden"}, http.StatusForbidden)
+		} else {
+			utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
+			log.Println("scan group error", err)
+		}
+		return
+	}
+	log.Println(group_id, "userid", group)
+	utils.WriteJSON(w, group, 200)
+}
