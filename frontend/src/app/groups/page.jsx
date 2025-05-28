@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import styles from "./groups.module.css";
 import Link from "next/link";
+import { useRouter } from 'next/router';
+
 
 export default function Home() {
   const [groups, setGroups] = useState([]);
@@ -30,6 +32,8 @@ export default function Home() {
         setError("No available Groups");
         return;
       }
+      console.log(data);
+      
       setGroups(data);
       
      
@@ -39,6 +43,8 @@ export default function Home() {
     }
   };
   useEffect(() => {
+    document.getElementById("initial").classList.add(`${styles.active}`)
+
     fetchGroups("/GetGroups");
   }, []);
   const handleCreateGroup = async (e) => {
@@ -95,6 +101,7 @@ export default function Home() {
         <a
           href="#"
           className={styles.lien}
+          id="initial"
           onClick={(e) => {
             e.preventDefault();
             addclass(e)
@@ -158,11 +165,24 @@ export default function Home() {
         {groups.length > 0 ? (
           <ul>
             {groups.map((groupe, i) => (
+              
+              
+              
+              
               <li key={i}>
-                <Link href={`/groups/${groupe.Id}`}>
+                <Link  href={{
+                 pathname: `/groups/${groupe.Id}`,
+                 query: {
+                 Id:groupe.Id,
+                 title: groupe.title,
+                 description: groupe.description,
+                 },
+                 }}>
+                  
                   <p>{groupe.title}</p>
                 </Link>
               </li>
+              
             ))}
           </ul>
         ) : (
