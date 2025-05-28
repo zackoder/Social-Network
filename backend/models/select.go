@@ -14,7 +14,7 @@ import (
 func QueryPosts(offset int, r *http.Request) []utils.Post {
 	host := r.Host
 	var posts []utils.Post
-	queryPosts := `SELECT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt
+	queryPosts := `SELECT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt, u.avatar
 	FROM posts p
 	JOIN users u ON p.user_id = u.id`
 	// cookie, _ := r.Cookie("token")
@@ -29,12 +29,15 @@ func QueryPosts(offset int, r *http.Request) []utils.Post {
 	defer rows.Close()
 	for rows.Next() {
 		var post utils.Post
-		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt)
+		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt, &post.Avatar)
 		if err != nil {
 			fmt.Println("scaning error:", err)
 		}
 		if post.Image != "" {
 			post.Image = host + post.Image
+		}
+		if post.Avatar != "" {
+			post.Avatar = host + post.Avatar
 		}
 		posts = append(posts, post)
 	}
@@ -177,8 +180,9 @@ func GetFollowers(userID int) ([]utils.Regester, error) {
 	}
 	return followersInfo, nil
 }
-func GetFollowings(userID int) ([]utils.Regester,error) {
-		query := `SELECT  f.followed_id, u.first_name FROM followers f 
+
+func GetFollowings(userID int) ([]utils.Regester, error) {
+	query := `SELECT  f.followed_id, u.first_name FROM followers f 
 	JOIN users u 
 	ON f.followed_id = u.id 
 	WHERE f.follower_id  = ? `
@@ -198,8 +202,8 @@ func GetFollowings(userID int) ([]utils.Regester,error) {
 		followersInfo = append(followersInfo, followerinfo)
 	}
 	return followersInfo, nil
-
 }
+
 func GetRegistration(id string) (utils.Regester, error) {
 	query := `SELECT * FROM users WHERE id = ?`
 
@@ -772,4 +776,10 @@ func GetNotifications(userId int, limit int, offset int) ([]utils.Notification, 
 	}
 
 	return notifications, nil
+}
+
+func QueryMsgs(receiver_id int, offset string) {
+	query := `
+		SELECT 
+	`
 }

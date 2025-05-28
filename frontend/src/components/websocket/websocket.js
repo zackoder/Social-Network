@@ -33,11 +33,8 @@ export function Websocket() {
 
         // Listen for messages
         // socket.addEventListener("message", (event) => {
-        //     console.log("Message from server ", event.data);
         //     let data = JSON.parse(event.data)
-        //     if (data.reciever_id){
-                
-        //     }
+        //     console.log("Message from server ", data);
         // });
     });
     return websocketConnection;
