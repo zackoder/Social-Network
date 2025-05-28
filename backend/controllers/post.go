@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
@@ -40,19 +41,15 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 
 	post.Image = filepath
 
-	if filepath == "" {
-		post.Image = "/uploads/defaulte.jpg"
-	}
-
 	user, _ := models.GetUserById(userId)
+	log.Println(user)
 	post.Poster_name = user.FirstName
 	post.Avatar = host + user.Avatar
 
 	fmt.Println("post", r.URL.Query().Get("id"))
 
-	if filepath != "" {
-		post.Image = filepath
-	}
+	post.Image = filepath
+	
 	fmt.Println(post.Poster_id)
 	post.Id, err = models.InsertPost(post)
 	if err != nil {
@@ -65,7 +62,10 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 		models.InsertFriends(post.Id, post.Friendes)
 		post.Friendes = []int{}
 	}
-	post.Image = host + post.Image
+
+	if filepath != "" {
+		post.Image = host + post.Image
+	}
 	utils.WriteJSON(w, post, 200)
 }
 

@@ -17,16 +17,20 @@ export default function Contacts({ onContactClick, activeContactId }) {
           credentials: "include",
         });
         const data = await response.json();
+        if (!response.ok) {
+          isAuthenticated(response.status, data.error);
+        }
+
         setContacts(data);
-        if (data &&data.error) {
+        if (data && data.error) {
           // throw new Error(data.error);
           console.log(data.error);
         }
-        console.log(data);
+
       } catch (error) {
         console.error("Failed to fetch contacts:", error);
         isAuthenticated(response.status, "you should login first")
-        
+
       }
     };
     fetchContacts();
@@ -37,19 +41,18 @@ export default function Contacts({ onContactClick, activeContactId }) {
 
   return (
     <div className={styles.container}>
-      {contacts.map((contact) => (
+      {Array.isArray(contacts) && contacts.map((contact) => (
         <div
           key={contact.id}
-          className={`${styles.profile} ${
-            activeContactId === contact.id ? styles.active : ""
-          }`}
+          className={`${styles.profile} ${activeContactId === contact.id ? styles.active : ""
+            }`}
           onClick={() => onContactClick(contact)}
           role="button"
           tabIndex={0}
           onKeyDown={(e) => e.key === "Enter" && onContactClick(contact)}
         >
           <div className={styles.imgProfile}>
-            <Image
+            <img
               src={`http://${contact.avatar}`}
               width={50}
               height={50}

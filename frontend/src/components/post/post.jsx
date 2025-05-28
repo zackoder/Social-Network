@@ -35,7 +35,7 @@
 //         return <p>No posts yet.</p>;
 //     }
 //     // console.log("posts", posts);
-    
+
 //     return (
 //         <div className={styles.container}>
 //             {posts.map((post) => (
@@ -93,12 +93,13 @@ import styles from "./post.module.css";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
-function GetData() {
+async function GetData() {
   const host = process.env.NEXT_PUBLIC_HOST;
   return fetch(`${host}/api/posts`).then((response) => {
-    console.log("response ------", response.ok);
     if (!response.ok) {
       console.log("Failed to Fetch Data");
+      isAuthenticated(response.status, data.error);
+      return
     }
     return response.json();
   });
@@ -119,7 +120,6 @@ export default function Post({ post }) {
     setLoading(true);
     GetData()
       .then((data) => {
-        console.log(data);
         setPosts(data);
         setLoading(false);
       })
@@ -139,7 +139,15 @@ export default function Post({ post }) {
           <div className={styles.header}>
             <Link href={`/profile?id=${post.poster}&profile=${post.first_name}`}>
               <div className={styles.containerHeader}>
-                <div className={styles.imageContainer}></div>
+                <div className={styles.imageContainer}>
+                  <img
+                    src={`http://${post.avatar}`}
+                    width={50}
+                    height={50}
+                    style={{ borderRadius: "100%" }}
+                    
+                  />
+                </div>
                 <h2>{post.first_name}</h2>
               </div>
             </Link>

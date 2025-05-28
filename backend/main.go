@@ -42,13 +42,13 @@ func main() {
 
 	mux.HandleFunc("/GetPostsFromGroupe", controllers.Get_all_post)
 
-
 	// mux.Handle("POST /creategroup", (http.HandlerFunc(controllers.CreateGroup)))
 	// mux.Handle("POST /joinReq",(http.HandlerFunc(controllers.JoinReq)))
 	mux.Handle("POST /api/logout", midleware.AuthMiddleware(controllers.LogoutHandler))
-	mux.HandleFunc("GET /uploads/", controllers.HandelPics)
+	mux.Handle("GET /uploads/", midleware.AuthMiddleware(controllers.HandelPics))
+	mux.Handle("GET /defaultIMG/", midleware.AuthMiddleware(controllers.HandelPics))
 	mux.Handle("/api/posts", http.HandlerFunc(controllers.Posts))
-	mux.HandleFunc("GET /api/getProfilePosts",midleware.AuthMiddleware(controllers.GetProfilePosts) )
+	mux.HandleFunc("GET /api/getProfilePosts", midleware.AuthMiddleware(controllers.GetProfilePosts))
 	mux.HandleFunc("GET /group", controllers.Group)
 	mux.Handle("/event-resp", (http.HandlerFunc(controllers.EventResponse)))
 	mux.Handle("/ws", midleware.AuthMiddleware(controllers.Websocket))
@@ -60,13 +60,12 @@ func main() {
 	// Reaction handlers
 	mux.Handle("GET /getReactions", http.HandlerFunc(controllers.GetReactions))
 
-	mux.Handle("/userData", http.HandlerFunc(controllers.UserData))
+	mux.Handle("/userData", midleware.AuthMiddleware(controllers.UserData))
 	mux.Handle("POST /addReaction", midleware.AuthMiddleware(controllers.AddReaction))
 
 	mux.Handle("/getNotifications", midleware.AuthMiddleware(controllers.GetNotifications))
 	mux.Handle("/notiResp", midleware.AuthMiddleware(controllers.NotiResp))
 	// mux.Handle("/private-messages", http.HandlerFunc(controllers.GetNotifications))
-
 
 	mux.HandleFunc("GET /group/{GroupName}", controllers.Group)
 
