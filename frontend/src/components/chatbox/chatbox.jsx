@@ -5,8 +5,10 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { IoIosSend } from "react-icons/io";
-import { socket, Websocket } from "../websocket/websocket";
-// import { parse } from "next/dist/build/swc/generated-native";
+import { socket } from "../websocket/websocket";
+import { isAuthenticated } from "@/app/page";
+
+const host = process.env.NEXT_PUBLIC_HOST;
 
 export default function ChatBox({ contact, onClickClose }) {
 
@@ -16,8 +18,6 @@ export default function ChatBox({ contact, onClickClose }) {
   const [showEmojis, setShowEmojis] = useState(false);
   const bottomRef = useRef(null);
   const userId = parseInt(localStorage.getItem("user-id"));
-
-  console.log("contact ---------------------------------", messages);
 
   const emojis = [
     "😁",
@@ -77,16 +77,10 @@ export default function ChatBox({ contact, onClickClose }) {
     }
   };
 
-  // useEffect(() => {
-  //   setMessages(["hello"]);
-  // }, [contact.id]);
-
-
   useEffect(() => {
     const handleMessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        console.log("--------------------------------------", data);
 
         if (
           (data.receiver_id === userId && data.sender_id === contact.id) ||
@@ -107,49 +101,23 @@ export default function ChatBox({ contact, onClickClose }) {
     };
   }, [contact.id]);
 
-
-  // useEffect(() => {
-  //   // Websocket().then(socket => {
-  //   // socket.addEventListener("message", (event) => {
-  //   //   const data = JSON.parse(event.data);
-  //   //   console.log("event", data);
-
-  //     // if ((data.receiver_id === userId && data.sender_id == contact.id) || (data.sender_id === userId && data.receiver_id == contact.id)) {
-
-  //     //   console.log("messages ------------------", messages);
-  //     //   setMessages(prev => [...prev, data]);
-  //     // }
-
-  //     // setMessages(filteredMessages);
-  //     // return () => socket.removeEventListener("message", handleMessage);
-  //   // });
-  //   // });
-  //   // const handleMessage = (event) => {
-
-  //   //   try {
-  //   //     // const data =
-  //   //     //   typeof event.data === "string"
-  //   //     //     ? JSON.parse(event.data)
-  //   //     //     : parseBinaryMessage(event.data);
-
-  //   //     socket.addEventListener("message", (event) => {
-  //   //       let data = parse.JSON(event.data);
-  //   //       setMessage(data)
-  //   //       return () => socket.removeEventListener("message", handleMessage);
-  //   //     });
-
-  //   //   } catch (err) {
-  //   //     console.error("Failed to parse message:", event.data);
-  //   //   }
-  //   // };
-
-
-  // }, [contact.id]); // Add contact.id as dependency  [socket, contact.id]
-
   useEffect(() => {
-    // Filter messages to only show those relevant to current contact
+    const fetchMessages = async () => {
+      try{
+        const response = await fetch(`${host}/GetMessages?receiver_id=${contact.id}?offset=${}`);
+        const data = await response.json();
+        if (!response.ok){
+          isAuthenticated(response.status, data.error);
+        }
+        setMessage(data);
+      }catch(err){
+        console.log("Error fetching messages", err);
+        
+      }
 
-  }, [contact.id]); // Reset messages when contact changes
+    };
+    fetchMessages();
+  }, [contact.id, userId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -220,10 +188,11 @@ export default function ChatBox({ contact, onClickClose }) {
             >
               {msg.sender_id !== userId && (
                 <div className={styles.profileImage}>
-                  <Image
-                    src="/profile/profile.png"
+                  <img
+                    src={`http://${contact.avatar}`}
                     alt="profile"
-                    fill
+                    width={50}
+                    height={50}
                     style={{ objectFit: "cover", borderRadius: "50%" }}
                   />
                 </div>
@@ -255,20 +224,22 @@ export default function ChatBox({ contact, onClickClose }) {
                       }}
                     />
                     <span className={styles.timeStamp}>
-                      {new Date(msg.timestamp).toLocaleTimeString([], {
+                      {/* {new Date(msg.timestamp).toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
-                      })}
+                      })} */}
+                      {msg.creation_date}
                     </span>
                   </div>
                 ) : (
                   <div className={styles.textMessage}>
                     <p>{msg.content}</p>
                     <span className={styles.timeStamp}>
-                      {new Date(msg.timestamp).toLocaleTimeString([], {
+                      {/* {new Date(msg.timestamp).toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
-                      })}
+                      })} */}
+                      {msg.creation_date}
                     </span>
                   </div>
                 )}

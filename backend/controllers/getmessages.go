@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -9,11 +10,21 @@ import (
 )
 
 func GetMessages(w http.ResponseWriter, r *http.Request, user_id int) {
-	receiver_id, err := strconv.Atoi(r.URL.Query().Get("receiver_id"))
+	var message utils.Message
+	var err error
+	message.Reciever_id, err = strconv.Atoi(r.URL.Query().Get("receiver_id"))
 	offset := r.URL.Query().Get("offset")
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "invalide data"}, http.StatusForbidden)
 		return
 	}
-	models.QueryMsgs(receiver_id, offset)
+	message.Sender_id = user_id
+
+	messages, err := models.QueryMsgs(message, r.Host, offset)
+	if err != nil {
+		log.Println("query error:", err)
+		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
+		return
+	}
+	utils.WriteJSON(w, messages, 200)
 }

@@ -778,11 +778,50 @@ func GetNotifications(userId int, limit int, offset int) ([]utils.Notification, 
 	return notifications, nil
 }
 
-func QueryMsgs(receiver_id int, offset string) {
+func QueryMsgs(message utils.Message, host, offset string) ([]utils.Message, error) {
 	query := `
-		SELECT 
+		SELECT
+	    m.sender_id,
+	    m.reciever_id,
+	    m.content,
+	    m.imagePath,
+	    m.creation_date,
+	    u.avatar
+	FROM
+	    messages m
+	    JOIN users u ON m.sender_id = u.id
+	WHERE
+	    (m.sender_id = ? AND m.reciever_id = ?)
+	    OR (m.sender_id = ? AND m.reciever_id = ?)
+		ORDER BY
+    		m.id DESC
+		LIMIT 20 OFFSET ?;
 	`
+	rows, err := Db.Query(query, message.Sender_id, message.Reciever_id, message.Reciever_id, message.Sender_id, offset)
+	if err != nil {
+		log.Println("quering messages err:", err)
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var messages []utils.Message
+
+	for rows.Next() {
+
+		err := rows.Scan(
+			&message.Sender_id,
+			&message.Reciever_id,
+			&message.Content,
+			&message.Filename,
+			&message.Creation_date,
+			&message.Avatar,
+		)
+		if err != nil {
+			return nil, err
+		}
+		message.Avatar = host + message.Avatar
+		messages = append(messages, message)
+	}
+	return messages, nil
 }
-
-
-

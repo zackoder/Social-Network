@@ -37,7 +37,9 @@ func main() {
 	mux.Handle("POST /creategroup", http.HandlerFunc(controllers.Creat_groupe))
 	mux.Handle("/JouindGroupe", http.HandlerFunc(controllers.Jouind_Groupe))
 	mux.Handle("/CreatEvent", midleware.AuthMiddleware(controllers.CreatEvent))
+	mux.Handle("/GetMessages", midleware.AuthMiddleware(controllers.GetMessages))
 
+	// GetMessages
 	mux.Handle("/groupInvitarion", http.HandlerFunc(controllers.InviteUser))
 
 	mux.HandleFunc("/GetPostsFromGroupe", controllers.Get_all_post)
