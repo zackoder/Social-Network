@@ -778,11 +778,11 @@ func GetNotifications(userId int, limit int, offset int) ([]utils.Notification, 
 	return notifications, nil
 }
 
-func QueryMsgs(receiver_id int, offset string) {
-	query := `
-		SELECT 
-	`
-}
+// func QueryMsgs(receiver_id int, offset string) {
+// 	query := `
+// 		SELECT 
+// 	`
+// }
 
 
 

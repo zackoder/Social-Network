@@ -9,6 +9,8 @@ import { isAuthenticated } from "@/app/page";
 // import styles from './likeDislikeComment.modules.css';
 
 export default function LikeDislikeComment({postId}) {
+  console.log("post id the compoenent", postId);
+  
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
   const [likeNumber, setLikeNbr] = useState(0);
@@ -51,12 +53,12 @@ export default function LikeDislikeComment({postId}) {
         credentials: "include",
         body: JSON.stringify({postId:postId,reactionType:"like"})
       }) 
+      const data = await response.json()
       if (!response.ok) {
         // throw new Error(error);
           console.log(error);
-
+          isAuthenticated(response.status, data.error)
       } 
-      const data = await response.json()
       // check status
       
       if (await data.message == "Reaction updated" && await data.reaction.reactionType == "like"){
@@ -133,39 +135,41 @@ export default function LikeDislikeComment({postId}) {
           getReactions(postId)
     }, [])
   
-  const handleCommentSubmit = async (e) => {
+  const handleCommentSubmit = async (e) => {    
     e.preventDefault();
     const formData = new FormData();
     const commentData = {
       content : comment,
+      postId : postId,
+      
     };
     formData.append('commentData', JSON.stringify(commentData))
     if (image) {
       formData.append('avatar', image)
     }
     try {
-      const response = fetch(`${host}/addComment`, {
+      const response = await fetch(`${host}/addComment`, {
         method: "POST",
         body: formData,
         credentials: "include"
       });
       const comment = await response.json();
+      //  const result = await response.json();
       if (!response.ok) {
-        // throw new Error(comment.error);
-      } else {
-        setSubmittedComment(comment);
-        setComment('');
-        setImage("")
-      }
+        isAuthenticated( response.status, comment.error);
+        return;
+      } 
+      setSubmittedComment(comment);
+      setComment('');
+      setImage("");
 
       // Reset file input
       if (fileInputRef.current) {
         fileInputRef.current.value = ""
       }
     } catch (error) {
-      console.log("Submission Error");
+      console.log("Submission Error", error);
     }
-
     //end point
   };
   return (
@@ -198,7 +202,7 @@ export default function LikeDislikeComment({postId}) {
           <FaCloudUploadAlt className="uploadIcon" />
         </label>
 
-        <input type="submit" className="submit" />
+        <input type="submit" className="submit" id="submitComment" />
         <label htmlFor="submitComment">
           <LuSend className="submitIcon" />
         </label>
@@ -208,7 +212,7 @@ export default function LikeDislikeComment({postId}) {
       {submittedComment && (
         <div style={{ marginTop: '20px', background: '#222', padding: '10px', borderRadius: '4px' }}>
           <strong>Comment:</strong>
-          <p>{submittedComment}</p>
+          <p>{submittedComment.content}</p>
         </div>
       )}
     </div>
