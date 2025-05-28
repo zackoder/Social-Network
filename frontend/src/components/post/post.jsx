@@ -106,6 +106,7 @@ async function GetData() {
 }
 
 export default function Post({ post }) {
+  
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -171,6 +172,7 @@ export default function Post({ post }) {
 
           <div className={styles.reaction}>
             <LikeDislikeComment postId={post.id} />
+            <button className="comment"> show comments </button>
           </div>
         </div>
       ))}

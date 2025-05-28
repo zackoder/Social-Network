@@ -33,6 +33,7 @@ func GetUserAvatarAndUserName(userId int) *UserProfileInfo {
 
 // AddComment handles adding a new comment to a post
 func AddComment(w http.ResponseWriter, r *http.Request, userID int) {
+	fmt.Println("data is hereeeeeeeeeeeeeeee")
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method not allowed"}, http.StatusMethodNotAllowed)
 		return
@@ -44,6 +45,7 @@ func AddComment(w http.ResponseWriter, r *http.Request, userID int) {
 	}
 
 	postData := r.FormValue("commentData")
+	fmt.Println("this id postdata ", postData)
 	// Get the file path for the uploaded image
 	filepath, err := utils.UploadImage(r)
 	if err != nil {
@@ -76,7 +78,7 @@ func AddComment(w http.ResponseWriter, r *http.Request, userID int) {
 
 	// Set the user ID from the session
 	comment.UserId = userID
-
+	fmt.Println("comment", comment.UserId, comment.Content,comment.PostId)
 	// Check if post exists
 	postExists, err := models.PostExists(comment.PostId)
 	if err != nil || !postExists {

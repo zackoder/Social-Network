@@ -10,7 +10,7 @@ func CanUserAccessPost(userId int, postId int) (bool, error) {
 	// Query to get the post's privacy and poster id
 	var privacy string
 	var posterId int
-	query := `SELECT privacy, poster_id FROM posts WHERE id = ?`
+	query := `SELECT post_privacy, user_id FROM posts WHERE id = ?`
 	err := Db.QueryRow(query, postId).Scan(&privacy, &posterId)
 	if err != nil {
 		if err == sql.ErrNoRows {
