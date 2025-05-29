@@ -31,6 +31,8 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 		return
 	}
 
+	post.Poster_id = 10
+
 	filepath, err := utils.UploadImage(r)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": err.Error()}, http.StatusInternalServerError)

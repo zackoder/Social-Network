@@ -44,6 +44,7 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request) {
 
 	groupInserted, err := models.InsserGroupe(Groupe.Title, Groupe.Description, Groupe.CreatorId)
 	if err != nil {
+		fmt.Println(err)
 		if strings.Contains(err.Error(), "groups.name") {
 			utils.WriteJSON(w, map[string]string{"error": "This group already exists"}, http.StatusBadRequest)
 			return
@@ -93,6 +94,9 @@ func Jouind_Groupe(w http.ResponseWriter, r *http.Request) {
 			utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
 			log.Println(err)
 		}
+		utils.WriteJSON(w, map[string]string{"prossotion": "seccesfel"}, http.StatusOK)
+	} else {
+		utils.WriteJSON(w, map[string]string{"error": "you are redy member in this group"}, 403)
 		return
 	}
 	fmt.Println("function stoped here")

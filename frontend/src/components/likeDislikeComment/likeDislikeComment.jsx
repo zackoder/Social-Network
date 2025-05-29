@@ -40,7 +40,7 @@ export default function LikeDislikeComment({postId}) {
       setDisliked(true);
     }
   } catch (error) {
-    console.error("Failed to fetch user reaction:", error);
+    // console.error("Failed to fetch user reaction:", error);
   }
   };
 

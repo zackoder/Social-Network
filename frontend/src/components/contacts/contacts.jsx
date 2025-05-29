@@ -24,7 +24,7 @@ export default function Contacts({ onContactClick, activeContactId }) {
         }
         console.log(data);
       } catch (error) {
-        console.error("Failed to fetch contacts:", error);
+        // console.error("Failed to fetch contacts:", error);
         isAuthenticated(response.status, "you should login first")
         
       }

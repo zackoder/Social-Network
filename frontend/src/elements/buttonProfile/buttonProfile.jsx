@@ -21,25 +21,22 @@ export default function ButtonProfile() {
             credentials: "include",
           }
         );
+        const data = await response.json();
 
         if (!response.ok) {
           // If response is 401 Unauthorized, redirect to login
-          if (response.status === 401) {
-            router.push("/login");
-            return;
-          }
+          isAuthenticated(response.status, data.error)
         }
         
         // Handle different response content types
       
-        const data = await response.json();
 
         console.log("User data received:", data);
 
-        if (!data || Object.keys(data).length === 0) {
-          console.error("Empty user data received");
-          throw new Error("Invalid user data");
-        }
+        // if (!data || Object.keys(data).length === 0) {
+        //   console.error("Empty user data received");
+        //   throw new Error("Invalid user data");
+        // }
 
         // Check multiple possible ID field names
         const userId = data.id;
@@ -52,7 +49,7 @@ export default function ButtonProfile() {
 
         setUserData(data);
       } catch (err) {
-        isAuthenticated(response.status, data.error);
+
       } finally {
         setIsLoading(false);
       }
@@ -70,7 +67,7 @@ export default function ButtonProfile() {
     }
 
     if (error) {
-      console.error("Cannot navigate due to error:", error);
+      // console.error("Cannot navigate due to error:", error);
       router.push("/login");
       return;
     }
@@ -82,7 +79,7 @@ export default function ButtonProfile() {
       console.log(`Navigating to profile with ID: ${userId}`);
       router.push(`/profile?id=${userId}`);
     } else {
-      console.error("Cannot navigate: user ID not found in data:", userData);
+      // console.error("Cannot navigate: user ID not found in data:", userData);
       router.push("/login");
     }
   };
