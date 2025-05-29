@@ -177,8 +177,8 @@ func GetFollowers(userID int) ([]utils.Regester, error) {
 	}
 	return followersInfo, nil
 }
-func GetFollowings(userID int) ([]utils.Regester,error) {
-		query := `SELECT  f.followed_id, u.first_name FROM followers f 
+func GetFollowings(userID int) ([]utils.Regester, error) {
+	query := `SELECT  f.followed_id, u.first_name FROM followers f 
 	JOIN users u 
 	ON f.followed_id = u.id 
 	WHERE f.follower_id  = ? `
@@ -619,7 +619,24 @@ func MyGroupes(user_id int) []string {
 
 func SelectNotifications(user_id int) ([]utils.Notification, error) {
 	var notis []utils.Notification
-	quetyNotifications := `SELECT id, user_id, actor_id, target_id, message FROM notifications WHERE target_id = ?`
+	quetyNotifications := `
+	SELECT DISTINCT
+    	n.actor_id,
+    	n.user_id,
+    	n.target_id,
+    	n.message,
+	FROM
+	    notifications n
+	    INNER JOIN group_members gm ON gm.group_id = n.target_id
+	WHERE
+	    (
+	        n.message = 'event'
+	        AND gm.user_id = ?
+	    )
+	    OR (
+	        n.message <> 'event'
+	        AND n.target_id = ?
+    );`
 	rows, err := Db.Query(quetyNotifications, user_id)
 	if err != nil {
 		return notis, err
