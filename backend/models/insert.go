@@ -127,7 +127,7 @@ func InsertSession(userData *utils.User) error {
 
 func InsertMsg(msg utils.Message) error {
 	query := "INSERT INTO messages (sender_id, reciever_id, content, imagePath, creation_date) VALUES (?,?,?,?,?)"
-	_, err := Db.Exec(query, msg.Sender_id, msg.Reciever_id, msg.Content, msg.Filename, time.Now())
+	_, err := Db.Exec(query, msg.Sender_id, msg.Reciever_id, msg.Content, msg.Filename, time.Now().Unix())
 	if err != nil {
 		fmt.Println("inserting error:", err)
 	} else {
