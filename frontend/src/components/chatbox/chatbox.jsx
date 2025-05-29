@@ -2,7 +2,7 @@
 
 import styles from "./chatbox.module.css";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { IoIosSend } from "react-icons/io";
 import { socket } from "../websocket/websocket";
@@ -17,6 +17,8 @@ export default function ChatBox({ contact, onClickClose }) {
   const [image, setImage] = useState(null);
   const [showEmojis, setShowEmojis] = useState(false);
   const bottomRef = useRef(null);
+  const [offset, setOffset] = useState(0);
+  const limit = 20;
   const userId = parseInt(localStorage.getItem("user-id"));
 
   const emojis = [
@@ -101,23 +103,44 @@ export default function ChatBox({ contact, onClickClose }) {
     };
   }, [contact.id]);
 
-  useEffect(() => {
-    const fetchMessages = async () => {
-      try{
-        const response = await fetch(`${host}/GetMessages?receiver_id=${contact.id}?offset=${}`);
-        const data = await response.json();
-        if (!response.ok){
-          isAuthenticated(response.status, data.error);
-        }
-        setMessage(data);
-      }catch(err){
-        console.log("Error fetching messages", err);
-        
+  const fetchMessages = async (offsetValue = 0) => {
+    try {
+      const response = await fetch(`${host}/GetMessages?receiver_id=${contact.id}&offset=${offsetValue}`, {
+        credentials: "include",
+        method: "GET"
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        isAuthenticated(response.status, data.error);
+        return;
       }
+      setMessages(prev => [...data, ...prev]);
+      setOffset(offsetValue + limit);
+    } catch (err) {
+      console.log("Error fetching messages", err);
+    }
+  };
 
-    };
-    fetchMessages();
-  }, [contact.id, userId]);
+  useEffect(() => {
+    setOffset(0);
+    fetchMessages(0);
+    setMessages([]);
+
+  }, [contact.id]);
+
+  const handleScroll = (e) => {
+    if (e.target.scrollTop === 0){
+      fetchMessages(offset);
+    }
+  };
+
+  useEffect(() => {
+    const container = document.querySelector(`${styles.readmessages}`);
+    container?.addEventListener("scroll", handleScroll);
+    console.log("container", container);
+    
+    return () => container?.removeEventListener("scroll");
+  }, [offset]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
