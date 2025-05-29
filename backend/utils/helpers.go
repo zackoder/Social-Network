@@ -83,12 +83,12 @@ func CheckName(name string) bool {
 	return re.MatchString(name)
 }
 
-func CheckAge(age uint8) bool {
-	if age < 13 || age > 120 {
-		return false
-	}
-	return true
-}
+// func CheckAge(age uint8) bool {
+// 	if age < 13 || age > 120 {
+// 		return false
+// 	}
+// 	return true
+// }
 
 func CheckGender(gender string) bool {
 	gender = strings.ToLower(gender)

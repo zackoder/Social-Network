@@ -63,7 +63,7 @@ type Notification struct {
 type User struct {
 	ID        int64
 	Nickname  string `json:"nickname"`
-	Age       uint8  `json:"age"`
+	Age       int  `json:"age"`
 	Gender    string `json:"gender"`
 	FirstName string `json:"firstname"`
 	LastName  string `json:"lastname"`
