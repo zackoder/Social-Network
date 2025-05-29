@@ -16,7 +16,9 @@ export default function LikeDislikeComment({ postId }) {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [image, setImage] = useState("");
-  const [submittedComment, setSubmittedComment] = useState("");
+  const [showComments, setShowComments] = useState(false);
+
+  // const [submittedComment, setSubmittedComment] = useState("");
   const fileInputRef = useRef(null);
   const host = process.env.NEXT_PUBLIC_HOST;
 
@@ -141,6 +143,12 @@ export default function LikeDislikeComment({ postId }) {
 
   /* handling show comments */
   const handleClick = async () => {
+    if (showComments) {
+      setShowComments(false);
+      return;
+    }
+    // if (comments.length === 0) {
+
     try {
       const response = await fetch(`${host}/getComments?postId=${postId}`, {
         // add an end point
@@ -148,7 +156,7 @@ export default function LikeDislikeComment({ postId }) {
         credentials: "include",
       });
 
-      console.log("response the fetch posts ", response);
+      console.log("fetching data response1111111", response);
 
       if (!response.ok) {
         console.log(`Error: ${response.status}`);
@@ -157,14 +165,19 @@ export default function LikeDislikeComment({ postId }) {
       }
       const data = await response.json();
       console.log("data the fetch posts------ ", data);
+      if (data.content === ""){
+        return
+      }
 
       setComments(data);
+      setShowComments(true);
       console.log("comments---", comments);
-      
+
       console.log("fetch comments: ", data); // for testing fetching
     } catch (err) {
       console.log("error", err);
-    }
+    // }
+  }
   };
 
   const handleCommentSubmit = async (e) => {
@@ -190,7 +203,9 @@ export default function LikeDislikeComment({ postId }) {
         isAuthenticated(response.status, comment.error);
         return;
       }
-      setSubmittedComment(comment);
+      // setComments((prevComments) => [comment, ...prevComments]);
+      setComments((prev) => [comment, ...prev]);
+      setShowComments(true);
       setComment("");
       setImage("");
 
@@ -238,6 +253,7 @@ export default function LikeDislikeComment({ postId }) {
 
       <form className="formComment" onSubmit={handleCommentSubmit}>
         <input
+          required
           placeholder="Write a comment..."
           value={comment}
           onChange={(e) => setComment(e.target.value)}
@@ -272,25 +288,30 @@ export default function LikeDislikeComment({ postId }) {
 
       {/* this is button the show Comments and display comments*/}
       <button className="show" onClick={handleClick}>
-        Show Comments
+        {showComments ? "Hide Comments" : "Show Comments"}
       </button>
 
-      {submittedComment && (
-        <div
-          style={{
-            marginTop: "20px",
-            background: "#222",
-            padding: "10px",
-            borderRadius: "4px",
-          }}
-        >
-          <strong>Comment:</strong>
-          <p>{submittedComment.content}</p>
-          {comments.map((comment) => {
-            <div key={comment.id}>
-              <p>{comment.content}</p>
-            </div>;
-          })}
+      {showComments && (
+        <div className="comments-container">
+          {comments.length === 0 ? (
+            <p style={{ color: "#aaa", textAlign: "center" }}>
+              No comments yet.
+            </p>
+          ) : (
+            comments.map((comment, index) => (
+              <div className="comment" key={index}>
+                <div className="comment-header">
+                  <span className="comment-author">{comment.userName}</span>
+                  <span className="comment-date">
+                    {new Date(comment.date * 1000).toLocaleString()}
+                  </span>
+                </div>
+                <div className="comment-content">
+                  <p>{comment.content}</p>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       )}
     </div>
