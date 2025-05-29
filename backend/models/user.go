@@ -7,7 +7,7 @@ import (
 )
 
 // GetUserById retrieves a user by their ID
-func GetUserById(userId int) (*utils.User, error) {
+func GetUserById(userId int) (utils.User, error) {
 	query := `
 		SELECT id, first_name, last_name, nickname, email, avatar, AboutMe, privacy 
 		FROM users 
@@ -28,10 +28,10 @@ func GetUserById(userId int) (*utils.User, error) {
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("user not found")
+			return user, fmt.Errorf("user not found")
 		}
-		return nil, err
+		return user, err
 	}
 
-	return &user, nil
+	return user, nil
 }

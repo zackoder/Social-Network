@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"social-network/models"
 	"social-network/utils"
@@ -16,19 +17,12 @@ type UserProfileInfo struct {
 }
 
 // GetUserAvatarAndUserName retrieves the avatar URL and full name for a user by ID
-func GetUserAvatarAndUserName(userId int) *UserProfileInfo {
+func GetUserAvatarAndUserName(userId int) utils.User {
 	user, err := models.GetUserById(userId)
 	if err != nil {
-		return &UserProfileInfo{
-			Avatar:   "",
-			UserName: "Anonymous",
-		}
+		log.Println(err)
 	}
-
-	return &UserProfileInfo{
-		Avatar:   user.Avatar,
-		UserName: user.FirstName + " " + user.LastName,
-	}
+	return user
 }
 
 // AddComment handles adding a new comment to a post
@@ -116,9 +110,9 @@ func AddComment(w http.ResponseWriter, r *http.Request, userID int) {
 
 	// Set the date and default values
 	comment.Date = utils.GetCurrentDate()
-
-	comment.UserAvatar = GetUserAvatarAndUserName(userID).Avatar
-	comment.UserName = GetUserAvatarAndUserName(userID).UserName
+	userdata := GetUserAvatarAndUserName(userID)
+	comment.UserAvatar = user.Avatar
+	comment.UserName = fmt.Sprintf("%s %s", userdata.FirstName, userdata.LastName)
 
 	if comment.UserAvatar == "" {
 		comment.UserAvatar = "https://example.com/default-avatar.png" // Default avatar URL

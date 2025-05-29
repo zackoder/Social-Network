@@ -5,5 +5,3 @@ frontend/.next
 frontend/.fresh.yaml
 backend/.fresh.yaml
 backend/tmp/runner-build
-
-

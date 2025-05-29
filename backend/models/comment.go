@@ -83,7 +83,7 @@ func GetCommentsByPostId(postId int) ([]utils.Comment, error) {
 // 	// User can modify their own comments or if they are the owner of the post
 // 	query := `
 // 		SELECT EXISTS(
-// 			SELECT 1 FROM comments 
+// 			SELECT 1 FROM comments
 // 			WHERE id = ? AND user_id = ?
 // 			UNION
 // 			SELECT 1 FROM comments c
