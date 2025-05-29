@@ -3,7 +3,7 @@ export const links = [
     {
         id: 1,
         title: "groupes",
-        url: "/about"
+        url: "/groups"
     },
     {
         id: 3,

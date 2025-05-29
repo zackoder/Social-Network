@@ -28,8 +28,8 @@ func RegisterUser(user *utils.User) error {
 }
 
 func InsertPost(post utils.Post) (int, error) {
-	insetpostQuery := "INSERT INTO posts (post_privacy, title, content, user_id, imagePath, createdAt) VALUES (?,?,?,?,?,strftime('%s', 'now'))"
-	res, err := Db.Exec(insetpostQuery, post.Privacy, post.Title, post.Content, post.Poster_id, post.Image)
+	insetpostQuery := "INSERT INTO posts (post_privacy, title, content, user_id, imagePath, createdAt,groupe_id) VALUES (?,?,?,?,?,strftime('%s', 'now'),?)"
+	res, err := Db.Exec(insetpostQuery, post.Privacy, post.Title, post.Content, post.Poster_id, post.Image, post.Groupe_id)
 	if err != nil {
 		fmt.Println(err)
 		return 0, err

@@ -19,7 +19,7 @@ export default function PostSystem() {
             const data = await response.json();            
             setPosts(data);
         } catch (err) {
-            console.error("Fetch error:", err);
+            // console.error("Fetch error:", err);
         }
     };
     const addNewPost = (newPost) => {
