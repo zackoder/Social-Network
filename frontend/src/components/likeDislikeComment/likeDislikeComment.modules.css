@@ -107,3 +107,59 @@
     borderRadius: '4px';
     cursor: 'pointer';
 } */
+
+
+
+
+/* css by ayoub , to be changed later  by sii walid  */
+.comments-container {
+ animation: fadeIn 0.3s ease-in-out;
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.comment {
+  background-color: #1e1e1e;
+  border: 1px solid #3a3a3a;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+  transition: background-color 0.3s ease;
+}
+
+.comment:hover {
+  background-color: #333;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.comment-author {
+  font-weight: bold;
+  color: #00aaff;
+}
+
+.comment-date {
+  font-size: 12px;
+  color: #888;
+}
+
+.comment-content {
+  font-size: 15px;
+  color: #f1f1f1;
+  line-height: 1.5;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

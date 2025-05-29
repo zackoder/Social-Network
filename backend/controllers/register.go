@@ -101,7 +101,10 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	return
 	}
 
-
+	// 	regesterreq.Avatar = filePath
+	// if registrstionFormRequest.Nickname == "" {
+	// 	registrstionFormRequest.Nickname = nil
+	// }
 
 
 
