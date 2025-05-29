@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"social-network/models"
 	"social-network/utils"
@@ -48,6 +49,7 @@ func AddComment(w http.ResponseWriter, r *http.Request, userID int) {
 
 	postData := r.FormValue("commentData")
 	fmt.Println("this id postdata ", postData)
+
 	// Get the file path for the uploaded image
 	filepath, err := utils.UploadImage(r)
 	if err != nil {
@@ -77,7 +79,11 @@ func AddComment(w http.ResponseWriter, r *http.Request, userID int) {
 	if filepath != "" {
 		comment.ImagePath = filepath
 	}
-
+	
+	if strings.TrimSpace(comment.Content) == ""{
+		utils.WriteJSON(w, map[string]string{"error": "Empty Message"}, http.StatusBadRequest)
+		return 
+	}
 	// Set the user ID from the session
 	comment.UserId = userID
 	fmt.Println("comment", comment.UserId, comment.Content, comment.PostId)
