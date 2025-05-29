@@ -253,7 +253,7 @@ export default function LikeDislikeComment({ postId }) {
 
       <form className="formComment" onSubmit={handleCommentSubmit}>
         <input
-        
+          aria-required
           placeholder="Write a comment..."
           value={comment}
           onChange={(e) => setComment(e.target.value)}
