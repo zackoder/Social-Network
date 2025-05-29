@@ -33,7 +33,7 @@ export default function NotificationDropdown({ isOpen, onClose }) {
       setHasMore(data.hasMore);
       setOffset(prev => prev + data.notifications.length);
     } catch (error) {
-      console.error('Error fetching notifications:', error);
+      // console.error('Error fetching notifications:', error);
     } finally {
       setLoading(false);
     }

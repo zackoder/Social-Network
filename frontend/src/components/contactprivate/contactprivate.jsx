@@ -1,12 +1,12 @@
 "use client";
-import React, {useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 // import styles from "./contactprivate.module.css"
 import { DataContext } from "@/contexts/dataContext";
 import { isAuthenticated } from "@/app/page";
 
 export default function ContactsPrivate() {
   const [selectedContacts, setSelectedContacts] = useState([]);
-  const {setSelectedContactsIds} = useContext(DataContext);
+  const { setSelectedContactsIds } = useContext(DataContext);
   const [contacts, setContacts] = useState([]);
   const host = process.env.NEXT_PUBLIC_HOST;
   useEffect(() => {
@@ -16,16 +16,17 @@ export default function ContactsPrivate() {
           credentials: "include",
         });
         const data = await response.json();
-        setContacts(data)
+        setContacts(data);
         // selectedContacts(data);
-        if (data && data.error) {          
+        if (data && data.error) {
           // throw new Error(data.error);
+          isAuthenticated(response.status, "you should login first");
+
           console.log(data.error);
-          
         }
       } catch (error) {
-        console.error("we can't fetch follower", error);
-        isAuthenticated(response.status, "you should login first")
+        // console.error("we can't fetch follower", error);
+        // isAuthenticated(response.status, "you should login first");
       }
     };
     fetchFollowers();
@@ -37,15 +38,15 @@ export default function ContactsPrivate() {
     setSelectedContacts((prev) =>
       prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]
     );
-    setSelectedContactsIds((prev)=> 
-    prev.includes(id) ? prev.filter((n)=> n !== id) : [...prev,id]
-  )
+    setSelectedContactsIds((prev) =>
+      prev.includes(id) ? prev.filter((n) => n !== id) : [...prev, id]
+    );
   };
 
   //  useEffect(() => {
   //   setSelectedContactsIds(selectedContacts); // send updated selection to parent
   // }, [selectedContacts]);
-  
+
   return (
     <div style={{ position: "relative", width: "200px" }}>
       <div
@@ -74,19 +75,21 @@ export default function ContactsPrivate() {
           overflowY: "scroll",
         }}
       >
-        
-        {Array.isArray(contacts) && contacts.map((contact) => (          
-          <label key={contact.id} style={{ display: "block" }}>
-            {console.log("contact", contact)}
-            <input
-              style={{ marginRight: "10px" }}
-              type="checkbox"
-              checked={selectedContacts.includes(contact.firstName)}
-              onChange={() => handleCheckboxChange(contact.firstName, contact.id)}
-            />
-            {contact.firstName}
-          </label>
-        ))}
+        {Array.isArray(contacts) &&
+          contacts.map((contact) => (
+            <label key={contact.id} style={{ display: "block" }}>
+              {console.log("contact", contact)}
+              <input
+                style={{ marginRight: "10px" }}
+                type="checkbox"
+                checked={selectedContacts.includes(contact.firstName)}
+                onChange={() =>
+                  handleCheckboxChange(contact.firstName, contact.id)
+                }
+              />
+              {contact.firstName}
+            </label>
+          ))}
       </div>
     </div>
   );

@@ -86,7 +86,7 @@ export default function ChatBox({ contact, onClickClose }) {
             : parseBinaryMessage(event.data);
 
       } catch (err) {
-        console.error("Failed to parse message:", event.data);
+        // console.error("Failed to parse message:", event.data);
       }
     };
 

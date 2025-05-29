@@ -32,7 +32,7 @@ export default function ButtonFollow({ profileId }) {
           checkFollowStatus(data.Id || data.id, profileId);
         }
       } catch (err) {
-        console.error("Error fetching current user:", err);
+        // console.error("Error fetching current user:", err);
         isAuthenticated(response.status,"you should login first")
       } finally {
         setIsLoading(false);
@@ -60,7 +60,7 @@ export default function ButtonFollow({ profileId }) {
         setIsPending(data.isPending === true);
       }
     } catch (err) {
-      console.error("Error checking follow status:", err);
+      // console.error("Error checking follow status:", err);
     }
   };
 
@@ -93,10 +93,10 @@ export default function ButtonFollow({ profileId }) {
       }
 
       if (!response.ok) {
-        console.error(
-          `Failed to update follow status: ${response.status} ${response.statusText}`,
-          responseData
-        );
+        // console.error(
+        //   `Failed to update follow status: ${response.status} ${response.statusText}`,
+        //   responseData
+        // );
     
       }
 
@@ -116,7 +116,7 @@ export default function ButtonFollow({ profileId }) {
         setIsFollowing(!isFollowing);
       }
     } catch (err) {
-      console.error("Error toggling follow status:", err);
+      // console.error("Error toggling follow status:", err);
         isAuthenticated(response.status, "you should login first")
     
     }
