@@ -83,13 +83,34 @@ import (
 )
 
 func Register(w http.ResponseWriter, r *http.Request) {
-	var userData utils.User
-	if err := json.NewDecoder(r.Body).Decode(&userData); err != nil {
-		fmt.Println(err)
-		utils.WriteJSON(w, map[string]string{"message": "invalid input data"}, http.StatusBadRequest)
-
+	if r.Method != http.MethodPost {
+		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
+	var registrstionFormRequest utils.User
+	userData := r.FormValue("userData")
+
+	// max image size 10Mb
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "Too larg file"}, http.StatusRequestEntityTooLarge)
+		return
+	}
+	if err := json.Unmarshal([]byte(userData), &registrstionFormRequest); err != nil {
+	utils.WriteJSON(w, map[string]string{"error": "Internal Server Error1"}, http.StatusMethodNotAllowed)
+	fmt.Println(err)
+	return
+	}
+
+
+
+
+
+	// if err := json.NewDecoder(r.Body).Decode(&userData); err != nil {
+	// 	fmt.Println(err)
+	// 	utils.WriteJSON(w, map[string]string{"message": "invalid input data"}, http.StatusBadRequest)
+
+	// 	return
+	// }
 
 	// if !CheckNickName(userData.Nickname) {
 	// 	utils.WriteJSON(w, map[string]string{"message": "invalid nickname"}, http.StatusUnauthorized)
@@ -97,42 +118,42 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	if !utils.CheckName(userData.LastName) {
+	if !utils.CheckName(registrstionFormRequest.LastName) {
 		utils.WriteJSON(w, map[string]string{"message": "invalid last name"}, http.StatusBadRequest)
 
 		return
 	}
 
-	if !utils.CheckName(userData.FirstName) {
+	if !utils.CheckName(registrstionFormRequest.FirstName) {
 		utils.WriteJSON(w, map[string]string{"message": "invalid first name"}, http.StatusBadRequest)
 
 		return
 	}
 
-	if !utils.CheckAge(userData.Age) {
-		utils.WriteJSON(w, map[string]string{"message": "Invalid age"}, http.StatusBadRequest)
+	// if !utils.CheckAge(registrstionFormRequest.Age) {
+	// 	utils.WriteJSON(w, map[string]string{"message": "Invalid age"}, http.StatusBadRequest)
 
-		return
-	}
+	// 	return
+	// }
 
-	if !utils.CheckGender(userData.Gender) {
+	if !utils.CheckGender(registrstionFormRequest.Gender) {
 		utils.WriteJSON(w, map[string]string{"message": "Invalid gender"}, http.StatusBadRequest)
 
 		return
 	}
 
-	if !utils.IsValidEmail(&userData.Email) {
+	if !utils.IsValidEmail(&registrstionFormRequest.Email) {
 		utils.WriteJSON(w,map[string]string{"message":  "Invalid emai"}, http.StatusBadRequest)
 
 		return
 	}
-	if len(userData.Password) < 8 || len(userData.Password) > 64 {
+	if len(registrstionFormRequest.Password) < 8 || len(registrstionFormRequest.Password) > 64 {
 		utils.WriteJSON(w, map[string]string{"message": "Invalid password"}, http.StatusBadRequest)
 
 		return
 	}
 
-	ok, err := models.IsUserRegistered(&userData)
+	ok, err := models.IsUserRegistered(&registrstionFormRequest)
 	if err != nil {
 		fmt.Println(err)
 		utils.WriteJSON(w,map[string]string{"message":  "internaInternal Server Error"}, http.StatusInternalServerError)
@@ -146,15 +167,15 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = utils.HashPassword(&userData.Password)
+	err = utils.HashPassword(&registrstionFormRequest.Password)
 	if err != nil {
 		utils.WriteJSON(w,map[string]string{"message":  "Incorect password"}, http.StatusBadRequest)
 
 		return
 	}
 
-	// userData.NickName = html.EscapeString(userData.NickName)
-	err = models.RegisterUser(&userData)
+	// registrstionFormRequest.NickName = html.EscapeString(registrstionFormRequest.NickName)
+	err = models.RegisterUser(&registrstionFormRequest)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"message": "internaInternal Server Error"}, http.StatusInternalServerError)
 
@@ -162,13 +183,13 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create a session and set a cookie
-	userData.SessionId, err = utils.GenerateSessionID()
+	registrstionFormRequest.SessionId, err = utils.GenerateSessionID()
 	if err != nil {
 		utils.WriteJSON(w,map[string]string{"message":  "internaInternal Server Error"}, http.StatusInternalServerError)
 		return
 	}
 
-	err = models.InsertSession(&userData)
+	err = models.InsertSession(&registrstionFormRequest)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"message": "internaInternal Server Error"}, http.StatusInternalServerError)
 		fmt.Println(err)
@@ -178,7 +199,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:  "token",
 		Path:  "/",
-		Value: userData.SessionId,
+		Value: registrstionFormRequest.SessionId,
 	})
 
 	utils.WriteJSON(w, map[string]string{"message": "registred succefully"}, http.StatusOK)
