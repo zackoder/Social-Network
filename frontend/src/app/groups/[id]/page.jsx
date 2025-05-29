@@ -69,7 +69,15 @@ export default function GroupPage() {
   };
   return (
     <div className={styles.parant}>
-      <div className={styles.left}></div>
+      <div className={styles.left}>
+          <div className={styles.soutitre0}>
+          <p>All users</p>
+
+        </div>
+        <div className={styles.chatbox0}>
+
+        </div>
+      </div>
       <div className={styles.divcentral}>
         <div className={styles.supp}>
           <h1 className={styles.header}>{groupData.title}</h1>
@@ -149,7 +157,15 @@ export default function GroupPage() {
       </div>
 
       </div>
-      <div className={styles.right}></div>
+      <div className={styles.right}>
+        <div className={styles.soutitre}>
+          <p>Group chat</p>
+
+        </div>
+        <div className={styles.chatbox1}>
+
+        </div>
+      </div>
     </div>
   );
 }
