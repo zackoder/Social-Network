@@ -1,0 +1,118 @@
+.chatcontainer {
+  margin-top: 20px;
+  /* height: 80vh; */
+  background-color: #222;
+  min-height: 50vh;
+  width: 300%;
+  position: relative;
+  right: 200%;
+  padding: 10px 0;
+  border-radius: 8px;
+}
+
+.msgsContainer {
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+}
+
+.msgsContainer .message {
+  padding: 10px;
+  margin-bottom: 5px;
+  display: flex;
+  flex-direction: column;
+}
+.msgsContainer .message .infoMsg {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.msgsContainer .message .infoMsg .avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 100%;
+}
+
+.msgsContainer .message .content {
+  font-size: 22px;
+  margin-left: 25px;
+  word-break: break-all;
+}
+
+.empty {
+  align-self: center;
+  color: gray;
+}
+
+.msgsContainer p {
+  padding: 8px;
+  border: 1px solid #222;
+  width: 80%;
+  word-break: break-all;
+  margin: 5px auto;
+  border-radius: 20px;
+}
+
+.submitForm {
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
+  margin: 20px auto;
+}
+.submitForm input[type="text"] {
+  padding: 8px;
+  background-color: #fff;
+  outline: none;
+  border: 1px solid #222;
+  color: #222;
+  border-radius: 4px;
+  width: 75%;
+  margin: 10px 5%;
+}
+.buttons {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  margin-left: 5%;
+  gap: 5px;
+}
+
+.buttons .submit {
+  padding: 8px;
+  background-color: var(--color-primary);
+  color: #fff;
+  outline: none;
+  border: 1px solid var(--color-primary);
+  border-radius: 4px;
+  font-size: 16px;
+  text-transform: capitalize;
+  width: 70%;
+  /* margin: 0 5%; */
+  cursor: pointer;
+  transition: all 0.5s ease-in-out;
+}
+.buttons .submit:hover {
+  /* background-color: #01694ec9; */
+  background-color: var(--color-primary-hover);
+}
+
+.buttons .hiddenInput {
+  display: none;
+}
+
+.buttons .uploadLabel {
+  width: 10%;
+  cursor: pointer;
+  color: var(--color-primary);
+  border: none;
+}
+
+.buttons .iconUpload {
+  font-size: 50px;
+  transition: color 0.2s ease-in-out;
+}
+.buttons .iconUpload:hover {
+  color: var(--color-primary-hover);
+}

@@ -84,13 +84,18 @@ export default function ChatBox({ contact, onClickClose }) {
           typeof event.data === "string"
             ? JSON.parse(event.data)
             : parseBinaryMessage(event.data);
-
       } catch (err) {
         // console.error("Failed to parse message:", event.data);
       }
     };
 
-    socket.addEventListener("message", handleMessage);
+    socket.addEventListener("message", () => {
+      if (socket.readyState !== WebSocket.OPEN) {
+        alert("connection opened again");
+        socket.addEventListener("open");
+      }
+      handleMessage;
+    });
     return () => socket.removeEventListener("message", handleMessage);
   }, [contact.id]); // Add contact.id as dependency
 
@@ -138,7 +143,6 @@ export default function ChatBox({ contact, onClickClose }) {
         type: "message",
         content: message,
         token: "online",
-        
       };
 
       // Optimistic update

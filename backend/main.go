@@ -37,19 +37,23 @@ func main() {
 	mux.Handle("POST /creategroup", http.HandlerFunc(controllers.Creat_groupe))
 	mux.Handle("/JouindGroupe", http.HandlerFunc(controllers.Jouind_Groupe))
 	mux.Handle("/CreatEvent", midleware.AuthMiddleware(controllers.CreatEvent))
-
+	// /groupmessages
+	mux.Handle("GET /GetGroups", http.HandlerFunc(controllers.AllGroups))
+	mux.Handle("GET /groupmessages", midleware.AuthMiddleware(controllers.Getgroupmsgs))
+	mux.Handle("/GetJoinedGroups", http.HandlerFunc(controllers.GetGroupsJoined))
+	mux.Handle("/group", midleware.AuthMiddleware(controllers.GetGroup))
+	mux.Handle("/GetMyGroups", http.HandlerFunc(controllers.GetGroupsCreatedByUser))
 	mux.Handle("/groupInvitarion", http.HandlerFunc(controllers.InviteUser))
 
 	mux.HandleFunc("/GetPostsFromGroupe", controllers.Get_all_post)
-
 
 	// mux.Handle("POST /creategroup", (http.HandlerFunc(controllers.CreateGroup)))
 	// mux.Handle("POST /joinReq",(http.HandlerFunc(controllers.JoinReq)))
 	mux.Handle("POST /api/logout", midleware.AuthMiddleware(controllers.LogoutHandler))
 	mux.HandleFunc("GET /uploads/", controllers.HandelPics)
 	mux.Handle("/api/posts", http.HandlerFunc(controllers.Posts))
-	mux.HandleFunc("GET /api/getProfilePosts",midleware.AuthMiddleware(controllers.GetProfilePosts) )
-	mux.HandleFunc("GET /group", controllers.Group)
+	mux.HandleFunc("GET /api/getProfilePosts", midleware.AuthMiddleware(controllers.GetProfilePosts))
+	// mux.HandleFunc("GET /group", controllers.Group)
 	mux.Handle("/event-resp", (http.HandlerFunc(controllers.EventResponse)))
 	mux.Handle("/ws", midleware.AuthMiddleware(controllers.Websocket))
 
@@ -60,15 +64,14 @@ func main() {
 	// Reaction handlers
 	mux.Handle("GET /getReactions", http.HandlerFunc(controllers.GetReactions))
 
-	mux.Handle("/userData", http.HandlerFunc(controllers.UserData))
+	mux.Handle("/userData", midleware.AuthMiddleware(controllers.UserData))
 	mux.Handle("POST /addReaction", midleware.AuthMiddleware(controllers.AddReaction))
 
 	mux.Handle("/getNotifications", midleware.AuthMiddleware(controllers.GetNotifications))
 	mux.Handle("/notiResp", midleware.AuthMiddleware(controllers.NotiResp))
 	// mux.Handle("/private-messages", http.HandlerFunc(controllers.GetNotifications))
 
-
-	mux.HandleFunc("GET /group/{GroupName}", controllers.Group)
+	// mux.HandleFunc("GET /group/{GroupName}", controllers.Group)
 
 	// note for walid
 	// this endpoint is gonna be used to fetch the users for the post privacy

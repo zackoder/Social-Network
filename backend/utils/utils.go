@@ -86,6 +86,9 @@ type Message struct {
 	Reciever_id int    `json:"receiver_id"`
 	Type        string `json:"type"`
 	Group_id    int    `json:"group_id"`
+	First_name  string `json:"first_name"`
+	Last_name   string `json:"last_name"`
+	Avatar      string `json:"avatar"`
 	Content     string `json:"content"`
 	Mime        string `json:"mime"`
 	Filename    string `json:"filename"`
@@ -102,11 +105,13 @@ type GroupInvitation struct {
 	CreatedAt time.Time
 }
 type Groupe struct {
+	Id          int
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	CreatorId   int    `json:"cretorid"`
+	FirstName   string `json:"first_name"`
+	LasttName   string `json:"last_name"`
 }
-
 type Groupe_member struct {
 	User_id   int `json:"user_id"`
 	Groupe_id int `json:"groupe_id"`
@@ -132,4 +137,3 @@ type UserD struct {
 	Firstname string `json:"firstName"`
 	Avatar    string `json:"avatar"`
 }
- 
