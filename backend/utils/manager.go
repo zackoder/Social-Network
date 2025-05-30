@@ -48,14 +48,14 @@ func (m *Manager) GetClient(id int) []*Client {
 
 func (m *Manager) CheckGroupMubers(id int) bool {
 	m.RLock()
-	m.RUnlock()
+	defer m.RUnlock()
 	_, exists := m.UsersList[id]
 	return exists
 }
 
 func (m *Manager) AddClient(client *Client) {
 	m.Lock()
-	m.Unlock()
+	defer m.Unlock()
 	if c, ok := m.UsersList[client.Client_id]; !ok {
 		m.UsersList[client.Client_id] = append(m.UsersList[client.Client_id], client)
 	} else {

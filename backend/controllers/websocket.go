@@ -27,12 +27,11 @@ func Websocket(w http.ResponseWriter, r *http.Request, user_id int) {
 		log.Println("WebSocket upgrade failed:", err)
 		return
 	}
-	defer conn.Close()
 	cookie, _ := r.Cookie("token")
 	client := utils.CreateClient(conn, Manager, user_id, cookie.Value)
 	Manager.AddClient(client)
 	defer Manager.RemoveClient(client)
-
+	defer log.Println("client id", user_id)
 	if groups := models.GetClientGroups(user_id); len(groups) > 0 {
 		go Manager.StoreGroups(groups, user_id)
 	}
@@ -74,7 +73,11 @@ func handleMessage(msgType int, payload []byte, host string, client *utils.Clien
 		return
 	}
 	log.Println("lhsdfljslfkdj", msg.Reciever_id)
-
+	msg.Sender_id = client.Client_id
+	user, _ := models.GetUserById(msg.Sender_id)
+	msg.Avatar = host + user.Avatar
+	msg.First_name = user.FirstName
+	msg.Last_name = user.LastName
 	if msg.Reciever_id != 0 {
 		BroadcastPrivateMessage(msg, host)
 	} else if msg.Group_id != 0 {
@@ -87,7 +90,6 @@ func handleMessage(msgType int, payload []byte, host string, client *utils.Clien
 
 func BroadcastPrivateMessage(msg utils.Message, host string) {
 	errMsg := utils.Err{}
-
 	if ok, err := models.FriendsChecker(msg.Sender_id, msg.Reciever_id); err != nil || !ok {
 		if err := os.Remove("." + msg.Filename); err != nil {
 			fmt.Println(err)
@@ -120,7 +122,7 @@ func Broadcast(receiverID int, msg any) {
 	if connections, exists := Manager.UsersList[receiverID]; exists {
 		for _, conn := range connections {
 			if err := conn.Connection.WriteJSON(msg); err != nil {
-				log.Println("WriteJSON failed:", err)
+				log.Println("WriteJSON failed:", err, receiverID)
 			}
 		}
 	}

@@ -1,74 +1,146 @@
-/* Global styles for the groups page */
-.container {
-  font-family: Arial, sans-serif;
-  margin: 20px;
+
+
+/* Conteneur pour les liens */
+.link-container {
+  display: flex;
+  justify-content: center; /* Centrer les liens horizontalement */
+  gap: 20px;
+  margin-top: 50px;
 }
 
-/* Header */
-.title {
-  color: #333;
+/* Style des liens */
+.lien{
+  width: 350px;
+  text-decoration: none;
+  color:#06d6a0;
+ 
+  background-color: #453f3f;
+  box-shadow: rgba(0, 0, 0, 0.25) -3px 0px 10px inset;
+  font-size: 18px;
+  font-weight: bold;
+  padding:22px 59px 22px 59px;
+  margin-right: -18px;
+  border: 1px solid #000;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  
 }
 
-/* Section styles */
-.section {
-  margin-bottom: 40px;
+/* Effet au survol des liens */
+.lien:hover {
+  color: #fff;
 }
 
-/* Style for section headings */
-.section_title {
-  color: #444;
+/* Conteneur pour le texte modifié */
+.content-container {
+  margin-top: 40px;
+  text-align: center;
 }
 
-/* Style for lists of groups */
-.containers {
-  list-style-type: none;
-  padding: 0;
+
+.div0{
+position: absolute;
+top: 18%;
+left: 25%;
+display: flex;
+gap: 20px;
+margin: 0 auto;
 }
 
-.group_title {
-  padding: 15px;
-  margin: 10px 0;
-  background-color: #f5f5f5;
-  border-radius: 8px;
-}
-
-/* Input and textarea for adding a new group */
-.input,
-.textarea {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-}
-
-/* Style for the add group button */
-.button {
-  padding: 10px 20px;
-  background-color: #4CAF50;
+.active {
+  background-color: #007BFF;
   color: white;
+}
+/*******************************************Creat groupe button******************************************************************************************/
+
+.div3{
+  position:fixed;
+  bottom: 20%;
+  right: 20%;
+}
+
+
+.button {
+  background-color: #4f46e5; 
+  color: #ffffff;
+  padding: 12px 24px;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .button:hover {
-  background-color: #45a049;
+  background-color: #4338ca; 
+  transform: translateY(-2px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Style for individual group items */
-.gT {
-  margin: 0;
-  font-size: 18px;
+.button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+/*************************************************popup***************************************************************************************/
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
 }
 
-.group_dis {
-  margin: 10px 0;
-  font-size: 14px;
+.modal {
+  background: rgb(95, 92, 92);
+  padding: 30px;
+  border-radius: 10px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
-/* Notification styles */
-.strong {
-  font-weight: bold;
-  margin-right: 5px;
+.modal label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+.modal input,
+.modal textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.submitBtn {
+  background-color: #10b981;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.cancelBtn {
+  background-color: #ef4444;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
 }

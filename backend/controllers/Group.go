@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -75,7 +76,7 @@ func Jouind_Groupe(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "you are already a member of this group"}, 403)
 		return
 	}
-	
+
 	if !models.CheckGroup(requist.Groupe_id) {
 		utils.WriteJSON(w, map[string]string{"error": "Group not found"}, http.StatusNotFound)
 		return
@@ -101,6 +102,103 @@ func Jouind_Groupe(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("function stoped here")
 	utils.WriteJSON(w, map[string]string{"prossotion": "succeeded"}, http.StatusOK)
+}
+
+func AllGroups(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
+		return
+	}
+
+	Groups := models.GetAllGroups()
+	fmt.Println(Groups)
+	utils.WriteJSON(w, Groups, 200)
+}
+
+func GetGroupsJoined(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("token")
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "You don't have access."}, http.StatusForbidden)
+		return
+	}
+	if r.Method != http.MethodGet {
+		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
+		return
+	}
+
+	userId, err := models.Get_session(cookie.Value)
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "Invalid session"}, http.StatusUnauthorized)
+		return
+	}
+
+	Groups := models.GetGroupsOfMember(userId)
+	fmt.Println(Groups)
+
+	utils.WriteJSON(w, Groups, 200)
+}
+
+func GetGroupsCreatedByUser(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
+		return
+	}
+	cookie, err := r.Cookie("token")
+	fmt.Println(err)
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "You don't have access."}, http.StatusForbidden)
+		return
+	}
+	userId, err := models.Get_session(cookie.Value)
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "Invalid session"}, http.StatusUnauthorized)
+		return
+	}
+	Groups := models.GroupsCreatedByUser(userId)
+	fmt.Println(Groups)
+
+	utils.WriteJSON(w, Groups, 200)
+}
+
+func GetGroup(w http.ResponseWriter, r *http.Request, user_id int) {
+	log.Println("working")
+	group_id, err := strconv.Atoi(r.URL.Query().Get("groupId"))
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "invalid data"}, http.StatusNotFound)
+		return
+	}
+	group, err := models.GetOneGroup(group_id)
+	group.Id = group_id
+	if err != nil {
+		if err == sql.ErrNoRows {
+			utils.WriteJSON(w, map[string]string{"error": "Forbidden"}, http.StatusForbidden)
+		} else {
+			utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
+			log.Println("scan group error", err)
+		}
+		return
+	}
+	log.Println(group)
+	utils.WriteJSON(w, group, 200)
+}
+
+func Getgroupmsgs(w http.ResponseWriter, r *http.Request, user_id int) {
+	group_id, err := strconv.Atoi(r.URL.Query().Get("groupId"))
+	offset := r.URL.Query().Get("offset")
+	fmt.Println("hello")
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "invalid data"}, http.StatusForbidden)
+		return
+	}
+	if !models.IsMember(group_id, user_id) {
+		utils.WriteJSON(w, map[string]string{"error": "you can't send messages unless you are a member "}, http.StatusForbidden)
+		return
+	}
+	msgs, err := models.SelectGroupMSGs(group_id, user_id, offset, r.Host)
+	if err != nil {
+		log.Println("group messages err:", err)
+	}
+	utils.WriteJSON(w, msgs, 200)
 }
 
 // fetch('/api/searchGroups?query=tech')
