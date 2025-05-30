@@ -1,106 +1,192 @@
 "use client";
+import { useState, useEffect } from "react";
+import styles from "./groups.module.css";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
-import { useState } from 'react';
-import styles from './groups.module.css'; // Importer le fichier CSS
+export default function Home() {
+  const [groups, setGroups] = useState([]);
+  const [error, setError] = useState(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
 
-export default function Groupes() {
-  // État initial pour tous les groupes, ceux que l'utilisateur a créés, et ceux dont il est membre
-  const [groupes, setGroupes] = useState([
-    { id: 1, nom: 'Développeurs Web', description: 'Un groupe de passionnés de développement web.', createur: true, membre: true },
-    { id: 2, nom: 'Designers', description: 'Les experts en design graphique et UX/UI.', createur: false, membre: true },
-    { id: 3, nom: 'Photographes', description: 'Un groupe pour les photographes amateurs et professionnels.', createur: true, membre: false },
-    { id: 4, nom: 'Musiciens', description: 'Groupe pour les passionnés de musique.', createur: false, membre: false },
-  ]);
+  const host = process.env.NEXT_PUBLIC_HOST;
 
-  // Notifications (simulation)
-  const [notifications, setNotifications] = useState([
-    { id: 1, groupeId: 1, message: 'Nouvelle mise à jour de la documentation.' },
-    { id: 2, groupeId: 2, message: 'Réunion prévue demain à 18h.' },
-  ]);
+  const fetchGroups = async (url) => {
+    setError(null);
+    try {
+      const res = await fetch(`${host}${url}`, {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Erreur lors du fetch des groupes");
+      const data = await res.json();
+      if (!data || data.length === 0) {
+        setGroups([]);
 
-  // Ajouter un nouveau groupe
-  const [nom, setNom] = useState('');
-  const [description, setDescription] = useState('');
+        setError("No available Groups");
+        return;
+      }
+      console.log(data);
 
-  const handleAjouterGroupe = () => {
-    if (nom && description) {
-      setGroupes([...groupes, { id: groupes.length + 1, nom, description, createur: true, membre: true }]);
-      setNom('');
-      setDescription('');
+      setGroups(data);
+    } catch (err) {
+      setGroups([]);
+      setError(err.message || "Erreur inconnue");
     }
+  };
+  useEffect(() => {
+    document.getElementById("initial").classList.add(`${styles.active}`);
+
+    fetchGroups("/GetGroups");
+  }, []);
+  const handleCreateGroup = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${host}/creategroup`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title, description }),
+      });
+      if (!res.ok) throw new Error("Group creation failed");
+      const newGroup = await res.json();
+
+      setIsPopupOpen(false);
+      setTitle("");
+      setDescription("");
+      setGroups((prev) => [...prev, newGroup]);
+      setError("");
+    } catch (err) {
+      alert(err.message || "Error creating group");
+    }
+  };
+  const addclass = (e) => {
+    const lients = document.querySelectorAll(`.${styles.lien}`);
+    console.log(lients);
+
+    lients.forEach((lien) => {
+      lien.classList.remove(`${styles.active}`);
+    });
+    e.target.classList.add(`${styles.active}`);
   };
 
   return (
-    <div className={styles.container}>
-      <h1 className='title'>Gestion des Groupes</h1>
+    <div>
+      <div className={styles.div0}>
+        <a
+          href="#"
+          className={styles.lien}
+          onClick={(e) => {
+            e.preventDefault();
+            addclass(e);
+            fetchGroups("/GetMyGroups");
+          }}
+        >
+          My groups
+        </a>
+        <a
+          href="#"
+          className={styles.lien}
+          id="initial"
+          onClick={(e) => {
+            e.preventDefault();
+            addclass(e);
+            fetchGroups("/GetGroups");
+          }}
+        >
+          All groups
+        </a>
+        <a
+          href="#"
+          className={styles.lien}
+          onClick={(e) => {
+            e.preventDefault();
+            addclass(e);
+            fetchGroups("/GetJoinedGroups");
+          }}
+        >
+          Joined groups
+        </a>
+        <div className={styles.div3}>
+          <button
+            className={styles.button}
+            onClick={() => {
+              console.log("Popup ouverte !");
+              setIsPopupOpen(true);
+            }}
+          >
+            Creat groupe
+          </button>
+        </div>
+      </div>
+      {/* POPUP MODAL */}
+      {isPopupOpen && (
+        <div
+          className={styles.modalOverlay}
+          onClick={() => setIsPopupOpen(false)}
+        >
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <h2>Create a group</h2>
+            <form onSubmit={handleCreateGroup}>
+              <label>Title :</label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+              />
+              <label>Description :</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              ></textarea>
+              <div className={styles.actions}>
+                <button type="submit" className={styles.submitBtn}>
+                  Create
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsPopupOpen(false)}
+                  className={styles.cancelBtn}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
-      {/* Section 1: Tous les groupes */}
-      <section className='section'>
-        <h2 className="section_title">Tous les Groupes</h2>
-        <ul className="containers">
-          {groupes.map(groupe => (
-            <li  className="group_title" key={groupe.id}>
-              <h3>{groupe.nom}</h3>
-              <p>{groupe.description}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <div className={styles.contenu} style={{ marginTop: "20px" }}>
+        {error && <p style={{ color: "red" }}>{error}</p>}
 
-      {/* Section 2: Groupes créés par l'utilisateur */}
-      <section className='section'>
-        <h2 className="section_title">Groupes que j'ai créés</h2>
-        <ul className="containers">
-          {groupes.filter(groupe => groupe.createur).map(groupe => (
-            <li  className="group_title" key={groupe.id}>
-              <h3>{groupe.nom}</h3>
-              <p>{groupe.description}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* Section 3: Groupes dont l'utilisateur est membre */}
-      <section className='section'>
-        <h2 className="section_title">Groupes dont je suis membre</h2>
-        <ul className="containers">
-          {groupes.filter(groupe => groupe.membre).map(groupe => (
-            <li  className="group_title" key={groupe.id}>
-              <h3 className='gT'>{groupe.nom}</h3>
-              <p className='group_dis'>{groupe.description}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* Section 4: Notifications des groupes */}
-      <section className='section'>
-        <h2 className="section_title">Notifications des Groupes</h2>
-        <ul className="containers">
-          {notifications.map(notification => (
-            <li  className="group_title" key={notification.id}>
-              <strong className='strong'>Groupe {groupes.find(g => g.id === notification.groupeId)?.nom}</strong>: {notification.message}
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* Formulaire pour ajouter un groupe */}
-      <section className='section'>
-        <h2 className="section_title">Ajouter un nouveau groupe</h2>
-        <input className='input'
-          typeh2="text"
-          placeholder="Nom du groupe"
-          value={nom}
-          onChange={(e) => setNom(e.target.value)}
-        />
-        <textarea className='textarea'
-          placeholder="Description du groupe"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        <button className='button' onClick={handleAjouterGroupe}>Ajouter</button>
-      </section>
+        {groups.length > 0 ? (
+          <ul>
+            {groups.map((groupe, i) => (
+              <li key={i}>
+                <Link
+                  href={{
+                    pathname: `/groups/${groupe.Id}`,
+                    query: {
+                      Id: groupe.Id,
+                      title: groupe.title,
+                      description: groupe.description,
+                    },
+                  }}
+                >
+                  <p>{groupe.title}</p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          !error && <p>No groups to display.</p>
+        )}
+      </div>
     </div>
   );
 }
