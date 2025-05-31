@@ -20,16 +20,13 @@ export default function ButtonFollow({ profileId }) {
             credentials: "include",
           }
         );
-
-        if (!response.ok) {
-        }
-
-        const data = await response.json();
-        setCurrentUserId(data.Id || data.id);
-
+        const data = await response.json();      
+        console.log("jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj",data);
+        
+        setCurrentUserId(data.id);
         // Now check follow status
-        if (profileId && (data.Id || data.id)) {
-          checkFollowStatus(data.Id || data.id, profileId);
+        if (profileId && data.id) {
+          checkFollowStatus(data.id, profileId);
         }
       } catch (err) {
         console.error("Error fetching current user:", err);
@@ -48,7 +45,7 @@ export default function ButtonFollow({ profileId }) {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_HOST}/api/checkFollowStatus?follower=${follower}&followed=${followed}`,
+        `${host}/api/registrationData`,
         {
           credentials: "include",
         }
@@ -56,6 +53,8 @@ export default function ButtonFollow({ profileId }) {
 
       if (response.ok) {
         const data = await response.json();
+        console.log(data);
+        
         setIsFollowing(data.isFollowing === true);
         setIsPending(data.isPending === true);
       }
@@ -82,24 +81,20 @@ export default function ButtonFollow({ profileId }) {
       );
 
       // Only try to parse JSON if content-type is application/json
-      const contentType = response.headers.get("content-type");
-      let responseData;
+      // const contentType = response.headers.get("content-type");
+      
 
-      if (contentType && contentType.includes("application/json")) {
-        responseData = await response.json();
-      } else {
+      // if (contentType && contentType.includes("application/json")) {
+        // responseData = await response.json();
+      // } else {
         // Just get the text for error logging
-        responseData = await response.text();
-      }
-
-      if (!response.ok) {
-        console.error(
-          `Failed to update follow status: ${response.status} ${response.statusText}`,
-          responseData
-        );
-    
-      }
-
+        // }
+        if (!response.ok) {
+          console.log(`Failed to update follow status: ${response.status} ${response.statusText}`,responseData);
+        }
+      const responseData = await response.text();
+      console.log("this is mee" ,responseData);
+      
       // Handle the response
       if (typeof responseData === "object") {
         if (responseData.resp === "followed seccessfoly") {

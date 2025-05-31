@@ -82,7 +82,7 @@ export default function LikeDislikeComment({ postId }) {
       // data.message
       // umdate or remove
     } catch (error) {
-      console.log();
+      // console.log();
     }
     await getReactions(postId);
 
@@ -156,7 +156,7 @@ export default function LikeDislikeComment({ postId }) {
         credentials: "include",
       });
 
-      console.log("fetching data response1111111", response);
+      // console.log("fetching data response1111111", response);
 
       if (!response.ok) {
         console.log(`Error: ${response.status}`);
@@ -164,11 +164,11 @@ export default function LikeDislikeComment({ postId }) {
         return;
       }
       const data = await response.json();
-      console.log("data the fetch posts------ ", data);
+      // console.log("data the fetch posts------ ", data);
   
       setComments(Array.isArray(data) ? data : []);
       setShowComments(true);
-      console.log("comments---", comments);
+      // console.log("comments---", comments);
 
       console.log("fetch comments: ", data); // for testing fetching
     } catch (err) {

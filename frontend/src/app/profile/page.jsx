@@ -17,12 +17,11 @@ function PostWrapper({ post }) {
 export default function ProfilePage() {
   const searchParams = useSearchParams();
   const profileId = searchParams.get("id");
-
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
-  // const [isOwnProfile, setIsOwnProfile] = useState(false);
+  const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [isPrivate, setIsPrivate] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("posts");
@@ -53,12 +52,17 @@ export default function ProfilePage() {
       }
 
       
-      console.log("Profile data:", profileData);
+      // console.log("Profile data:", profileData);
       setProfile(profileData.registration_data);
       setIsPrivate(profileData.profile_status);
-      console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk",profileData.profile_status);
+      // console.log(profileData.profile_status);
+      const profileowner = localStorage.getItem("user-id") 
       
-      // setIsOwnProfile(profileData.isOwnProfile);
+      console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk",profileData);
+      if (profileowner == profileId){
+        setIsOwnProfile(true);
+
+      }
 
       // Fetch posts with similar safeguards
       
@@ -70,7 +74,7 @@ export default function ProfilePage() {
       );
       const posts = await postsResponse.json()
 
-     console.log("this is for posts", posts);
+    //  console.log("this is for posts", posts);
      
         // Ensure posts is always an array
         setPosts(Array.isArray(posts) ? posts : []);
@@ -78,38 +82,37 @@ export default function ProfilePage() {
         // setPosts([]); // Set empty array on error
 
       // Fetch followers
-      const followersResponse = await fetch(
+      const followers = await fetch(
         `${host}/api/getfollowers?id=${profileId}`,
         {
           credentials: "include",
         }
       );
-      const followersData = await followersResponse.json();
+      const followersData = await followers.json();
 
-      if (followersResponse.ok) {
+      if (followers.ok) {
         setFollowers(Array.isArray(followersData) ? followersData : []);
       } else {
         // console.error("Failed to fetch followers" , error);
         setFollowers([]);
       }
-       console.log("followersResponse.ok", followersResponse);
+      //  console.log("followersResponse.ok", followers);
  
       // Fetch following
-      const followingResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_HOST}/api/getfollowinglist?id=${profileId}`,
+      const following = await fetch(`${host}/api/getfollowinglist?id=${profileId}`,
         {
           credentials: "include",
         }
       );
 
-      if (followingResponse.ok) {
-        const followingData = await followingResponse.json();
+      if (following.ok) {
+        const followingData = await following.json();
         setFollowing(Array.isArray(followingData) ? followingData : []);
       } else {
         setError("Failed to fetch following");
         setFollowing([]);
       }
-      console.log("followersResponse.ok", followingResponse);
+      // console.log("followers.ok", following);
     } catch (error) {
       // console.error("Error in profile data fetch:", error);
       setError(error.message || "Error loading profile");
@@ -120,8 +123,7 @@ export default function ProfilePage() {
 
   const handlePrivacyToggle = async () => {
     try {
-      const response = await fetch(
-        `${host}/api/updatePrivacy`,
+      const response = await fetch(`${host}/api/updatePrivacy`,
         {
           method: "POST",
           credentials: "include",
