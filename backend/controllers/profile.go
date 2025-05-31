@@ -50,6 +50,7 @@ func HandleFollow(w http.ResponseWriter, r *http.Request, follower int) {
 
 func UpdatePrivacy(w http.ResponseWriter, r *http.Request, user_id int) {
 	privacy := models.UpdateProfile(user_id)
+	fmt.Println(privacy)
 	utils.WriteJSON(w, map[string]string{"profile_status": privacy}, 200)
 }
 
