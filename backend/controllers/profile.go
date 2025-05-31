@@ -62,6 +62,7 @@ func UserData(w http.ResponseWriter, r *http.Request, user_id int) {
 	user, _ := models.GetUserById(user_id)
 	userD.Firstname = user.FirstName
 	userD.Id = user_id
+	// fmt.Println("this is meee",userD.Id)
 	userD.Avatar = user.Avatar
 	if userD.Avatar != "" {
 		userD.Avatar = r.Host + userD.Avatar
