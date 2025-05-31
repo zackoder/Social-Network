@@ -11,18 +11,17 @@ export default function ButtonFollow({ profileId }) {
   const [currentUserId, setCurrentUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const host = process.env.NEXT_PUBLIC_HOST
+  const host = process.env.NEXT_PUBLIC_HOST;
   // Fetch current user data when component mounts
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
-        const response = await fetch(`${host}/userData`,{
-            credentials: "include",
-          }
-        );
-        const data = await response.json();      
-        console.log("jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj",data);
-        
+        const response = await fetch(`${host}/userData`, {
+          credentials: "include",
+        });
+        const data = await response.json();
+        console.log("jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj", data);
+
         setCurrentUserId(data.id);
         // Now check follow status
         if (profileId && data.id) {
@@ -30,7 +29,7 @@ export default function ButtonFollow({ profileId }) {
         }
       } catch (err) {
         console.error("Error fetching current user:", err);
-        isAuthenticated(response.status,"you should login first")
+        isAuthenticated(response.status, "you should login first");
       } finally {
         setIsLoading(false);
       }
@@ -44,17 +43,14 @@ export default function ButtonFollow({ profileId }) {
     if (!follower || !followed) return;
 
     try {
-      const response = await fetch(
-        `${host}/api/registrationData`,
-        {
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`${host}/api/registrationData`, {
+        credentials: "include",
+      });
 
       if (response.ok) {
         const data = await response.json();
         console.log(data);
-        
+
         setIsFollowing(data.isFollowing === true);
         setIsPending(data.isPending === true);
       }
@@ -73,7 +69,8 @@ export default function ButtonFollow({ profileId }) {
     }
 
     try {
-      const response = await fetch(`${host}/followReq?follower=${currentUserId}&followed=${profileId}`,
+      const response = await fetch(
+        `${host}/followReq?follower=${currentUserId}&followed=${profileId}`,
         {
           method: "POST",
           credentials: "include",
@@ -82,19 +79,21 @@ export default function ButtonFollow({ profileId }) {
 
       // Only try to parse JSON if content-type is application/json
       // const contentType = response.headers.get("content-type");
-      
 
       // if (contentType && contentType.includes("application/json")) {
-        // responseData = await response.json();
+      // responseData = await response.json();
       // } else {
-        // Just get the text for error logging
-        // }
-        if (!response.ok) {
-          console.log(`Failed to update follow status: ${response.status} ${response.statusText}`,responseData);
-        }
+      // Just get the text for error logging
+      // }
+      if (!response.ok) {
+        console.log(
+          `Failed to update follow status: ${response.status} ${response.statusText}`,
+          responseData
+        );
+      }
       const responseData = await response.text();
-      console.log("this is mee" ,responseData);
-      
+      console.log("this is mee", responseData);
+
       // Handle the response
       if (typeof responseData === "object") {
         if (responseData.resp === "followed seccessfoly") {
@@ -112,8 +111,7 @@ export default function ButtonFollow({ profileId }) {
       }
     } catch (err) {
       console.error("Error toggling follow status:", err);
-        isAuthenticated(response.status, "you should login first")
-    
+      isAuthenticated(response.status, "you should login first");
     }
   };
 
