@@ -165,11 +165,8 @@ export default function LikeDislikeComment({ postId }) {
       }
       const data = await response.json();
       console.log("data the fetch posts------ ", data);
-      if (data.content === ""){
-        return
-      }
-
-      setComments(data);
+  
+      setComments(Array.isArray(data) ? data : []);
       setShowComments(true);
       console.log("comments---", comments);
 
@@ -203,8 +200,12 @@ export default function LikeDislikeComment({ postId }) {
         isAuthenticated(response.status, comment.error);
         return;
       }
+      if (comments.length === 0){
+        await handleClick()
+      }else{
+        setComments((prev) => [comment, ...prev]);
+      }
       // setComments((prevComments) => [comment, ...prevComments]);
-      setComments((prev) => [comment, ...prev]);
       setShowComments(true);
       setComment("");
       setImage("");
