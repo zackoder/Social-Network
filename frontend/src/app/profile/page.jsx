@@ -1,4 +1,5 @@
 "use client";
+import { FaUserPlus, FaUserCheck, FaUserClock } from "react-icons/fa";
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -21,13 +22,13 @@ export default function ProfilePage() {
   const [posts, setPosts] = useState([]);
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
-  const [isOwnProfile, setIsOwnProfile] = useState(false);
+  // const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [isPrivate, setIsPrivate] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("posts");
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState({ title: "", data: [] });
-  const host = process.env.NEXT_PUBLIC_HOST
+  const host = process.env.NEXT_PUBLIC_HOST;
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -45,41 +46,43 @@ export default function ProfilePage() {
         { credentials: "include" }
       );
       const profileData = await profileResponse.json();
-      
+
       if (!profileResponse.ok) {
         console.log(`Profile response error: ${profileResponse.status}`);
-        isAuthenticated(profileResponse.status, profileData.error)
+        isAuthenticated(profileResponse.status, profileData.error);
       }
 
-      
       // console.log("Profile data:", profileData);
       setProfile(profileData.registration_data);
       setIsPrivate(profileData.profile_status);
       // console.log(profileData.profile_status);
-      const profileowner = localStorage.getItem("user-id") 
-      
-      console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk",profileData);
-      if (profileowner == profileId){
-        setIsOwnProfile(true);
+      // const profileowner = localStorage.getItem("user-id")
 
-      }
+      console.log(
+        "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk",
+        profileData
+      );
+      // if (profileowner == profileId){
+      //   setIsOwnProfile(true);
+
+      // }
 
       // Fetch posts with similar safeguards
-      
+
       const postsResponse = await fetch(
         `${host}/api/getProfilePosts?id=${profileId}`,
         {
           credentials: "include",
         }
       );
-      const posts = await postsResponse.json()
+      const posts = await postsResponse.json();
 
-    //  console.log("this is for posts", posts);
-     
-        // Ensure posts is always an array
-        setPosts(Array.isArray(posts) ? posts : []);
-        // console.error("Failed to fetch posts");
-        // setPosts([]); // Set empty array on error
+      //  console.log("this is for posts", posts);
+
+      // Ensure posts is always an array
+      setPosts(Array.isArray(posts) ? posts : []);
+      // console.error("Failed to fetch posts");
+      // setPosts([]); // Set empty array on error
 
       // Fetch followers
       const followers = await fetch(
@@ -92,14 +95,12 @@ export default function ProfilePage() {
 
       if (followers.ok) {
         setFollowers(Array.isArray(followersData) ? followersData : []);
-      } else {
-        // console.error("Failed to fetch followers" , error);
-        setFollowers([]);
       }
       //  console.log("followersResponse.ok", followers);
- 
+
       // Fetch following
-      const following = await fetch(`${host}/api/getfollowinglist?id=${profileId}`,
+      const following = await fetch(
+        `${host}/api/getfollowinglist?id=${profileId}`,
         {
           credentials: "include",
         }
@@ -108,9 +109,6 @@ export default function ProfilePage() {
       if (following.ok) {
         const followingData = await following.json();
         setFollowing(Array.isArray(followingData) ? followingData : []);
-      } else {
-        setError("Failed to fetch following");
-        setFollowing([]);
       }
       // console.log("followers.ok", following);
     } catch (error) {
@@ -119,25 +117,42 @@ export default function ProfilePage() {
     } finally {
       setIsLoading(false);
     }
+    // if (isPrivate === "private" || isPrivate === "public") {
+    //   await handlePrivacyToggle();
+    // }
   };
-
+  const handleFollowToggle = async () => {
+    const response = await fetch(`${host}/followReq?followed=${profileId}`, {
+      method: "POST",
+      credentials: "include",
+    });
+    let data = await response.json();
+    data = data.resp;
+    console.log(data);
+    if (data === "followed seccessfoly") {
+      setIsPrivate("unfollow");
+    } else if (data === "unfollowed seccessfoly") {
+      setIsPrivate("follow");
+    } else if (data === "follow request sent") {
+      setIsPrivate("follow sent");
+    }
+  };
   const handlePrivacyToggle = async () => {
     try {
-      const response = await fetch(`${host}/api/updatePrivacy`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ isPrivate: isPrivate }),
-        }
-      );
+      const response = await fetch(`${host}/updatePrivacy`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ isPrivate: isPrivate }),
+      });
+      const data = await response.json();
+      console.log(";;;;;;;;;;;;;;;;;;;;;;;;;;", data.profile_status);
 
       if (response.ok) {
+        setIsPrivate(data.profile_status);
         // setIsPrivate(!isPrivate);
-      } else {
-      console.log("Failed to update privacy settings");
       }
     } catch (error) {
       console.log("Error updating privacy settings", error);
@@ -187,21 +202,47 @@ export default function ProfilePage() {
             {profile.nickName && <p>@{profile.nickName}</p>}
             <p>{profile.aboutMe}</p>
 
-            {isPrivate ?/* (isPrivate === "private" ? "private" : "public" ( */
+            {["public", "private"].includes(isPrivate) ? (
               <div className={styles.privacyToggle}>
-                <span>{isPrivate /* {? <FaLock /> : <FaLockOpen />} */}</span>
+                <span>
+                  {isPrivate === "private" ? <FaLock /> : <FaLockOpen />}
+                </span>
                 <label className={styles.toggleSwitch}>
                   <input
                     type="checkbox"
-                    checked={isPrivate}
+                    checked={isPrivate === "private"}
                     onChange={handlePrivacyToggle}
                   />
                   <span className={styles.slider}></span>
                 </label>
-                <span>{isPrivate ? "Private Profile" : "Public Profile"}</span>
+                <span>
+                  {isPrivate === "private"
+                    ? "Private Profile"
+                    : "Public Profile"}
+                </span>
               </div>
-            /* )) */ : (
-              <ButtonFollow profileId={profileId} />
+            ) : (
+              <button
+                className={`${styles.button} ${
+                  isPrivate == "follow" ? styles.following : ""
+                }`}
+                onClick={handleFollowToggle}
+              >
+                {isPrivate == "follow sent" ? (
+                  <>
+                    <FaUserClock /> follow sent
+                  </>
+                ) : isPrivate == "follow" ? (
+                  <>
+                    <FaUserCheck /> Following
+                  </>
+                ) : (
+                  <>
+                    <FaUserPlus /> Follow
+                  </>
+                )}
+              </button>
+              // <ButtonFollow profileId={profileId} />
             )}
           </div>
         </div>
