@@ -1,10 +1,11 @@
 package utils
 
 import (
-	"strings"
-
+	"fmt"
 	"net/http"
+	"os"
 	"regexp"
+	"strings"
 
 	"github.com/gofrs/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -16,6 +17,15 @@ func Hashpass(password string) string {
 		return ""
 	}
 	return string(hashedPasswd)
+}
+
+func RemoveIMG(filepath string) {
+	if filepath == "" {
+		return
+	}
+	if err := os.Remove(filepath); err != nil {
+		fmt.Println("removing error:", err)
+	}
 }
 
 func CheckExtension(FileExtension string) bool {

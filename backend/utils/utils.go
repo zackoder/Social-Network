@@ -30,6 +30,7 @@ type Post struct {
 	Title       string    `json:"title"`
 	Content     string    `json:"content"`
 	Image       string    `json:"image"`
+	Avatar      string    `json:"image"`
 	Friendes    []int     `json:"friends"`
 	CreatedAt   int       `json:"createdAt"`
 	Reactions   Reactions `json:"reaction"`

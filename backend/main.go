@@ -30,7 +30,7 @@ func main() {
 
 	mux.Handle("/login", midleware.WithCORS(http.HandlerFunc(controllers.Login)))
 	mux.Handle("/register", midleware.WithCORS(http.HandlerFunc(controllers.Register)))
-	mux.Handle("POST /addPost", midleware.WithCORS(http.HandlerFunc(controllers.AddPost)))
+	mux.Handle("POST /addPost", midleware.AuthMiddleware((controllers.AddPost)))
 	mux.Handle("POST /followReq", midleware.WithCORS(http.HandlerFunc(controllers.HandleFollow)))
 	mux.Handle("POST /updatePrivacy", midleware.WithCORS(http.HandlerFunc(controllers.UpdatePrivacy)))
 	mux.Handle("POST /creategroup", midleware.WithCORS(http.HandlerFunc(controllers.Creat_groupe)))
