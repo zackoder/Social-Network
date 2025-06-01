@@ -16,6 +16,7 @@
   position: relative;
   width: 100%;
   height: 92%;
+  overflow: auto;
 
 }
 /* Partie supérieure (supp) */
