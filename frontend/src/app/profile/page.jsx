@@ -31,6 +31,8 @@ export default function ProfilePage() {
   const host = process.env.NEXT_PUBLIC_HOST;
   const [error, setError] = useState("");
 
+  console.log("get id of the user ", profileId);
+  
   useEffect(() => {
     if (profileId) {
       fetchProfileData();
@@ -52,23 +54,8 @@ export default function ProfilePage() {
         isAuthenticated(profileResponse.status, profileData.error);
       }
 
-      // console.log("Profile data:", profileData);
       setProfile(profileData.registration_data);
       setIsPrivate(profileData.profile_status);
-      // console.log(profileData.profile_status);
-      // const profileowner = localStorage.getItem("user-id")
-
-      console.log(
-        "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk",
-        profileData
-      );
-      // if (profileowner == profileId){
-      //   setIsOwnProfile(true);
-
-      // }
-
-      // Fetch posts with similar safeguards
-
       const postsResponse = await fetch(
         `${host}/api/getProfilePosts?id=${profileId}`,
         {
@@ -121,22 +108,22 @@ export default function ProfilePage() {
     //   await handlePrivacyToggle();
     // }
   };
-  const handleFollowToggle = async () => {
-    const response = await fetch(`${host}/followReq?followed=${profileId}`, {
-      method: "POST",
-      credentials: "include",
-    });
-    let data = await response.json();
-    data = data.resp;
-    console.log(data);
-    if (data === "followed seccessfoly") {
-      setIsPrivate("unfollow");
-    } else if (data === "unfollowed seccessfoly") {
-      setIsPrivate("follow");
-    } else if (data === "follow request sent") {
-      setIsPrivate("follow sent");
-    }
-  };
+  // const handleFollowToggle = async () => {
+  //   const response = await fetch(`${host}/followReq?followed=${profileId}`, {
+  //     method: "POST",
+  //     credentials: "include",
+  //   });
+  //   let data = await response.json();
+  //   data = data.resp;
+  //   console.log(data);
+  //   if (data === "followed seccessfoly") {
+  //     setIsPrivate("unfollow");
+  //   } else if (data === "unfollowed seccessfoly") {
+  //     setIsPrivate("follow");
+  //   } else if (data === "follow request sent") {
+  //     setIsPrivate("follow sent");
+  //   }
+  // };
   const handlePrivacyToggle = async () => {
     try {
       const response = await fetch(`${host}/updatePrivacy`, {
@@ -221,28 +208,30 @@ export default function ProfilePage() {
                     : "Public Profile"}
                 </span>
               </div>
-            ) : (
-              <button
-                className={`${styles.button} ${
-                  isPrivate == "follow" ? styles.following : ""
-                }`}
-                onClick={handleFollowToggle}
-              >
-                {isPrivate == "follow sent" ? (
-                  <>
-                    <FaUserClock /> follow sent
-                  </>
-                ) : isPrivate == "follow" ? (
-                  <>
-                    <FaUserCheck /> Following
-                  </>
-                ) : (
-                  <>
-                    <FaUserPlus /> Follow
-                  </>
-                )}
-              </button>
-              // <ButtonFollow profileId={profileId} />
+            ) : 
+            (
+            //   <button
+            //     className={`${styles.button} ${
+            //       isPrivate == "follow" ? styles.following : ""
+            //     }`}
+            //     onClick={handleFollowToggle}
+            //   >
+            //     {isPrivate == "follow sent" ? (
+            //       <>
+            //         <FaUserClock /> follow sent
+            //       </>
+            //     ) : isPrivate == "follow" ? (
+            //       <>
+            //         <FaUserCheck /> Following
+            //       </>
+            //     ) : (
+            //       <>
+            //         <FaUserPlus /> Follow
+            //       </>
+            //     )}
+            //   </button>
+            // )}
+            <ButtonFollow profileId={profileId} />
             )}
           </div>
         </div>

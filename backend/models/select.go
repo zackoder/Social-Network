@@ -442,7 +442,7 @@ func GetUserFriends(userId int, host string) ([]utils.Regester, error) {
 }
 
 func FriendsChecker(Sender_id, Reciever_id int) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM followers WHERE follower_id = ? AND followed_id = ? OR follower_id = ? AND followed_id = ?)"
+	query := "SELECT EXISTS(SELECT 1 FROM followers WHERE follower_id = ? AND followed_id = ?)"
 	var friends bool
 	err := Db.QueryRow(query, Sender_id, Reciever_id, Reciever_id, Sender_id).Scan(&friends)
 	return friends, err
