@@ -1,17 +1,20 @@
 "use client";
 import styles from "./id.module.css";
+import Modal from "@/components/module/Modal";
 import { useParams, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export default function GroupPage() {
   const [text, setText] = useState("");
   const [image, setImage] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
+  const [title, setTitle] = useState("")
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [eventTitle, setEventTitle] = useState('');
   const [eventDescription, setEventDescription] = useState('');
   const [eventDatetime, setEventDatetime] = useState('');
-
+  const fileInputRef = useRef(null);
   const [events, setEvents] = useState([]);
   const [posts, setPosts] = useState([]);
   const [groupData, setGroupData] = useState(null);
@@ -30,21 +33,29 @@ export default function GroupPage() {
 
   const handleSubmit = async () => {
     console.log("hi");
-    
+
     if (!text && !image) return;
 
     const formData = new FormData();
-    formData.append("groupe_id",id);
-    formData.append("content", text);
+    const postData = {
+      groupe_id: parseInt(id),
+      title,
+      content: text,
+    }
+    formData.append("postData", JSON.stringify(postData));
+    formData.append("postData", text);
     if (image) {
       formData.append("image", image);
     }
-    
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
 
     try {
       const response = await fetch(`${host}/addPost`, {
-         credentials: "include",
-         method: "POST",
+        credentials: "include",
+        method: "POST",
         body: formData,
       });
 
@@ -139,29 +150,38 @@ export default function GroupPage() {
           </div>
 
           <div className={styles.creatPost}>
-            <div className={styles.textareaWrapper}>
-              <textarea
-                className={styles.input}
-                placeholder="Share something..."
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSubmit();
-                  }
-                }}
-              ></textarea>
+            <button onClick={() => setIsModalOpen(true)} className={styles.addEventButton}>+Add Post</button>
 
-              <label htmlFor="imageUpload" className={styles.imageIcon}>📷</label>
-              <input
-                type="file"
-                accept="image/*"
-                id="imageUpload"
-                className={styles.hiddenInput}
-                onChange={handleImageChange}
-              />
-            </div>
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+
+
+              <h2 className={styles.Createvent}>Create New Post</h2>
+              <form onSubmit={handleSubmit}>
+                <input
+                  className={styles.input2}
+                  onChange={(e) => setTitle(e.target.value)}
+                  value={title}
+                  placeholder="Titre"
+                  type="text"
+                />
+                <textarea
+                  onChange={(e) => setText(e.target.value)}
+                  value={text}
+                  placeholder="Contenu"
+                  className={styles.input3}
+                  rows={4}
+                />
+                <input
+                  type="file"
+                  className={styles.input4}
+                  onChange={(e) => setImage(e.target.files[0])}
+                  ref={fileInputRef}
+                />
+                <button type="submit" className={styles.button} >Publier</button>
+              </form>
+
+            </Modal>
+
           </div>
         </div>
 
