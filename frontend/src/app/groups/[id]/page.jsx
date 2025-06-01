@@ -1,10 +1,25 @@
 "use client";
 import styles from "./id.module.css";
+import Post from "@/components/post/post";
 import Modal from "@/components/module/Modal";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 
 export default function GroupPage() {
+  const postse = [
+        {
+            id: 1,
+            title: "Mon premier post",
+            content: "Ceci est le contenu du post.",
+            image: ""
+        },
+        {
+            id: 2,
+            title: "Deuxième post",
+            content: "Autre contenu.",
+            image: ""
+        }
+    ];
   const [text, setText] = useState("");
   const [image, setImage] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
@@ -139,14 +154,9 @@ export default function GroupPage() {
 
         <div className={styles.moyyen}>
           <div className={styles.postsContainer}>
-            {posts.map((post) => (
-              <div key={post.id} className={styles.postCard}>
-                <div>{post.title}</div>
-                <div>{post.content}</div>
-                {post.image && <img src={post.image} alt="Post" />}
-                <small className={styles.postDate}>{post.date}</small>
-              </div>
-            ))}
+            <Post posts={posts} />
+
+
           </div>
 
           <div className={styles.creatPost}>
