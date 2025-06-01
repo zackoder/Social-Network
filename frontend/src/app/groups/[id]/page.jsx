@@ -169,9 +169,6 @@ export default function GroupPage() {
         </div>
       </div>
       <div className={styles.right}>
-        <div className={styles.soutitre}>
-          <p className={styles.titleGroup}>Group chat</p>
-        </div>
         <GroupChat groupData={groupData}></GroupChat>
         <div className={styles.chatbox1}></div>
       </div>
