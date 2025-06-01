@@ -165,7 +165,7 @@ export default function LikeDislikeComment({ postId }) {
       }
       const data = await response.json();
       // console.log("data the fetch posts------ ", data);
-  
+
       setComments(Array.isArray(data) ? data : []);
       setShowComments(true);
       // console.log("comments---", comments);
@@ -173,8 +173,8 @@ export default function LikeDislikeComment({ postId }) {
       console.log("fetch comments: ", data); // for testing fetching
     } catch (err) {
       console.log("error", err);
-    // }
-  }
+      // }
+    }
   };
 
   const handleCommentSubmit = async (e) => {
@@ -200,9 +200,9 @@ export default function LikeDislikeComment({ postId }) {
         isAuthenticated(response.status, comment.error);
         return;
       }
-      if (comments.length === 0){
-        await handleClick()
-      }else{
+      if (comments.length === 0) {
+        await handleClick();
+      } else {
         setComments((prev) => [comment, ...prev]);
       }
       // setComments((prevComments) => [comment, ...prevComments]);
@@ -302,6 +302,15 @@ export default function LikeDislikeComment({ postId }) {
             comments.map((comment, index) => (
               <div className="comment" key={index}>
                 <div className="comment-header">
+                  <div className="comment-image">
+                    <img
+                      src={`${host}${comment.userAvatar}`}
+                      alt="image profile"
+                      width={50}
+                      height={50}
+                      style={{ objectFit: "cover", borderRadius: "50%" }}
+                    />
+                  </div>
                   <span className="comment-author">{comment.userName}</span>
                   <span className="comment-date">
                     {new Date(comment.date * 1000).toLocaleString()}
