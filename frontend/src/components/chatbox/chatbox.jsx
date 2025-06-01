@@ -239,7 +239,7 @@ export default function ChatBox({ contact, onClickClose }) {
                 {msg.filename ? (
                   <div className={styles.imageContainer}>
                     <img
-                      src={`${process.env.NEXT_PUBLIC_HOST}${msg.filename}`}
+                      src={`http://${msg.filename}`}
                       alt="sent-image"
                       width={250} // Set appropriate dimensions
                       height={250}

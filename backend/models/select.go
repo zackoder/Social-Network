@@ -820,6 +820,9 @@ func QueryMsgs(message utils.Message, host, offset string) ([]utils.Message, err
 		if err != nil {
 			return nil, err
 		}
+		if message.Filename != "" {
+			message.Filename = host + message.Filename
+		}
 		message.Avatar = host + message.Avatar
 		messages = append(messages, message)
 	}
