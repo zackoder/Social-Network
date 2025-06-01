@@ -6,8 +6,9 @@ import { isAuthenticated } from "@/app/page";
 import { FaUserPlus, FaUserCheck, FaUserClock } from "react-icons/fa";
 
 export default function ButtonFollow({ profileId }) {
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [isPending, setIsPending] = useState(false);
+  const [followstatus, setfollowststus] = useState("");
+  // const [isFollowing, setIsFollowing] = useState(false);
+  // const [isPending, setIsPending] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,7 +21,7 @@ export default function ButtonFollow({ profileId }) {
           credentials: "include",
         });
         const data = await response.json();
-        console.log("jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj", data);
+        // console.log("jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj", data);
 
         setCurrentUserId(data.id);
         // Now check follow status
@@ -38,21 +39,23 @@ export default function ButtonFollow({ profileId }) {
     fetchCurrentUser();
   }, [profileId]);
 
-  // Check if the current user is following the profile
+  // Check if the current user is following the prof   setIsFollowing(data.isFollowing === true);
+  // setIsPending(data.isPending === true);ile
   const checkFollowStatus = async (follower, followed) => {
     if (!follower || !followed) return;
 
     try {
-      const response = await fetch(`${host}/api/registrationData`, {
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${host}/api/registrationData?id=${profileId}`,
+        {
+          credentials: "include",
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
         console.log(data);
-
-        setIsFollowing(data.isFollowing === true);
-        setIsPending(data.isPending === true);
+        setfollowststus(data.profile_status);
       }
     } catch (err) {
       console.error("Error checking follow status:", err);
@@ -60,7 +63,7 @@ export default function ButtonFollow({ profileId }) {
   };
 
   const handleFollowToggle = async () => {
-    if (!currentUserId || !profileId || isLoading) return;
+    // if (!currentUserId || !profileId || isLoading) return;
 
     // Don't allow following yourself
     if (currentUserId.toString() === profileId.toString()) {
@@ -69,45 +72,19 @@ export default function ButtonFollow({ profileId }) {
     }
 
     try {
-      const response = await fetch(
-        `${host}/followReq?follower=${currentUserId}&followed=${profileId}`,
-        {
-          method: "POST",
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`${host}/followReq?followed=${profileId}`, {
+        method: "POST",
+        credentials: "include",
+      });
 
-      // Only try to parse JSON if content-type is application/json
-      // const contentType = response.headers.get("content-type");
+      const data = await response.json();
 
-      // if (contentType && contentType.includes("application/json")) {
-      // responseData = await response.json();
-      // } else {
-      // Just get the text for error logging
-      // }
-      if (!response.ok) {
-        console.log(
-          `Failed to update follow status: ${response.status} ${response.statusText}`,
-          responseData
-        );
-      }
-      const responseData = await response.text();
-      console.log("this is mee", responseData);
-
-      // Handle the response
-      if (typeof responseData === "object") {
-        if (responseData.resp === "followed seccessfoly") {
-          setIsFollowing(true);
-          setIsPending(false);
-        } else if (responseData.resp === "unfollowed seccessfoly") {
-          setIsFollowing(false);
-          setIsPending(false);
-        } else if (responseData.resp === "follow request sent") {
-          setIsPending(true);
-        }
-      } else {
-        // The response wasn't JSON, toggle the state based on previous state
-        setIsFollowing(!isFollowing);
+      if (data.resp === "followed seccessfoly") {
+        setfollowststus("unfollow");
+      } else if (data.resp === "unfollowed seccessfoly") {
+        setfollowststus("follow");
+      } else if (data.resp === "follow request sent") {
+        setfollowststus("follow sent");
       }
     } catch (err) {
       console.error("Error toggling follow status:", err);
@@ -119,7 +96,7 @@ export default function ButtonFollow({ profileId }) {
   if (currentUserId && currentUserId.toString() === profileId?.toString()) {
     return null;
   }
-
+  
   // Don't show button while loading
   if (isLoading) {
     return (
@@ -131,15 +108,16 @@ export default function ButtonFollow({ profileId }) {
 
   return (
     <button
-      className={`${styles.button} ${isFollowing ? styles.following : ""}`}
+      className={`${styles.button} ${
+        followstatus == "follow" ? styles.following : ""
+      }`}
       onClick={handleFollowToggle}
-      disabled={isLoading}
     >
-      {isPending ? (
+      {followstatus == "follow sent" ? (
         <>
-          <FaUserClock /> Pending
+          <FaUserClock /> follow sent
         </>
-      ) : isFollowing ? (
+      ) : followstatus == "follow" ? (
         <>
           <FaUserCheck /> Following
         </>
