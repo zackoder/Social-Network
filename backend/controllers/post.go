@@ -12,22 +12,24 @@ import (
 )
 
 func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
-	fmt.Println("userid",userId)
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
 	var post utils.Post
-	post.Poster_id = userId                                   
+	post.Poster_id = userId
 	host := r.Host
 	postData := r.FormValue("postData")
+	post.Poster_id = userId
+
 	err := json.Unmarshal([]byte(postData), &post)
-	
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "internal server error\nparsing post"}, http.StatusInternalServerError)
 		fmt.Println("unmarshal err:", err)
 		return
 	}
+
+	fmt.Println("group id", post.Groupe_id)
 
 	if strings.TrimSpace(post.Title) == "" || strings.TrimSpace(post.Content) == "" {
 		utils.WriteJSON(w, map[string]string{"error": "title or content is empty"}, http.StatusBadRequest)
@@ -46,7 +48,7 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 	user, _ := models.GetUserById(userId)
 	log.Println(user)
 	post.Poster_name = user.FirstName
-	post.Avatar = host + user.Avatar  
+	post.Avatar = host + user.Avatar
 
 	fmt.Println("post", r.URL.Query().Get("id"))
 
