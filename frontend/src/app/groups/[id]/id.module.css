@@ -292,28 +292,8 @@
   /* background-color: rgb(0, 47, 255); */
   width: 20%;
   height: 100%;
-  position: static;
-  left: 80%;
-  right: 0%;
-}
-.soutitre {
-  position: relative;
-  top: 1%;
-  left: 5%;
-  width: 90%;
-  background-color: var(--color-primary);
-  color: #ffffff;
-  padding: 10px;
-  border-radius: 4px;
-  transition: all 0.5s ease-in-out;
-  cursor: pointer;
-}
-.soutitre:hover {
-  background-color: var(--color-primary-hover);
+  position: fixed;
+  /* left: 80%; */
+  right: 5%;
 }
 
-.titleGroup {
-  font-size: 22px;
-  font-weight: 800;
-  text-transform: capitalize;
-}

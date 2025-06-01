@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import CreatePost from "../createPost/createPost";
 import Post from "../post/post";
+import { isAuthenticated } from "@/app/page";
 
 export default function PostSystem() {
     const [posts, setPosts] = useState([]);
