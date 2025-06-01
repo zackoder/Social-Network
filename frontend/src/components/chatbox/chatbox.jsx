@@ -10,7 +10,7 @@ import { isAuthenticated } from "@/app/page";
 
 const host = process.env.NEXT_PUBLIC_HOST;
 
-function getCookie(name){
+function getCookie(name) {
   const value = `; {${document.cookie}}`;
   const parts = value.split(`${name}=`);
   if (parts.length === 2) return parts.pop().split(";").shift();
@@ -26,8 +26,8 @@ export default function ChatBox({ contact, onClickClose }) {
   const [offset, setOffset] = useState(0);
   const limit = 20;
   const userId = parseInt(localStorage.getItem("user-id"));
-  
-  const token = getCookie("token"); 
+
+  const token = getCookie("token");
 
   const emojis = [
     "😁",
@@ -84,7 +84,7 @@ export default function ChatBox({ contact, onClickClose }) {
     if (file) {
       setImage(file);
       console.log("file image ", file);
-      
+
       e.target.value = "";
     }
   };
@@ -98,7 +98,7 @@ export default function ChatBox({ contact, onClickClose }) {
           (data.receiver_id === userId && data.sender_id === contact.id) ||
           (data.sender_id === userId && data.receiver_id === contact.id)
         ) {
-          setMessages((prev) => [...prev, data]);
+          setMessages((prev) => [prev, data]);
         }
       } catch (err) {
         console.log("Failed to parse message:", event.data);
@@ -124,8 +124,11 @@ export default function ChatBox({ contact, onClickClose }) {
         isAuthenticated(response.status, data.error);
         return;
       }
-      setMessages(prev => [...data, ...prev]);
-      setOffset(offsetValue + limit);
+      if (Array.isArray(data)) {
+        console.log("data msg", data);
+        setMessages(prev => [...data, prev]);
+        setOffset(offsetValue + limit);
+      }
     } catch (err) {
       console.log("Error fetching messages", err);
     }
@@ -162,12 +165,12 @@ export default function ChatBox({ contact, onClickClose }) {
           sender_id: userId,
           receiver_id: contact.id,
           type: "image",
-          token: {token},
+          token: { token },
           content: message,
           mime: image.type,
           filename: image.name,
         };
-        {console.log("path image---------", image.name)}
+        { console.log("path image---------", image.name) }
         const messageBuffer = buildBinaryMessage(metadata, reader.result);
         socket.send(messageBuffer);
         // Add optimistic update for better UX
@@ -182,7 +185,7 @@ export default function ChatBox({ contact, onClickClose }) {
         receiver_id: contact.id,
         type: "message",
         content: message,
-        token: {token},
+        token: { token },
       };
 
       // Optimistic update
@@ -190,6 +193,7 @@ export default function ChatBox({ contact, onClickClose }) {
       setMessage("");
     }
   };
+  console.log("messages", messages);
 
   return (
     <div className={styles.chatBox}>
@@ -230,7 +234,7 @@ export default function ChatBox({ contact, onClickClose }) {
                   />
                 </div>
               )}
-              
+
               <div className={styles.message}>
                 {msg.filename ? (
                   <div className={styles.imageContainer}>
