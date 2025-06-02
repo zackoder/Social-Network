@@ -1,13 +1,13 @@
 #!/bin/bash
 
 if [ ! -e "./frontend/.env" ]; then 
-    echo "NEXT_PUBLIC_HOST=http://localhost:8080" >> ./frontend/.env
+    echo "NEXT_PUBLIC_HOST=http://localhost:8080" >>  ./frontend/.env
 fi
 
 # cd frontend 
 # npm i
 
-# cd ../backend
+# cd ../backend	Poster_name string    `json:"name"`
 # export PATH="$PATH:$HOME/go/bin"
 # source ~/.bashrc
 # fresh -g

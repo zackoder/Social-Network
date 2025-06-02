@@ -1,9 +1,7 @@
-"use client"
+"use client";
 import { useState, useEffect } from "react";
 import styles from "./groups.module.css";
 import Link from "next/link";
-import { useRouter } from 'next/router';
-
 
 export default function Home() {
   const [groups, setGroups] = useState([]);
@@ -11,112 +9,88 @@ export default function Home() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [activeTab, setActiveTab] = useState("all");
 
   const host = process.env.NEXT_PUBLIC_HOST;
 
-
-
-
   const fetchGroups = async (url) => {
-
     setError(null);
     try {
-      const res = await fetch(`${host}${url}`, {
-        credentials: "include",
-      });
+      const res = await fetch(`${host}${url}`, { credentials: "include" });
       if (!res.ok) throw new Error("Erreur lors du fetch des groupes");
       const data = await res.json();
-      if (!data || data.length === 0) {
-        setGroups([]);
-        
-        setError("No available Groups");
-        return;
-      }
-      console.log(data);
-      
-      setGroups(data);
-      
-     
+      setGroups(data.length ? data : []);
+      if (!data.length) setError("No available Groups");
     } catch (err) {
       setGroups([]);
       setError(err.message || "Erreur inconnue");
     }
   };
-  useEffect(() => {
-    document.getElementById("initial").classList.add(`${styles.active}`)
 
+  useEffect(() => {
     fetchGroups("/GetGroups");
   }, []);
+
+  const handleTabClick = (type) => {
+    setActiveTab(type);
+    const endpoints = {
+      all: "/GetGroups",
+      my: "/GetMyGroups",
+      joined: "/GetJoinedGroups",
+    };
+    fetchGroups(endpoints[type]);
+  };
+
   const handleCreateGroup = async (e) => {
     e.preventDefault();
     try {
       const res = await fetch(`${host}/creategroup`, {
         method: "POST",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, description }),
       });
       if (!res.ok) throw new Error("Group creation failed");
       const newGroup = await res.json();
-
+      setGroups((prev) => [...prev, newGroup]);
       setIsPopupOpen(false);
       setTitle("");
       setDescription("");
-      setGroups((prev) => [...prev, newGroup]);
-      setError("")
-
+      setError("");
     } catch (err) {
       alert(err.message || "Error creating group");
     }
   };
-  const addclass = (e) => {
-    const lients = document.querySelectorAll(`.${styles.lien}`);
-    console.log(lients);
-    
-
-    lients.forEach((lien) => {
-      lien.classList.remove(`${styles.active}`);
-    });
-    e.target.classList.add(`${styles.active}`);
-  }
-
 
   return (
-
     <div>
       <div className={styles.div0}>
         <a
           href="#"
-          className={styles.lien}
+          className={`${styles.lien} ${activeTab === "my" ? styles.active : ""}`}
           onClick={(e) => {
             e.preventDefault();
-            addclass(e)
-            fetchGroups("/GetMyGroups");
+            handleTabClick("my");
           }}
         >
           My groups
         </a>
         <a
           href="#"
-          className={styles.lien}
-          id="initial"
+          className={`${styles.lien} ${activeTab === "all" ? styles.active : ""}`}
           onClick={(e) => {
             e.preventDefault();
-            addclass(e)
-            fetchGroups("/GetGroups");
+            handleTabClick("all");
           }}
         >
           All groups
         </a>
         <a
           href="#"
-          className={styles.lien}
+          className={`${styles.lien} ${activeTab === "joined" ? styles.active : ""}`}
           onClick={(e) => {
             e.preventDefault();
-            addclass(e)
-            fetchGroups("/GetJoinedGroups");
+            handleTabClick("joined");
           }}
         >
           Joined groups
@@ -124,65 +98,50 @@ export default function Home() {
         <div className={styles.div3}>
           <button
             className={styles.button}
-            onClick={() => {
-              console.log("Popup ouverte !");
-              setIsPopupOpen(true);
-            }}>Creat groupe</button>
+            onClick={() => setIsPopupOpen(true)}
+          >
+            Create group
+          </button>
         </div>
       </div>
-      {/* POPUP MODAL */}
+
       {isPopupOpen && (
         <div className={styles.modalOverlay} onClick={() => setIsPopupOpen(false)}>
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <h2>Create a group</h2>
             <form onSubmit={handleCreateGroup}>
               <label>Title :</label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-              />
+              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
               <label>Description :</label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
-              ></textarea>
+              <textarea value={description} onChange={(e) => setDescription(e.target.value)} required />
               <div className={styles.actions}>
                 <button type="submit" className={styles.submitBtn}>Create</button>
-                <button type="button" onClick={() => setIsPopupOpen(false)} className={styles.cancelBtn}>Cancel</button>
+                <button type="button" className={styles.cancelBtn} onClick={() => setIsPopupOpen(false)}>Cancel</button>
               </div>
             </form>
           </div>
         </div>
       )}
 
-
       <div className={styles.contenu} style={{ marginTop: "20px" }}>
         {error && <p style={{ color: "red" }}>{error}</p>}
-
         {groups.length > 0 ? (
           <ul>
             {groups.map((groupe, i) => (
-              
-              
-              
-              
               <li key={i}>
-                <Link  href={{
-                 pathname: `/groups/${groupe.Id}`,
-                 query: {
-                 Id:groupe.Id,
-                 title: groupe.title,
-                 description: groupe.description,
-                 },
-                 }}>
-                  
+                <Link
+                  href={{
+                    pathname: `/groups/${groupe.Id}`,
+                    query: {
+                      Id: groupe.Id,
+                      title: groupe.title,
+                      description: groupe.description,
+                    },
+                  }}
+                >
                   <p>{groupe.title}</p>
                 </Link>
               </li>
-              
             ))}
           </ul>
         ) : (

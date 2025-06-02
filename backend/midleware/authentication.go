@@ -80,23 +80,8 @@ func AuthMiddleware(next customHandler) http.HandlerFunc {
 	})
 }
 
-// func IsUserRegistered(db *sql.DB, userData *utils.User) (bool, error) {
-// 	var exists bool
-// 	query := `SELECT EXISTS(SELECT 1 FROM users WHERE email = ?);`
-// 	err := db.QueryRow(query, userData.Email).Scan(&exists)
-// 	return exists, err
-// }
 
-// func RegisterUser(db *sql.DB, userData *utils.User) error {
-// 	insertQuery := `INSERT INTO users (nickname, age, gender, firstname, lastname, email, password) VALUES (?, ?, ?, ?, ?, ?, ?);`
-// 	result, err := db.Exec(insertQuery, userData.Nickname, userData.Age, userData.Gender, userData.FirstName, userData.LastName, userData.Email, userData.Password)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	userData.ID, err = result.LastInsertId()
-// 	return err
-// }
-
+ 
 
 func ValidUser(r *http.Request) (int, error) {
 		cookie, err := r.Cookie("token")
@@ -113,16 +98,14 @@ func ValidUser(r *http.Request) (int, error) {
 func WithCORS(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000") 
-        w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+        w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, UPDATE")
         w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
         w.Header().Set("Access-Control-Allow-Credentials", "true")
-
         // Handle preflight
         if r.Method == "OPTIONS" {
             w.WriteHeader(http.StatusOK)
             return
         }
-
         next.ServeHTTP(w, r)
     })
 }

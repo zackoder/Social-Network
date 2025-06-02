@@ -20,7 +20,6 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 	post.Poster_id = userId
 	host := r.Host
 	postData := r.FormValue("postData")
-	post.Poster_id = userId
 
 	err := json.Unmarshal([]byte(postData), &post)
 	if err != nil {
@@ -28,14 +27,13 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 		fmt.Println("unmarshal err:", err)
 		return
 	}
-	fmt.Println("postdata",post)
-
-	fmt.Println("group id", post.Groupe_id)
 
 	if strings.TrimSpace(post.Title) == "" || strings.TrimSpace(post.Content) == "" {
 		utils.WriteJSON(w, map[string]string{"error": "title or content is empty"}, http.StatusBadRequest)
 		return
 	}
+
+	post.Poster_id = 10
 
 	filepath, err := utils.UploadImage(r)
 	if err != nil {
@@ -46,16 +44,17 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 
 	post.Image = filepath
 
+	if filepath == "" {
+		post.Image = "/uploads/defaulte.jpg"
+	}
+
 	user, _ := models.GetUserById(userId)
 	log.Println(user)
 	post.Poster_name = user.FirstName
 	post.Avatar = host + user.Avatar
 
-	fmt.Println("post", r.URL.Query().Get("id"))
-
 	post.Image = filepath
 
-	fmt.Println(post.Poster_id)
 	post.Id, err = models.InsertPost(post)
 	if err != nil {
 		utils.RemoveIMG(filepath)
@@ -67,6 +66,7 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 		models.InsertFriends(post.Id, post.Friendes)
 		post.Friendes = []int{}
 	}
+	post.Image = host + post.Image
 
 	if filepath != "" {
 		post.Image = host + post.Image
@@ -74,8 +74,46 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 	utils.WriteJSON(w, post, 200)
 }
 
-func Posts(w http.ResponseWriter, r *http.Request) {
+func Posts(w http.ResponseWriter, r *http.Request, user_id int) {
 	offset := 0
 	posts := models.QueryPosts(offset, r)
 	utils.WriteJSON(w, posts, 200)
 }
+
+// func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
+// 	cookie, err := r.Cookie("token")
+// 	if err != nil {
+// 		return
+// 	}
+
+// 	profilOwnerId := r.URL.Query().Get("id")
+
+// 	userId, err := models.Get_session(cookie.Value)
+// 	if err != nil {
+// 		utils.WriteJSON(w, map[string]string{"error": "user id not found "}, http.StatusNotFound)
+
+// 		return
+// 	}
+// 	useridstr := strconv.Itoa(userId)
+// 	if profilOwnerId == useridstr {
+// 		ProfilePosts := models.GetProfilePost(userId, 0)
+// 		utils.WriteJSON(w, ProfilePosts, 200)
+// 	} else if profilOwnerId != useridstr {
+// 		profilPrivacy, err := models.IsPrivateProfile(profilOwnerId)
+// 		if err != nil {
+// 			utils.WriteJSON(w, map[string]string{"error": "not found"}, http.StatusNotFound)
+// 		}
+// 		if !profilPrivacy {
+// 			profileOwnerId, err := strconv.Atoi(profilOwnerId)
+// 			if err != nil {
+// 				fmt.Println("we cant convert")
+// 				return
+// 			}
+// 			userPostsForDisplay := models.GetProfilePost(profileOwnerId, 0)
+// 			utils.WriteJSON(w, userPostsForDisplay, 200)
+
+// 		} else if profilPrivacy {
+// 			// checkPostPrivacy,err := models.CheckPostPrivacy()
+// 		}
+// 	}
+// }

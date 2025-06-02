@@ -124,3 +124,13 @@ is the creator of a group and another user requests to join the group, so he can
 is member of a group and an event is created
 
 Every other notification created by you that isn't on the list is welcomed too.
+-----------------------------------------------------------------------------------
+
+
+
+
+gender in regitre
+
+follow button 
+
+error handling
