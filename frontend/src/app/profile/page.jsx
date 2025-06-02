@@ -11,9 +11,9 @@ import { FaLock, FaLockOpen } from "react-icons/fa";
 import { isAuthenticated } from "../page";
 
 // Create a non-async wrapper for Post
-function PostWrapper({ post }) {
-  return <Post post={post} />;
-}
+// function PostWrapper({ post }) {
+//   return <Post post={post} />;
+// }
 
 export default function ProfilePage() {
   const searchParams = useSearchParams();
