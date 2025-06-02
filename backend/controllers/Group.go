@@ -152,6 +152,7 @@ func AllGroups(w http.ResponseWriter, r *http.Request, user_id int) {
 }
 
 func GetGroupsJoined(w http.ResponseWriter, r *http.Request, user_id int) {
+	fmt.Println("ussssssssssssssssssssssssssssssserid",user_id)
 	cookie, err := r.Cookie("token")
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "You don't have access."}, http.StatusForbidden)
