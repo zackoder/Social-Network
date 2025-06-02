@@ -98,7 +98,7 @@ export default function ChatBox({ contact, onClickClose }) {
           (data.receiver_id === userId && data.sender_id === contact.id) ||
           (data.sender_id === userId && data.receiver_id === contact.id)
         ) {
-          setMessages((prev) => [prev, data]);
+          setMessages((prev) => [...prev, data]);
         }
       } catch (err) {
         console.log("Failed to parse message:", event.data);
@@ -126,7 +126,7 @@ export default function ChatBox({ contact, onClickClose }) {
       }
       if (Array.isArray(data)) {
         console.log("data msg", data);
-        setMessages(prev => [...data, prev]);
+        setMessages(prev => [...data.reverse(), ...prev]);
         setOffset(offsetValue + limit);
       }
     } catch (err) {
