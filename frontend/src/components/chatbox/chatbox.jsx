@@ -122,7 +122,10 @@ export default function ChatBox({ contact, onClickClose }) {
           filename: image.name,
         };
         const messageBuffer = buildBinaryMessage(metadata, reader.result);
-        socket.send(messageBuffer);
+        if (socket.readyState === WebSocket.OPEN) socket.send(messageBuffer);
+        else
+          console.log("------------------------------------ waaaaaaaaaa 11111");
+
         // Add optimistic update for better UX
         setMessages((prev) => [
           ...prev,
@@ -147,7 +150,13 @@ export default function ChatBox({ contact, onClickClose }) {
 
       // Optimistic update
       setMessages((prev) => [...prev, newMsg]);
-      socket.send(JSON.stringify(newMsg));
+      if (socket.readyState === WebSocket.OPEN)
+        socket.send(JSON.stringify(newMsg));
+      else
+        console.log(
+          "------------------------------------------------ waaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 2"
+        );
+
       setMessage("");
     }
   };
