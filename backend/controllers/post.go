@@ -28,6 +28,7 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 		fmt.Println("unmarshal err:", err)
 		return
 	}
+	fmt.Println("postdata",post)
 
 	fmt.Println("group id", post.Groupe_id)
 
