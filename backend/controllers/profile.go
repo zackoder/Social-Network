@@ -3,20 +3,20 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"strconv"
+
 	"social-network/models"
 	"social-network/utils"
-	"strconv"
 )
 
-func HandleFollow(w http.ResponseWriter, r *http.Request) {
+func HandleFollow(w http.ResponseWriter, r *http.Request, follower int) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Not allowed"}, http.StatusMethodNotAllowed)
 		return
 	}
 	var noti utils.Notification
-	follower := r.URL.Query().Get("follower")
 	followed := r.URL.Query().Get("followed")
-	noti.Sender_id, _ = strconv.Atoi(follower)
+	noti.Sender_id = follower
 	noti.Target_id, _ = strconv.Atoi(followed)
 	noti.Message = "follow request"
 	privacy, err := models.IsPrivateProfile(followed)
@@ -32,6 +32,7 @@ func HandleFollow(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"resp": "unfollowed seccessfoly"}, 200)
 		return
 	}
+	fmt.Println(privacy)
 	if !privacy {
 		err := models.InsertFollow(follower, followed)
 		if err != nil {
@@ -41,14 +42,31 @@ func HandleFollow(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"resp": "followed seccessfoly"}, 200)
 	} else {
 		utils.WriteJSON(w, map[string]string{"resp": "follow request sent"}, 200)
-		BroadcastNotification(noti)
 		noti.Actor_id = noti.Sender_id
+		Broadcast(noti.Target_id, noti)
 		models.InsertNotification(noti)
 	}
 }
 
-func UpdatePrivacy(w http.ResponseWriter, r *http.Request) {
-	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
-	test := models.UpdateProfile(id)
-	utils.WriteJSON(w, map[string]string{"test": test}, 200)
+func UpdatePrivacy(w http.ResponseWriter, r *http.Request, user_id int) {
+	privacy := models.UpdateProfile(user_id)
+	utils.WriteJSON(w, map[string]string{"profile_status": privacy}, 200)
+}
+
+func UserData(w http.ResponseWriter, r *http.Request, user_id int) {
+	if r.Method != http.MethodGet {
+		utils.WriteJSON(w, map[string]string{"error": "Not allowed"}, http.StatusMethodNotAllowed)
+		return
+	}
+	var userD utils.UserD
+	user, err := models.GetUserById(user_id)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	userD.Id = user_id
+	userD.Firstname = user.FirstName
+	userD.Avatar = r.Host + user.Avatar
+
+	utils.WriteJSON(w, userD, 200)
 }

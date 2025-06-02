@@ -1,7 +1,7 @@
-import LikeDislikeComment from "../likeDislikeComment/likeDislikeComment";
-import styles from "./post.module.css"
-// import Image from "next/image";
-import Link from "next/link";
+// import LikeDislikeComment from "../likeDislikeComment/likeDislikeComment";
+// import styles from "./post.module.css"
+// // import Image from "next/image";
+// import Link from "next/link";
 
 
 // export function getData(data) {
@@ -29,57 +29,151 @@ import Link from "next/link";
 
 
 
-export default function Post({ posts, divclass = "container" }) {
-    // const posts = await fetchAllPosts();
-    if (!posts || posts.lenght === 0) {
-        return <p>No posts yet.</p>;
+// export default function Post({ posts }) {
+//     // const posts = await fetchAllPosts();
+//     if (!posts || posts.lenght === 0) {
+//         return <p>No posts yet.</p>;
+//     }
+//     // console.log("posts", posts);
+
+//     return (
+//         <div className={styles.container}>
+//             {posts.map((post) => (
+//                 <div className={styles.post} key={post.id}>
+//                     <div className={styles.header}>
+//                         <Link href={`/profile?id=${post.poster}&profile=${post.first_name}`}>
+//                             <div className={styles.containerHeader}>
+//                                 <div className={styles.imageContainer}>
+//                                     {/* <img
+//                                         className={styles.image}
+//                                         src={`http://${post.avatar}`}
+//                                         alt={`post.name`}
+//                                         fill={false}
+//                                     /> */}
+//                                 </div>
+//                                 <h2>{post.first_name}</h2>
+
+//                             </div>
+//                         </Link>
+//                     </div>
+
+//                     <div className={styles.content}>
+//                         <h3>{post.title}</h3>
+//                         <p>{post.content}</p>
+//                     </div>
+//                     <div className={styles.imagePost}>
+//                         {post.image ? (
+//                             <img
+//                                 className={styles.image}
+//                                 src={`http://${post.image}`}
+//                                 alt="post"
+//                                 width={500}
+//                                 height={300}
+//                             // fill={true}
+//                             />
+
+//                         ) : null}
+
+//                     </div>
+
+//                     <div className={styles.reaction}>
+//                         <LikeDislikeComment postId={post.id} />
+//                     </div>
+//                 </div> //end post
+//             ))}
+//         </div> // end container
+//     );
+// }
+
+
+"use client";
+
+import LikeDislikeComment from "../likeDislikeComment/likeDislikeComment";
+import styles from "./post.module.css";
+import Link from "next/link";
+import { useState, useEffect } from "react";
+
+async function GetData() {
+  const host = process.env.NEXT_PUBLIC_HOST;
+  return fetch(`${host}/api/posts`).then((response) => {
+    if (!response.ok) {
+      console.log("Failed to Fetch Data");
+      isAuthenticated(response.status, data.error);
+      return
+    }
+    return response.json();
+  });
+}
+
+export default function Post({ post, divclass = "container" }) {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // If a single post is passed as prop, use it instead of fetching
+  useEffect(() => {
+    if (post) {
+      setPosts([post]);
+      return;
     }
 
-    return (
-        <div className={divclass}>
-            {posts.map((post) => (
-                <div className={styles.post} key={post.id}>
-                    <div className={styles.header}>
-                        <Link href={"/profile?id=1&profile=zack"}>
-                            <div className={styles.containerHeader}>
-                                <div className={styles.imageContainer}>
-                                    {/* <Image
-                                className={styles.image}
-                                src=""
-                                alt=""
-                                fill={false}
-                            /> */}
-                                </div>
-                                <h2>Name</h2>
+    setLoading(true);
+    GetData()
+      .then((data) => {
+        setPosts(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, [post]);
 
-                            </div>
-                        </Link>
-                    </div>
+  if (loading) return <div className={styles.container}>Loading posts...</div>;
+  if (error) return <div className={styles.container}>Error: {error}</div>;
 
-                    <div className={styles.content}>
-                        <h3>{post.title}</h3>
-                        <p>{post.content}</p>
-                    </div>
-                    <div className={styles.imagePost}>
-                        {post.image ? (
-                            <img
-                                className={styles.image}
-                                src={`http://${post.image}`}
-                                alt="post"
-                                width={500}
-                                height={300}
-                            // fill={true}
-                            />
+  return (
+    <div className={divclass}>
+      {posts.map((post) => (
+        <div className={styles.post} key={post.id}>
+          <div className={styles.header}>
+            <Link href={`/profile?id=${post.poster}&profile=${post.first_name}`}>
+              <div className={styles.containerHeader}>
+                <div className={styles.imageContainer}>
+                  <img
+                    src={`http://${post.avatar}`}
+                    width={50}
+                    height={50}
+                    style={{ borderRadius: "100%" }}
 
-                        ) : null}
+                  />
+                </div>
+                <h2>{post.first_name}</h2>
+              </div>
+            </Link>
+          </div>
 
-                    </div>
+          <div className={styles.content}>
+            <h3>{post.title}</h3>
+            <p>{post.content}</p>
+          </div>
+          <div className={styles.imagePost}>
+            {post.image ? (
+              <img
+                className={styles.image}
+                src={`http://${post.image}`}
+                alt="post"
+                width={500}
+                height={300}
+              />
+            ) : null}
+          </div>
 
-                    <div className={styles.reaction}>
-                        <LikeDislikeComment />
-                    </div>
-                </div> //end post
-            ))}
-        </div> // end container
-    );
+          <div className={styles.reaction}>
+            <LikeDislikeComment postId={post.id} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 }

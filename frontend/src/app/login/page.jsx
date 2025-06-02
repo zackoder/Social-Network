@@ -10,11 +10,23 @@ export default function Login() {
     email: "",
     password: "",
   });
+  
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-
+  
   const host = process.env.NEXT_PUBLIC_HOST;
-
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+  const validate = () => {
+    if (!emailRegex.test(formData.email)) {
+      return "Please enter a valid email address.";
+    }
+    if (!formData.password) {
+      return "Please enter your password.";
+    }
+    return "";
+  };
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -22,12 +34,17 @@ export default function Login() {
       [name]: value,
     }));
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
     setError("");
-
+    const validationError = validate();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+    setIsLoading(true);
+    
     try {
       const response = await fetch(`${host}/login`, {
         method: "POST",
@@ -35,25 +52,22 @@ export default function Login() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-        credentials: "include", // Important for cookies
+        credentials: "include",
       });
       
-      if (!response.ok) {
-        throw new Error("Invalid email or password");
-      }
-
       const data = await response.json();
+      console.log(formData);
+      console.log(data);
+      
 
-      // Clear form
-      setFormData({
-        email: "",
-        password: "",
-      });
-
-      // Redirect to home page on successful login
-      router.push("/");
-    } catch (err) {
-      setError(err.message || "Login failed. Please try again.");
+      if (response.ok && data.success === "ok") {
+        // Redirect to home page on successful login
+        router.push("/");
+      } else {
+        setError(data.error || "Invalid email or password");
+      }
+    } catch {
+      setError("Login failed. Please try again.");
     } finally {
       setIsLoading(false);
     }

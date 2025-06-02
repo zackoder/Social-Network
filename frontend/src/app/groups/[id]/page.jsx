@@ -4,22 +4,9 @@ import Post from "@/components/post/post";
 import Modal from "@/components/module/Modal";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
+import GroupChat from "@/components/groupchat/groupchat";
 
 export default function GroupPage() {
-  const postse = [
-    {
-      id: 1,
-      title: "Mon premier post",
-      content: "Ceci est le contenu du post.",
-      image: ""
-    },
-    {
-      id: 2,
-      title: "Deuxième post",
-      content: "Autre contenu.",
-      image: ""
-    }
-  ];
   const [text, setText] = useState("");
   const [image, setImage] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
@@ -154,7 +141,7 @@ export default function GroupPage() {
 
         <div className={styles.moyyen}>
           {/* <div className={styles.postsContainer}> */}
-            <Post posts={posts} divclass="postsContainer" />
+          <Post posts={posts} divclass="postsContainer" />
 
 
 
@@ -236,7 +223,9 @@ export default function GroupPage() {
       </div>
 
       <div className={styles.right}>
-        <div className={styles.soutitre}><p>Group chat</p></div>
+        <GroupChat groupData={groupData}></GroupChat>
+        {/* <GroupChat groupData={groupData}></GroupChat> */}
+        {/* <div className={styles.soutitre}><p>Group chat</p></div> */}
         <div className={styles.chatbox1}></div>
       </div>
     </div>

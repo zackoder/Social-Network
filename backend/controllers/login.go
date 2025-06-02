@@ -16,60 +16,50 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, "invalid input data", http.StatusBadRequest)
 		return
 	}
-	fmt.Println("test-------------------", userData.Email)
-	fmt.Println("test", userData.Password)
+
+	// if len(userData.Email) < 5 || len(userData.Password) < 5 || len(userData.Email) > 250 || len(userData.Password) > 64 {
+	// 	utils.WriteJSON(w, map[string]string{"error": "invalid username/password/email"}, http.StatusBadRequest)
+	// 	return
+	// }
+
+	// if utils.IsValidEmail(&userData.Email) {
+	// 	 userData.Email = userData.Email, userData.Email
+	// }
 
 	password := userData.Password
 	err := models.ValidCredential(&userData)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			utils.WriteJSON(w, "Incorect Username or password", http.StatusUnauthorized)
+			utils.WriteJSON(w, map[string]string{"error": "Incorect Username or password"}, http.StatusUnauthorized)
 			return
 		}
 		fmt.Println(err)
-		utils.WriteJSON(w, "internaInternal Server Error1", http.StatusInternalServerError)
+		utils.WriteJSON(w, map[string]string{"error": "internaInternal Server Error1"}, http.StatusInternalServerError)
 		return
 	}
-	if userData.ID > 11 {
+
+	if userData.ID > 10 {
 		if !utils.CheckPasswordHash(&password, &userData.Password) {
+			// fmt.Println(&password,&userData.Password)
 			utils.WriteJSON(w, "Incorect password", http.StatusUnauthorized)
 			return
 		}
-		ok, err := models.GetActiveSession(&userData)
-		if err != nil {
-			utils.WriteJSON(w, "internaInternal Server Error2", http.StatusInternalServerError)
-			return
-		}
-		fmt.Println(ok)
-		if ok {
-			err = models.DeleteSession(&userData)
-			if err != nil {
-				fmt.Println(err)
-				utils.WriteJSON(w, "internaInternal Server Error3", http.StatusInternalServerError)
-				return
-			}
-		}
-
-	} else {
-		if userData.Password != password {
-			utils.WriteJSON(w, map[string]string{"error": "not found"}, http.StatusNotFound)
-			return
-		}
 	}
+
 	userData.SessionId, err = utils.GenerateSessionID()
 	if err != nil {
 		fmt.Println(err)
-		utils.WriteJSON(w, "internaInternal Server Error4", http.StatusInternalServerError)
+		utils.WriteJSON(w, map[string]string{"error": "internaInternal Server Error"}, http.StatusInternalServerError)
 		return
 	}
 
 	err = models.InsertSession(&userData)
 	if err != nil {
 		fmt.Println(err)
-		utils.WriteJSON(w, "internaInternal Server Erro5", http.StatusInternalServerError)
+		utils.WriteJSON(w, map[string]string{"error": "internaInternal Server Error"}, http.StatusInternalServerError)
 		return
 	}
-
+	
 	http.SetCookie(w, &http.Cookie{
 		Name:  "token",
 		Path:  "/",

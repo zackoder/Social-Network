@@ -2,19 +2,21 @@ package utils
 
 import "time"
 
-// import "time"
-
 type Regester struct {
+	ID              int    `json:"id"`
 	FirstName       string `json:"firstName"`
 	LastName        string `json:"lastName"`
 	NickName        any    `json:"nickName"`
-	Age             int    `json:"age"`
+	Age             string `json:"age"`
 	Gender          string `json:"gender"`
 	Email           string `json:"email"`
 	Password        string `json:"password"`
 	ConfermPassword string `json:"confermPassword"`
 	About_Me        string `json:"AboutMe"`
 	Avatar          string `json:"avatar"`
+	Pravecy         string `json:"privecy"`
+	ProfileOner     bool   `json:"profileOner"`
+	SessionId       string
 }
 
 type Login struct {
@@ -26,11 +28,11 @@ type Post struct {
 	Id          int       `json:"id"`
 	Privacy     string    `json:"privacy"`
 	Poster_id   int       `json:"poster"`
-	Poster_name string    `json:"first_name`
+	Avatar      string    `json:"avatar"`
+	Poster_name string    `json:"first_name"`
 	Title       string    `json:"title"`
 	Content     string    `json:"content"`
 	Image       string    `json:"image"`
-	Avatar      string    `json:"image"`
 	Friendes    []int     `json:"friends"`
 	CreatedAt   int       `json:"createdAt"`
 	Reactions   Reactions `json:"reaction"`
@@ -81,9 +83,12 @@ type Session struct {
 
 type Message struct {
 	Sender_id   int    `json:"sender_id"`
-	Reciever_id int    `json:"reciever_id"`
+	Reciever_id int    `json:"receiver_id"`
 	Type        string `json:"type"`
 	Group_id    int    `json:"group_id"`
+	First_name  string `json:"first_name"`
+	Last_name   string `json:"last_name"`
+	Avatar      string `json:"avatar"`
 	Content     string `json:"content"`
 	Mime        string `json:"mime"`
 	Filename    string `json:"filename"`
@@ -111,6 +116,7 @@ type Groupe_member struct {
 	User_id   int `json:"user_id"`
 	Groupe_id int `json:"groupe_id"`
 }
+
 type Event struct {
 	GroupID     int       `json:"groupe_id"`
 	Title       string    `json:"title"`
@@ -124,4 +130,10 @@ type EventResponse struct {
 	EventID  int    `json:"event_id"`
 	GroupeId int    `json:"groupe_id"`
 	Response string `json:"responce"`
+}
+
+type UserD struct {
+	Id        int    ` json:"id"`
+	Firstname string `json:"firstName"`
+	Avatar    string `json:"avatar"`
 }
