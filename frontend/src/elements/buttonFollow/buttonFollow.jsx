@@ -117,7 +117,7 @@ export default function ButtonFollow({ profileId }) {
         <>
           <FaUserClock /> follow sent
         </>
-      ) : followstatus == "follow" ? (
+      ) : followstatus == "unfollow" ? (
         <>
           <FaUserCheck /> Following
         </>
