@@ -13,13 +13,15 @@ export default function CreatePost({ onPostCreated }) {
   let [title, setTitle] = useState("");
   let [content, setContent] = useState("");
   let [image, setImage] = useState("");
-  const { selectedContactsIds } = useContext(DataContext);
+  const { selectedContactsIds, setSelectedContactsIds } = useContext(DataContext);
   let friends = selectedContactsIds;
   const fileInputRef = useRef(null);
   const host = process.env.NEXT_PUBLIC_HOST;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("friends", friends);
+    
     const formData = new FormData();
     const postData = {
       privacy,
@@ -52,7 +54,7 @@ export default function CreatePost({ onPostCreated }) {
         setTitle("");
         setContent("");
         setImage("");
-        setAllowedIds([]);
+        setSelectedContactsIds([]);
       }
 
       // Reset file input
