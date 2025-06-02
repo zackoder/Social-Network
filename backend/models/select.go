@@ -18,8 +18,7 @@ func QueryPosts(offset int, r *http.Request) []utils.Post {
 	FROM posts p
 	JOIN users u ON p.user_id = u.id`
 	// cookie, _ := r.Cookie("token")
-	if 5 >= 4 {
-	}
+
 	// id := 5
 	rows, err := Db.Query(queryPosts)
 	if err != nil {

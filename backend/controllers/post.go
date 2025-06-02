@@ -74,9 +74,11 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 	utils.WriteJSON(w, post, 200)
 }
 
-func Posts(w http.ResponseWriter, r *http.Request, user_id int) {
+func Posts(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("rani dakhl")
 	offset := 0
 	posts := models.QueryPosts(offset, r)
+	fmt.Println("posts",posts)
 	utils.WriteJSON(w, posts, 200)
 }
 
