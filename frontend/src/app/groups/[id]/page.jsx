@@ -33,8 +33,9 @@ export default function GroupPage() {
     }
   };
 
-  const handleSubmit = async () => {
-    console.log("hi");
+  const handleSubmit = async (e) => {
+      e.preventDefault();
+
 
     if (!text && !image) return;
 
@@ -64,8 +65,10 @@ export default function GroupPage() {
       if (response.ok) {
         console.log("Post created successfully");
         setText("");
+        setTitle("")
         setImage(null);
-        // Re-fetch or update posts
+        setIsModalOpen(false)
+
       } else {
         alert("Failed to create post");
       }
