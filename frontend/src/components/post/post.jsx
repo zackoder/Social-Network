@@ -98,37 +98,42 @@ async function GetData() {
   return fetch(`${host}/api/posts`).then((response) => {
     if (!response.ok) {
       console.log("Failed to Fetch Data");
-      isAuthenticated(response.status, data.error);
-      return
+      return [];
     }
     return response.json();
   });
 }
 
-export default function Post({ post }) {
-  
+export default function Post({ post = null, posts: propsPosts = null }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // If a single post is passed as prop, use it instead of fetching
   useEffect(() => {
+    // If an array of posts is passed as a prop
+    if (propsPosts && Array.isArray(propsPosts)) {
+      setPosts(propsPosts);
+      return;
+    }
+
+    // If a single post is passed
     if (post) {
       setPosts([post]);
       return;
     }
 
+    // If no props, fetch all posts
     setLoading(true);
     GetData()
       .then((data) => {
-        setPosts(data);
+        setPosts(Array.isArray(data) ? data : []);
         setLoading(false);
       })
       .catch((err) => {
         setError(err.message);
         setLoading(false);
       });
-  }, [post]);
+  }, [post, propsPosts]);
 
   if (loading) return <div className={styles.container}>Loading posts...</div>;
   if (error) return <div className={styles.container}>Error: {error}</div>;
@@ -146,7 +151,6 @@ export default function Post({ post }) {
                     width={50}
                     height={50}
                     style={{ borderRadius: "100%" }}
-                    
                   />
                 </div>
                 <h2>{post.first_name}</h2>
@@ -158,8 +162,9 @@ export default function Post({ post }) {
             <h3>{post.title}</h3>
             <p>{post.content}</p>
           </div>
+
           <div className={styles.imagePost}>
-            {post.image ? (
+            {post.image && (
               <img
                 className={styles.image}
                 src={`http://${post.image}`}
@@ -167,7 +172,7 @@ export default function Post({ post }) {
                 width={500}
                 height={300}
               />
-            ) : null}
+            )}
           </div>
 
           <div className={styles.reaction}>

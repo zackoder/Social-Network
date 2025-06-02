@@ -16,7 +16,10 @@ func QueryPosts(offset int, r *http.Request) []utils.Post {
 	var posts []utils.Post
 	queryPosts := `SELECT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt, u.avatar
 	FROM posts p
-	JOIN users u ON p.user_id = u.id`
+	JOIN users u ON p.user_id = u.id
+	ORDER BY p.createdAt DESC 
+	`
+	
 	// cookie, _ := r.Cookie("token")
 	if 5 >= 4 {
 	}
@@ -44,12 +47,12 @@ func QueryPosts(offset int, r *http.Request) []utils.Post {
 	return posts
 }
 
-func GetProfilePost(user_id, offset int) ([]utils.Post, error) {
+func GetProfilePost(user_id int) ([]utils.Post, error) {
 	var posts []utils.Post
-	fmt.Printf("Querying posts for user_id=%d with offset=%d\n", user_id, offset)
+	// fmt.Printf("Querying posts for user_id=%d with offset=%d\n", user_id)
 
-	query := "SELECT * FROM posts WHERE user_id = ? LIMIT 10 OFFSET ?"
-	rows, err := Db.Query(query, user_id, offset)
+	query := "SELECT * FROM posts WHERE user_id = ? ORDER BY id DESC "
+	rows, err := Db.Query(query, user_id)
 	if err != nil {
 		fmt.Println("Error querying posts:", err)
 		return nil, err

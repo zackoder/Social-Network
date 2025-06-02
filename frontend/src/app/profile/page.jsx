@@ -22,7 +22,6 @@ export default function ProfilePage() {
   const [posts, setPosts] = useState([]);
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
-  // const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [isPrivate, setIsPrivate] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("posts");
@@ -135,11 +134,10 @@ export default function ProfilePage() {
         body: JSON.stringify({ isPrivate: isPrivate }),
       });
       const data = await response.json();
-      console.log(";;;;;;;;;;;;;;;;;;;;;;;;;;", data.profile_status);
+      // console.log(";;;;;;;;;;;;;;;;;;;;;;;;;;", data.profile_status);
 
       if (response.ok) {
         setIsPrivate(data.profile_status);
-        // setIsPrivate(!isPrivate);
       }
     } catch (error) {
       console.log("Error updating privacy settings", error);
@@ -210,27 +208,7 @@ export default function ProfilePage() {
               </div>
             ) : 
             (
-            //   <button
-            //     className={`${styles.button} ${
-            //       isPrivate == "follow" ? styles.following : ""
-            //     }`}
-            //     onClick={handleFollowToggle}
-            //   >
-            //     {isPrivate == "follow sent" ? (
-            //       <>
-            //         <FaUserClock /> follow sent
-            //       </>
-            //     ) : isPrivate == "follow" ? (
-            //       <>
-            //         <FaUserCheck /> Following
-            //       </>
-            //     ) : (
-            //       <>
-            //         <FaUserPlus /> Follow
-            //       </>
-            //     )}
-            //   </button>
-            // )}
+     
             <ButtonFollow profileId={profileId} />
             )}
           </div>
@@ -268,15 +246,12 @@ export default function ProfilePage() {
       </div>
 
       <main>
-        {activeTab === "posts" && (
-          <div>
-            {/* Add null/undefined check before accessing length */}
-            {posts && posts.length > 0 ? (
-              posts.map((post) => <PostWrapper key={post.id} post={post} />)
-            ) : (
-              <div className={styles.noContent}>No posts to display</div>
-            )}
-          </div>
+          {activeTab === "posts" && (
+          posts && posts.length > 0 ? (
+            <Post posts={posts} />
+          ) : (
+            <div className={styles.noContent}>No posts to display</div>
+          )
         )}
 
         {activeTab === "about" && (

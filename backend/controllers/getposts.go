@@ -22,7 +22,7 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request, userId int) {
 	fmt.Println(userId)
 	// in casse u wanna see ur profile
 	if strconv.Itoa(userId) == profileOwnerIDStr {
-		allPosts, err := models.GetProfilePost(userId, 0)
+		allPosts, err := models.GetProfilePost(userId)
 		if err != nil {
 			utils.WriteJSON(w, map[string]string{"error": "Failed to fetch posts"}, http.StatusInternalServerError)
 			return
