@@ -31,7 +31,8 @@ func Websocket(w http.ResponseWriter, r *http.Request, user_id int) {
 	cookie, _ := r.Cookie("token")
 	client := utils.CreateClient(conn, Manager, user_id, cookie.Value)
 	Manager.AddClient(client)
-	defer Manager.RemoveClient(client)
+	
+	 defer Manager.RemoveClient(client)
 
 	if groups := models.GetClientGroups(user_id); len(groups) > 0 {
 		go Manager.StoreGroups(groups, user_id)

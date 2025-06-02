@@ -47,106 +47,181 @@ export default function LikeDislikeComment({ postId }) {
     }
   };
 
-  const handleLike = async () => {
-    try {
-      const response = await fetch(`${host}/addReaction`, {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify({ postId: postId, reactionType: "like" }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        // throw new Error(error);
-        console.log(error);
-        isAuthenticated(response.status, data.error);
-      }
-      // check status
+  // const handleLike = async () => {
+  //   try {
+  //     const response = await fetch(`${host}/addReaction`, {
+  //       method: "POST",
+  //       credentials: "include",
+  //       body: JSON.stringify({ postId: postId, reactionType: "like" }),
+  //     });
+  //     const data = await response.json();
+  //     if (!response.ok) {
+  //       // throw new Error(error);
+  //       console.log(error);
+  //       isAuthenticated(response.status, data.error);
+  //     }
+  //     // check status
 
-      if (
-        (await data.message) == "Reaction updated" &&
-        (await data.reaction.reactionType) == "like"
-      ) {
-        setLiked(true);
-        setDisliked(false);
-        // setLikeNbr(likeNumber+1)
-        // setDisLikeNbr(disLikeNumber-1)
-      } else if (data.message === "Reaction removed") {
-        // setLikeNbr(likeNumber-1)
-        setLiked(false);
-        setDisliked(false);
-      } else {
-        // setLikeNbr(likeNumber+1)
-        setLiked(true);
-        setDisliked(false);
-      }
-      // data.message
-      // umdate or remove
-    } catch (error) {
-      // console.log();
-    }
-    await getReactions(postId);
+  //     if (
+  //       (await data.message) == "Reaction updated" &&
+  //       (await data.reaction.reactionType) == "like"
+  //     ) {
+  //       setLiked(true);
+  //       setDisliked(false);
+  //       // setLikeNbr(likeNumber+1)
+  //       // setDisLikeNbr(disLikeNumber-1)
+  //     } else if (data.message === "Reaction removed") {
+  //       // setLikeNbr(likeNumber-1)
+  //       setLiked(false);
+  //       setDisliked(false);
+  //     } else {
+  //       // setLikeNbr(likeNumber+1)
+  //       setLiked(true);
+  //       setDisliked(false);
+  //     }
+  //     // data.message
+  //     // umdate or remove
+  //   } catch (error) {
+  //     // console.log();
+  //   }
+  //   await getReactions(postId);
 
-    setLiked(!liked);
-    if (disliked) {
-      setDisliked(false);
-    }
-  };
-  // Id           int    `json:"id"`
-  // PostId       int    `json:"postId"`
-  // UserId       int    `json:"userId"`
-  // ReactionType string `json:"reactionType"`
-  // Date         int64  `json:"date"`
-  const handleDislike = async () => {
-    try {
-      const response = await fetch(`${host}/addReaction`, {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify({ postId: postId, reactionType: "dislike" }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        isAuthenticated(response.status, data.error);
-        return;
-        // throw new Error(error);
-      }
+  //   setLiked(!liked);
+  //   if (disliked) {
+  //     setDisliked(false);
+  //   }
+  // };
+  // // Id           int    `json:"id"`
+  // // PostId       int    `json:"postId"`
+  // // UserId       int    `json:"userId"`
+  // // ReactionType string `json:"reactionType"`
+  // // Date         int64  `json:"date"`
+  // const handleDislike = async () => {
+  //   try {
+  //     const response = await fetch(`${host}/addReaction`, {
+  //       method: "POST",
+  //       credentials: "include",
+  //       body: JSON.stringify({ postId: postId, reactionType: "dislike" }),
+  //     });
+  //     const data = await response.json();
+  //     if (!response.ok) {
+  //       isAuthenticated(response.status, data.error);
+  //       return;
+  //       // throw new Error(error);
+  //     }
 
-      // check status
-      if (
-        (await data.message) == "Reaction updated" &&
-        (await data.reaction.reactionType) == "dislike"
-      ) {
-        setLiked(false);
-        setDisliked(true);
-      } else if (data.message === "Reaction removed") {
-        setLiked(false);
-        setDisliked(false);
-      } else {
-        setLiked(false);
-        setDisliked(true);
-      }
-      // data.message
-      // umdate or remove
-    } catch (error) {
-      console.log();
-    }
-    await getReactions(postId);
+  //     // check status
+  //     if (
+  //       (await data.message) == "Reaction updated" &&
+  //       (await data.reaction.reactionType) == "dislike"
+  //     ) {
+  //       setLiked(false);
+  //       setDisliked(true);
+  //     } else if (data.message === "Reaction removed") {
+  //       setLiked(false);
+  //       setDisliked(false);
+  //     } else {
+  //       setLiked(false);
+  //       setDisliked(true);
+  //     }
+  //     // data.message
+  //     // umdate or remove
+  //   } catch (error) {
+  //     console.log();
+  //   }
+  //   await getReactions(postId);
 
-    setDisliked(!disliked);
-    if (liked) {
-      setLiked(false);
-    }
-  };
+  //   setDisliked(!disliked);
+  //   if (liked) {
+  //     setLiked(false);
+  //   }
+  // };
 
   useEffect(() => {
     getReactions(postId);
   }, []);
 
+
+
+
+
+
+
+
+
+const handleReaction = async (reactionType) => {
+  try {
+    const response = await fetch(`${host}/addReaction`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ postId, reactionType }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      isAuthenticated(response.status, data.error);
+      return;
+    }
+
+    const isLike = reactionType === "like";
+    const isDislike = reactionType === "dislike";
+    console.log(data);
+    
+
+    if (await data.message === "Reaction updated") {
+      // console.log("nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn", data.reaction.reactionType);
+      
+      if (await data.type === "like") {
+        setLiked(true);
+        setDisliked(false);
+      } else if (data.type === "dislike") {
+        setLiked(false);
+        setDisliked(true);
+        
+      }
+    } else if (data.message === "Reaction removed") {
+      setLiked(false);
+      setDisliked(false);
+    } else {
+      // Default: new reaction
+      setLiked(isLike);
+      setDisliked(isDislike);
+    }
+  } catch (error) {
+    console.error("Reaction error:", error);
+  }
+
+  await getReactions(postId);
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   /* handling show comments */
   const handleClick = async () => {
-    if (showComments) {
+    if (showComments && comments.length !== 0) {
       setShowComments(false);
       return;
     }
+
     // if (comments.length === 0) {
 
     try {
@@ -228,7 +303,7 @@ export default function LikeDislikeComment({ postId }) {
       >
         {/* className={styles.button} */}
         <button
-          onClick={handleLike}
+          onClick={() => handleReaction("like")}
           style={{
             color: liked ? "var(--color-primary)" : "gray",
             fontSize: "18px",
@@ -240,7 +315,7 @@ export default function LikeDislikeComment({ postId }) {
         </button>
         <button
           // className={styles.button}
-          onClick={handleDislike}
+          onClick={() => handleReaction("dislike")}
           style={{
             color: disliked ? "red" : "gray",
             fontSize: "18px",
@@ -306,9 +381,9 @@ export default function LikeDislikeComment({ postId }) {
                     <img
                       src={`${host}${comment.userAvatar}`}
                       alt="image profile"
-                      width={50}
-                      height={50}
-                      style={{ objectFit: "cover", borderRadius: "50%" }}
+                      // width={50}
+                      // height={50}
+                      // style={{ objectFit: "cover", borderRadius: "50%" }}
                     />
                   </div>
                   <span className="comment-author">{comment.userName}</span>
