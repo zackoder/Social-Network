@@ -40,13 +40,3 @@ export function Websocket() {
   });
   return websocketConnection;
 }
-
-// type Message struct {
-// 	Sender_id   int    `json:"sender_id"`
-// 	Reciever_id int    `json:"reciever_id"`
-// 	Type        string `json:"type"`
-// 	Group_id    int    `json:"group_id"`
-// 	Content     string `json:"content"`
-// 	Mime        string `json:"mime"`
-// 	Filename    string `json:"filename"`
-// }

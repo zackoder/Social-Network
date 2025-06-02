@@ -27,16 +27,23 @@ func Websocket(w http.ResponseWriter, r *http.Request, user_id int) {
 		log.Println("WebSocket upgrade failed:", err)
 		return
 	}
+
 	cookie, _ := r.Cookie("token")
 	client := utils.CreateClient(conn, Manager, user_id, cookie.Value)
-	Manager.AddClient(client)
-	defer Manager.RemoveClient(client)
-	defer log.Println("client id", user_id)
+	log.Println("client tres to log", client)
+	go Manager.AddClient(client)
+	defer func() {
+		log.Println("1", client)
+		go Manager.RemoveClient(client)
+		log.Println("Client disconnected:", user_id)
+	}()
+
 	if groups := models.GetClientGroups(user_id); len(groups) > 0 {
 		go Manager.StoreGroups(groups, user_id)
 	}
 
 	for {
+		log.Println("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
 		msgType, payload, err := conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
@@ -44,16 +51,19 @@ func Websocket(w http.ResponseWriter, r *http.Request, user_id int) {
 			}
 			break
 		}
-		fmt.Println(string(payload))
+
+		log.Println("Message received type:", msgType)
 		handleMessage(msgType, payload, r.Host, client)
 	}
 }
 
 func handleMessage(msgType int, payload []byte, host string, client *utils.Client) {
-	var err error
-	var msg utils.Message
-	var errMsg utils.Err
-	log.Println(msgType)
+	var (
+		msg    utils.Message
+		errMsg utils.Err
+		err    error
+	)
+
 	switch msgType {
 	case websocket.BinaryMessage:
 		msg, err = utils.UploadMsgImg(payload)
@@ -62,59 +72,94 @@ func handleMessage(msgType int, payload []byte, host string, client *utils.Clien
 			Broadcast(client.Client_id, errMsg)
 			return
 		}
+
 	case websocket.TextMessage:
-		if err := json.Unmarshal(payload, &msg); err != nil {
-			errMsg.Error = "failed to parse your data"
+		err = json.Unmarshal(payload, &msg)
+		if err != nil {
+			errMsg.Error = "Failed to parse your data"
 			Broadcast(client.Client_id, errMsg)
-			log.Println("JSON Unmarshal error:", err)
+			log.Println("JSON unmarshal error:", err)
 			return
 		}
+
 	default:
+		log.Println("Unsupported message type:", msgType)
 		return
 	}
-	log.Println("lhsdfljslfkdj", msg.Reciever_id)
+
 	msg.Sender_id = client.Client_id
-	user, _ := models.GetUserById(msg.Sender_id)
+	user, err := models.GetUserById(msg.Sender_id)
+	if err != nil {
+		errMsg.Error = "User not found"
+		Broadcast(client.Client_id, errMsg)
+		return
+	}
+
 	msg.Avatar = host + user.Avatar
 	msg.First_name = user.FirstName
 	msg.Last_name = user.LastName
-	if msg.Reciever_id != 0 {
+
+	switch {
+	case msg.Reciever_id != 0:
 		BroadcastPrivateMessage(msg, host)
-	} else if msg.Group_id != 0 {
-		if err := BroadcastGroupMessage(msg, host); err != nil {
+
+	case msg.Group_id != 0:
+		err = BroadcastGroupMessage(msg, host)
+		if err != nil {
 			errMsg.Error = err.Error()
 			Broadcast(msg.Sender_id, errMsg)
 		}
+
+	default:
+		log.Println("Message has no recipient")
 	}
 }
 
 func BroadcastPrivateMessage(msg utils.Message, host string) {
 	errMsg := utils.Err{}
-	if ok, err := models.FriendsChecker(msg.Sender_id, msg.Reciever_id); err != nil || !ok {
-		if err := os.Remove("." + msg.Filename); err != nil {
-			fmt.Println(err)
+	ok, err := models.FriendsChecker(msg.Sender_id, msg.Reciever_id)
+	if err != nil || !ok {
+		if msg.Filename != "" {
+			_ = os.Remove("." + msg.Filename)
 		}
-		errMsg.Error = "you need to follow the receiver first"
+		errMsg.Error = "You need to follow the receiver first"
 		Broadcast(msg.Sender_id, errMsg)
 		return
 	}
-	log.Println(msg)
-	models.InsertMsg(msg)
+
+	err = models.InsertMsg(msg)
+	if err != nil {
+		log.Println("Failed to save private message:", err)
+		return
+	}
+
 	if msg.Filename != "" {
 		msg.Filename = host + msg.Filename
 	}
+
 	Broadcast(msg.Reciever_id, msg)
 	Broadcast(msg.Sender_id, msg)
 }
 
 func BroadcastGroupMessage(msg utils.Message, host string) error {
 	if !models.CheckSender(msg.Group_id, msg.Sender_id) {
-		return fmt.Errorf("you need to be a group member first")
+		return fmt.Errorf("You need to be a group member first")
 	}
+
+	err := models.InsertGroupMSG(msg)
+	if err != nil {
+		log.Println("Failed to save group message:", err)
+		return err
+	}
+
+	if msg.Filename != "" {
+		msg.Filename = host + msg.Filename
+	}
+
 	for _, receiverID := range Manager.Groups[msg.Group_id] {
 		Broadcast(receiverID, msg)
 	}
-	models.InsertGroupMSG(msg)
+
 	return nil
 }
 
@@ -122,7 +167,7 @@ func Broadcast(receiverID int, msg any) {
 	if connections, exists := Manager.UsersList[receiverID]; exists {
 		for _, conn := range connections {
 			if err := conn.Connection.WriteJSON(msg); err != nil {
-				log.Println("WriteJSON failed:", err, receiverID)
+				log.Println("WriteJSON failed for user", receiverID, ":", err)
 			}
 		}
 	}
