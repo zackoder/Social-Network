@@ -152,7 +152,7 @@ func AllGroups(w http.ResponseWriter, r *http.Request, user_id int) {
 }
 
 func GetGroupsJoined(w http.ResponseWriter, r *http.Request, user_id int) {
-	fmt.Println("ussssssssssssssssssssssssssssssserid",user_id)
+	fmt.Println("ussssssssssssssssssssssssssssssserid", user_id)
 	cookie, err := r.Cookie("token")
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "You don't have access."}, http.StatusForbidden)
@@ -288,7 +288,9 @@ func Get_all_post(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreatEvent(w http.ResponseWriter, r *http.Request, userId int) {
+	log.Println(r.Method)
 	if r.Method != http.MethodPost {
+		log.Println("haaa fin ana ")
 		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
@@ -300,21 +302,22 @@ func CreatEvent(w http.ResponseWriter, r *http.Request, userId int) {
 		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest1"}, http.StatusBadRequest)
 		return
 	}
+	log.Println(event)
 	notification.Target_id = event.GroupID
-
+	event.CreatedBy = userId
 	if len(event.Title) > 25 || len(event.Description) > 100 || len(strings.TrimSpace(event.Description)) < 2 || len(strings.TrimSpace(event.Title)) < 2 {
 		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest2"}, http.StatusBadRequest)
 		return
 	}
 
-	if !models.IsMember(event.GroupID, event.CreatedBy) {
+	if !models.IsMember(event.GroupID, userId) {
 		utils.WriteJSON(w, map[string]string{"error": "Access denied: you must be a member of the group to creat event."}, 403)
 		return
 	}
 
 	notification.Actor_id, err = models.InsserEventInDatabase(event)
 	notification.Message = "event"
-	log.Println(notification)
+	notification.Sender_id = userId
 	err = models.InsertNotification(notification)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)

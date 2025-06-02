@@ -3,7 +3,6 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
@@ -49,7 +48,7 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 	}
 
 	user, _ := models.GetUserById(userId)
-	log.Println(user)
+	// log.Println(user)
 	post.Poster_name = user.FirstName
 	post.Avatar = host + user.Avatar
 
@@ -78,7 +77,7 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("rani dakhl")
 	offset := 0
 	posts := models.QueryPosts(offset, r)
-	fmt.Println("posts",posts)
+	// fmt.Println("posts",posts)
 	utils.WriteJSON(w, posts, 200)
 }
 
