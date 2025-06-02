@@ -29,8 +29,7 @@ func InsertReaction(reaction *utils.Reaction) (int, error) {
 // GetReactionsByPostId retrieves all reactions for a specific post
 func GetReactionsByPostId(postId int) ([]utils.Reaction, error) {
 	query := `
-		SELECT r.id, r.post_id, r.user_id, r.reaction_type, 
-		       strftime('%s', r.date) as unix_date
+		SELECT r.id, r.post_id, r.user_id, r.reaction_type 
 		FROM reactions r
 		WHERE r.post_id = ?
 	`
@@ -50,10 +49,10 @@ func GetReactionsByPostId(postId int) ([]utils.Reaction, error) {
 			&reaction.PostId,
 			&reaction.UserId,
 			&reaction.ReactionType,
-			&reaction.Date,
+			
 		)
 		if err != nil {
-			fmt.Println("Error scanning reaction row:", err)
+			fmt.Println("Error scanning reaction row11:", err)
 			continue
 		}
 		reactions = append(reactions, reaction)
@@ -69,8 +68,7 @@ func GetReactionsByPostId(postId int) ([]utils.Reaction, error) {
 // GetUserReactionForPost gets a specific user's reaction to a post, if any
 func GetUserReactionForPost(userId, postId int) (*utils.Reaction, error) {
 	query := `
-		SELECT id, post_id, user_id, reaction_type, 
-		       strftime('%s', date) as unix_date
+		SELECT id, post_id, user_id, reaction_type 
 		FROM reactions
 		WHERE user_id = ? AND post_id = ?
 	`
@@ -81,7 +79,6 @@ func GetUserReactionForPost(userId, postId int) (*utils.Reaction, error) {
 		&reaction.PostId,
 		&reaction.UserId,
 		&reaction.ReactionType,
-		&reaction.Date,
 	)
 
 	if err != nil {

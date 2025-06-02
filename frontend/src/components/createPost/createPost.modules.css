@@ -9,7 +9,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 15px;
+    margin-bottom: 80px;
 }
 
 .imageProfile{
@@ -21,7 +21,19 @@
 
 .nameProfile{
     margin-left: 10px;
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
 }
+
+.nameProfile .name-privacy{
+    margin-right: 10px;
+}
+
+/* .contactPrivate{
+    margin-left: 20px;
+} */
+
 .nameProfile h3{
     margin-bottom: 5px;
 }

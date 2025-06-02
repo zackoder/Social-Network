@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import CreatePost from "../createPost/createPost";
 import Post from "../post/post";
+import { isAuthenticated } from "@/app/page";
 
 export default function PostSystem() {
     const [posts, setPosts] = useState([]);
@@ -14,13 +15,12 @@ export default function PostSystem() {
                 cache: "no-store",
             });
             if (!response.ok) {
-                throw new Error("Failed to fetch posts");
+                // throw new Error("Failed to fetch posts");
             }
-            const data = await response.json();
-
+            const data = await response.json();            
             setPosts(data);
         } catch (err) {
-            console.error("Fetch error:", err);
+            // console.error("Fetch error:", err);
         }
     };
     const addNewPost = (newPost) => {

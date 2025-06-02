@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"log"
 	"sync"
 
 	"github.com/gorilla/websocket"
@@ -48,19 +49,16 @@ func (m *Manager) GetClient(id int) []*Client {
 
 func (m *Manager) CheckGroupMubers(id int) bool {
 	m.RLock()
-	m.RUnlock()
+	defer m.RUnlock()
 	_, exists := m.UsersList[id]
 	return exists
 }
 
 func (m *Manager) AddClient(client *Client) {
 	m.Lock()
-	m.Unlock()
-	if c, ok := m.UsersList[client.Client_id]; !ok {
-		m.UsersList[client.Client_id] = append(m.UsersList[client.Client_id], client)
-	} else {
-		m.UsersList[client.Client_id] = append(c, client)
-	}
+	defer m.Unlock()
+	// time.Sleep((2 * time.Second))
+	m.UsersList[client.Client_id] = append(m.UsersList[client.Client_id], client)
 }
 
 func (m *Manager) AddGroup(group_id, user_id int) {
@@ -111,22 +109,29 @@ func (m *Manager) CheckuserExistenc(user_id, group_id int) bool {
 }
 
 func (m *Manager) RemoveClient(client *Client) {
+	// time.Sleep(5 * time.Second)
+	log.Println("removing client")
 	m.Lock()
-	defer m.Unlock()
+	log.Println("removing client")
 
 	clients := m.UsersList[client.Client_id]
+	log.Println("clent len", len(clients))
 	for i, c := range clients {
 		if c == client {
 			m.UsersList[client.Client_id] = append(clients[:i], clients[i+1:]...)
+			fmt.Println("midle", m.UsersList[client.Client_id])
 			break
 		}
 	}
-	fmt.Println(len(m.UsersList[client.Client_id]))
+
+	fmt.Println("client tabs", len(m.UsersList[client.Client_id]))
 	// If no clients left, delete entry
 	if len(m.UsersList[client.Client_id]) == 0 {
 		delete(m.UsersList, client.Client_id)
 		m.RemoveClientFromGroups(client.Client_id)
 	}
+	m.Unlock()
+	log.Println("client removed")
 }
 
 func (m *Manager) RemoveClientFromGroups(id int) {
