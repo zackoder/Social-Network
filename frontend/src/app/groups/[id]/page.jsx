@@ -7,19 +7,19 @@ import { useEffect, useState, useRef } from "react";
 
 export default function GroupPage() {
   const postse = [
-        {
-            id: 1,
-            title: "Mon premier post",
-            content: "Ceci est le contenu du post.",
-            image: ""
-        },
-        {
-            id: 2,
-            title: "Deuxième post",
-            content: "Autre contenu.",
-            image: ""
-        }
-    ];
+    {
+      id: 1,
+      title: "Mon premier post",
+      content: "Ceci est le contenu du post.",
+      image: ""
+    },
+    {
+      id: 2,
+      title: "Deuxième post",
+      content: "Autre contenu.",
+      image: ""
+    }
+  ];
   const [text, setText] = useState("");
   const [image, setImage] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
@@ -153,11 +153,10 @@ export default function GroupPage() {
         </div>
 
         <div className={styles.moyyen}>
-          <div className={styles.postsContainer}>
-            <Post posts={posts} />
+          {/* <div className={styles.postsContainer}> */}
+            <Post posts={posts} divclass="postsContainer" />
 
 
-          </div>
 
           <div className={styles.creatPost}>
             <button onClick={() => setIsModalOpen(true)} className={styles.addEventButton}>+Add Post</button>
