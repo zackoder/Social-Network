@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	"social-network/utils"
 )
@@ -155,6 +156,9 @@ func InsertNotification(noti utils.Notification) error {
 	} else {
 		query := "INSERT INTO notifications (user_id, target_id, actor_id, message) VALUES (?,?,?,?)"
 		_, err = Db.Exec(query, noti.Sender_id, noti.Target_id, noti.Actor_id, noti.Message)
+		if err != nil {
+			log.Println("inserting notin error: ", err)
+		}
 	}
 	return err
 }
@@ -180,8 +184,12 @@ func InsserMemmberInGroupe(Groupe_id, User_id int, role string) error {
 }
 
 func InsserEventInDatabase(event utils.Event) (int, error) {
-	Quirie := "INSERT INTO events (group_id,title,description,event_time,created_by) VALUES (?,?,?,?)"
+	Quirie := "INSERT INTO events (group_id,title,description,event_time,created_by) VALUES (?,?,?,?,?)"
 	res, err := Db.Exec(Quirie, event.GroupID, event.Title, event.Description, event.EventTime, event.CreatedBy)
+	if err != nil {
+		log.Println("inserting event err", err)
+		return 0, err
+	}
 	lastid, _ := res.LastInsertId()
 	return int(lastid), err
 }

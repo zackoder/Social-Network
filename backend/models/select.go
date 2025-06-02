@@ -176,6 +176,7 @@ func GetFollowers(userID int) ([]utils.Regester, error) {
 	}
 	return followersInfo, nil
 }
+
 func GetFollowings(userID int) ([]utils.Regester, error) {
 	query := `SELECT  f.followed_id, u.first_name FROM followers f 
 	JOIN users u 
@@ -197,8 +198,8 @@ func GetFollowings(userID int) ([]utils.Regester, error) {
 		followersInfo = append(followersInfo, followerinfo)
 	}
 	return followersInfo, nil
-
 }
+
 func GetRegistration(id string) (utils.Regester, error) {
 	query := `SELECT * FROM users WHERE id = ?`
 
@@ -583,7 +584,6 @@ func fetchGroupsInfo(groupIDs []int) []utils.Groupe {
 	return res
 }
 
-
 func GetAllGroups() []utils.Groupe {
 	var res []utils.Groupe
 
@@ -740,7 +740,9 @@ func SelectOneNoti(noti *utils.Notification) {
 	queryNoti := "SELECT message, target_id, actor_id, user_id FROM notifications WHERE id = ?"
 	err := Db.QueryRow(queryNoti, noti.Id).Scan(&noti.Message, &noti.Target_id, &noti.Actor_id, &noti.Sender_id)
 	if err != nil {
-		fmt.Println(err)
+		if err != sql.ErrNoRows {
+			fmt.Println(err)
+		}
 	}
 }
 

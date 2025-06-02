@@ -118,11 +118,11 @@ type Groupe_member struct {
 }
 
 type Event struct {
-	GroupID     int       `json:"groupe_id"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	EventTime   time.Time `json:"event_time"`
-	CreatedBy   int       `json:"created_by"`
+	GroupID     int    `json:"groupe_id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	EventTime   int    `json:"event_time"`
+	CreatedBy   int    `json:"created_by"`
 }
 
 type EventResponse struct {
