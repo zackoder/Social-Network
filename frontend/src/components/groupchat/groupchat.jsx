@@ -1,5 +1,5 @@
 "use client";
-import { socket } from "../websocket/websocket";
+import { socket, Websocket } from "../websocket/websocket";
 import "./groupChat.css";
 import { useEffect, useState } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
@@ -67,23 +67,35 @@ export default function GroupChat({ groupData }) {
   function handleMessage(e) {
     e.preventDefault();
     const content = e.target.children[0].value.trim();
-    if (!content && image !== null) return;
+
+    if (!content && image === null) return;
     const message = {
       group_id: groupData.Id,
       content: content,
     };
+
     if (image) {
       message.mime = image.type;
       message.filename = image.name;
       const reader = new FileReader();
       reader.onload = () => {
         const messageBuffer = buildBinaryMessage(message, reader.result);
-        socket.send(messageBuffer);
+        Websocket().then((socket) => {
+          if (socket.readyState === WebSocket.OPEN) socket.send(messageBuffer);
+        });
       };
       reader.readAsArrayBuffer(image);
     } else {
       console.log(message);
-      socket.send(JSON.stringify(message));
+      Websocket()
+        .then((socket) => {
+          if (socket.readyState === WebSocket.OPEN)
+            socket.send(JSON.stringify(message));
+          else console.log("hadshi ma5damsh");
+        })
+        .catch((err) => {
+          console.log("ash hadshi ", err);
+        });
     }
     setmessage("");
     setImage(null);
@@ -160,18 +172,18 @@ export default function GroupChat({ groupData }) {
             type="text"
           />
           <div className="buttons">
-            <button type="submit" className="submit">
-              submit
-            </button>
             <input
               type="file"
-              id="uploadImage"
+              id="uploadGroupImage"
               onChange={handleImageChange}
               className="hiddenInput"
             />
-            <label htmlFor="uploadImage" className="uploadLabel">
+            <label htmlFor="uploadGroupImage" className="uploadLabel">
               <FaCloudUploadAlt className="iconUpload" />
             </label>
+            <button type="submit" className="submit">
+              submit
+            </button>
           </div>
         </form>
       </div>
