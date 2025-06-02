@@ -21,7 +21,7 @@ import Link from "next/link";
 //         return result;
 //     }catch (error){
 //         console.log("Error loading posts:", error);
-        
+
 //     }
 //     // const data = await response.json();
 //     // getData(data)
@@ -29,14 +29,14 @@ import Link from "next/link";
 
 
 
-export default function Post({posts}) {
+export default function Post({ posts, divclass = "container" }) {
     // const posts = await fetchAllPosts();
     if (!posts || posts.lenght === 0) {
         return <p>No posts yet.</p>;
     }
 
     return (
-        <div className={styles.container}>
+        <div className={divclass}>
             {posts.map((post) => (
                 <div className={styles.post} key={post.id}>
                     <div className={styles.header}>
