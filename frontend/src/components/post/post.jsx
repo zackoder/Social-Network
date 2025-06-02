@@ -8,24 +8,30 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 
 async function GetData() {
-  console.log("rani dakgl hna ");
   
+
   const host = process.env.NEXT_PUBLIC_HOST;
-  return fetch(`${host}/api/posts`).then((response) => {
+
+  try {
+    const response = await fetch(`${host}/api/posts`);
+
     if (!response.ok) {
-          return []; // retourne un tableau vide au lieu de undefined
-      console.log("Failed to Fetch Data");
-      return
+      console.error("faild to fetch");
+      return [];
     }
-    console.log("anan");
-    
-    console.log(response.json());
-    
-    return response.json();
-  });
+
+    const data = await response.json();
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error("Error", error);
+    return [];
+  }
 }
 
+
 export default function Post({ post, divclass = "container" }) {
+  let i = 0;
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -38,8 +44,7 @@ export default function Post({ post, divclass = "container" }) {
     }
 
     setLoading(true);
-    GetData()
-      .then((data) => {
+    GetData().then((data) => {
         setPosts(data);
         setLoading(false);
       })
@@ -55,6 +60,9 @@ export default function Post({ post, divclass = "container" }) {
   return (
     <div className={divclass}>
       {posts.map((post) => (
+        
+       
+
         <div className={styles.post} key={post.id}>
           <div className={styles.header}>
             <Link href={`/profile?id=${post.poster}&profile=${post.first_name}`}>

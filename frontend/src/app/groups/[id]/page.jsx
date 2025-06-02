@@ -34,7 +34,7 @@ export default function GroupPage() {
   };
 
   const handleSubmit = async (e) => {
-      e.preventDefault();
+    e.preventDefault();
 
 
     if (!text && !image) return;
@@ -93,24 +93,42 @@ export default function GroupPage() {
     getGroupData();
   }, [id, host]);
 
-  const createEvent = () => {
-    if (!eventTitle || !eventDatetime) return;
+  const createEvent = async () => {
+    console.log("hyhy");
 
-    setEvents([
-      ...events,
-      {
+    if (!eventTitle || !eventDatetime || !eventDescription) return;
+    const eventT = new Date(eventDatetime)
+    console.log("___________________________________----------------", eventT.getTime());
+    const response = await fetch(`${host}/CreatEvent`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        groupe_id: parseInt(id),
         title: eventTitle,
         description: eventDescription,
-        datetime: eventDatetime,
-        createdAt: new Date().toISOString(),
-        responses: {}
-      }
-    ]);
+        event_time: (eventT.getTime() / 1000)
+      })
+    });
+    console.log(response.ok);
+    
+    if (!response.ok) {
+     
+       setShowPopup(false);
 
+      alert("failed to creat event")
+      return
+
+    }
+    // data = await response.JSON()
     setEventTitle('');
     setEventDescription('');
     setEventDatetime('');
-    setShowPopup(false);
+      setShowPopup(false);
+
+
   };
 
   const respondToEvent = (index, response) => {
@@ -185,6 +203,7 @@ export default function GroupPage() {
         </div>
 
         <div className={styles.infer}>
+
           {showPopup && (
             <div className={styles.overlay}>
               <div className={styles.popup}>
