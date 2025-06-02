@@ -19,7 +19,7 @@ func QueryPosts(offset int, r *http.Request) []utils.Post {
 	JOIN users u ON p.user_id = u.id
 	ORDER BY p.createdAt DESC 
 	`
-	
+
 	// cookie, _ := r.Cookie("token")
 	if 5 >= 4 {
 	}
@@ -51,7 +51,10 @@ func GetProfilePost(user_id int) ([]utils.Post, error) {
 	var posts []utils.Post
 	// fmt.Printf("Querying posts for user_id=%d with offset=%d\n", user_id)
 
-	query := "SELECT * FROM posts WHERE user_id = ? ORDER BY id DESC "
+	query := `
+		SELECT * FROM posts WHERE user_id = ? 		
+		ORDER BY id DESC
+		`
 	rows, err := Db.Query(query, user_id)
 	if err != nil {
 		fmt.Println("Error querying posts:", err)
@@ -783,9 +786,6 @@ func GetNotifications(userId int, limit int, offset int) ([]utils.Notification, 
 
 // func QueryMsgs(receiver_id int, offset string) {
 // 	query := `
-// 		SELECT 
+// 		SELECT
 // 	`
 // }
-
-
-
