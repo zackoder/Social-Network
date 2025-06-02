@@ -90,6 +90,10 @@ export default function ChatBox({ contact, onClickClose }) {
   };
 
   useEffect(() => {
+    bottomRef.current?.scrollIntoView({behavior: "auto"});
+  }, [messages]);
+
+  useEffect(() => {
     const handleMessage = (event) => {
       try {
         const data = JSON.parse(event.data);
@@ -125,7 +129,6 @@ export default function ChatBox({ contact, onClickClose }) {
         return;
       }
       if (Array.isArray(data)) {
-        console.log("data msg", data);
         setMessages(prev => [...data.reverse(), ...prev]);
         setOffset(offsetValue + limit);
       }
@@ -170,7 +173,6 @@ export default function ChatBox({ contact, onClickClose }) {
           mime: image.type,
           filename: image.name,
         };
-        { console.log("path image---------", image.name) }
         const messageBuffer = buildBinaryMessage(metadata, reader.result);
         socket.send(messageBuffer);
         // Add optimistic update for better UX
@@ -193,7 +195,6 @@ export default function ChatBox({ contact, onClickClose }) {
       setMessage("");
     }
   };
-  console.log("messages", messages);
 
   return (
     <div className={styles.chatBox}>
@@ -246,14 +247,14 @@ export default function ChatBox({ contact, onClickClose }) {
                       className={styles.imageMessage}
                     />
                     <span className={styles.timeStamp}>
-                      {msg.creation_date}
+                      {formatDate(msg.creation_date)}
                     </span>
                   </div>
                 ) : (
                   <div className={styles.textMessage}>
                     <p>{msg.content}</p>
                     <span className={styles.timeStamp}>
-                      {msg.creation_date}
+                      {formatDate(msg.creation_date)}
                     </span>
                   </div>
                 )}
@@ -334,4 +335,30 @@ function buildBinaryMessage(metadata, fileBuffer) {
   combined.set(metaBuffer, 0);
   combined.set(new Uint8Array(fileBuffer), metaBuffer.length);
   return combined;
+}
+
+
+const oneday = 60 * 60 * 24;
+const onehour = 60 * 60;
+const oneminut = 60;
+
+export function formatDate(time) {
+  if (!time) time = Date.now() / 1000 - 1;
+  let timeText;
+  const date = Date.now() / 1000;
+  const elapsed = date - time;
+  let days = Math.floor(elapsed / oneday);
+  let hours = Math.floor((elapsed % oneday) / onehour);
+  let minutes = Math.floor((elapsed % onehour) / oneminut);
+  let seconds = Math.floor(elapsed % oneminut);
+  if (days > 0) {
+    timeText = `${days}d`;
+  } else if (hours > 0) {
+    timeText = `${hours}h`;
+  } else if (minutes > 0) {
+    timeText = `${minutes}min`;
+  } else {
+    timeText = `${seconds}s`;
+  }
+  return timeText;
 }
