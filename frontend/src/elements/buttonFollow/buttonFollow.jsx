@@ -11,7 +11,7 @@ export default function ButtonFollow({ profileId }) {
   // const [isPending, setIsPending] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null);
   const host = process.env.NEXT_PUBLIC_HOST;
   // Fetch current user data when component mounts
   useEffect(() => {
@@ -67,7 +67,7 @@ export default function ButtonFollow({ profileId }) {
 
     // Don't allow following yourself
     if (currentUserId.toString() === profileId.toString()) {
-      setError("You cannot follow yourself");
+      console.log("You cannot follow yourself");
       return;
     }
 

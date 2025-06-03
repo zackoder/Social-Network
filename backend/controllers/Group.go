@@ -185,13 +185,13 @@ func Get_all_post(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	Posts := models.QueryPosts(0, r)
+	// Posts := models.QueryPosts(0, r)
 	var Posts_groupe []utils.Post
-	for _, v := range Posts {
-		if v.Groupe_id == groupe_id {
-			Posts_groupe = append(Posts_groupe, v)
-		}
-	}
+	// for _, v := range Posts {
+	// 	if v.Groupe_id == groupe_id {
+	// 		Posts_groupe = append(Posts_groupe, v)
+	// 	}
+	// }
 
 	utils.WriteJSON(w, Posts_groupe, http.StatusOK)
 }
