@@ -122,7 +122,7 @@ export default function GroupPage() {
       return
 
     }
-    // data = await response.JSON()
+    // data = awai response.JSON()
     setEventTitle('');
     setEventDescription('');
     setEventDatetime('');
