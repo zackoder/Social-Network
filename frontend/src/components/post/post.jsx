@@ -42,8 +42,8 @@ export default  function Post({ post = null, posts: propsPosts = null }) {
 
   return (
     <div className={styles.container}>
-      {posts.map((post) => (
-        <div className={styles.post} key={Math.random(post.id)}>
+      {posts.map((post, index) => (
+        <div className={styles.post} key={index}>
           <div className={styles.header}>
             <Link href={`/profile?id=${post.poster}&profile=${post.first_name}`}>
               <div className={styles.containerHeader}>
