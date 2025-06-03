@@ -11,20 +11,22 @@ import (
 	"social-network/utils"
 )
 
-func QueryPosts(offset int, r *http.Request) []utils.Post {
+func QueryPosts( limit , offset int, r *http.Request) []utils.Post {
+	fmt.Println("bbbbbbbbbbbbbbbbbb",limit,offset)
 	host := r.Host
 	var posts []utils.Post
 	queryPosts := `SELECT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt, u.avatar
 	FROM posts p
 	JOIN users u ON p.user_id = u.id
 	ORDER BY p.createdAt DESC 
+	  LIMIT ? OFFSET ?
 	`
 
 	// cookie, _ := r.Cookie("token")
 	if 5 >= 4 {
 	}
 	// id := 5
-	rows, err := Db.Query(queryPosts)
+	rows, err := Db.Query(queryPosts,limit, offset)
 	if err != nil {
 		fmt.Println("ana hnaa", err)
 		return nil
@@ -44,6 +46,7 @@ func QueryPosts(offset int, r *http.Request) []utils.Post {
 		}
 		posts = append(posts, post)
 	}
+	fmt.Println(posts)
 	return posts
 }
 

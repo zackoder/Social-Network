@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"social-network/models"
@@ -49,7 +50,7 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 	fmt.Println("post", r.URL.Query().Get("id"))
 
 	post.Image = filepath
-	
+
 	fmt.Println(post.Poster_id)
 	post.Id, err = models.InsertPost(post)
 	if err != nil {
@@ -70,8 +71,23 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 }
 
 func Posts(w http.ResponseWriter, r *http.Request) {
-	offset := 0
-	posts := models.QueryPosts(offset, r)
+	offsetStr := r.URL.Query().Get("offset")
+	limitStr := r.URL.Query().Get("limit")
+
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil {
+		fmt.Println("offset", err)
+		return
+	}
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		fmt.Println("limiit", err)
+		return
+	}
+	fmt.Println("offset", offset)
+	fmt.Println("limiit", limit)
+
+	posts := models.QueryPosts(limit,offset,r)
 	utils.WriteJSON(w, posts, 200)
 }
 
