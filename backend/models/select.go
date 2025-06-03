@@ -50,15 +50,16 @@ func QueryPosts( limit , offset int, r *http.Request) []utils.Post {
 	return posts
 }
 
-func GetProfilePost(user_id int) ([]utils.Post, error) {
+func GetProfilePost(user_id,limit,offset int) ([]utils.Post, error) {
 	var posts []utils.Post
 	// fmt.Printf("Querying posts for user_id=%d with offset=%d\n", user_id)
-
+fmt.Println("database",limit,offset)
 	query := `
-		SELECT * FROM posts WHERE user_id = ? 		
+		SELECT * FROM posts WHERE user_id = ?
 		ORDER BY id DESC
+		LIMIT ? OFFSET ? 		
 		`
-	rows, err := Db.Query(query, user_id)
+	rows, err := Db.Query(query,user_id,limit,offset)
 	if err != nil {
 		fmt.Println("Error querying posts:", err)
 		return nil, err
@@ -273,7 +274,7 @@ func GetProfileStatus(profileowner, userId int) (string, error) {
 	}
 }
 
-func GetPuclicPosts(userID int) ([]utils.Post, error) {
+func GetPuclicPosts(userID,limit, offset int) ([]utils.Post, error) {
 	var publicPosts []utils.Post
 	query := `
 	SELECT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt
@@ -287,7 +288,7 @@ func GetPuclicPosts(userID int) ([]utils.Post, error) {
 		LIMIT ? OFFSET ?
 	`
 
-	rows, err := Db.Query(query, userID, 10, 0)
+	rows, err := Db.Query(query, userID, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -307,7 +308,7 @@ func GetPuclicPosts(userID int) ([]utils.Post, error) {
 	return publicPosts, nil
 }
 
-func GetAllowedPosts(profileOwnerID int, viewerID int) ([]utils.Post, error) {
+func GetAllowedPosts(profileOwnerID , viewerID, limit, offset int) ([]utils.Post, error) {
 	query := `
 	SELECT DISTINCT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt
 	FROM posts p
@@ -320,6 +321,7 @@ func GetAllowedPosts(profileOwnerID int, viewerID int) ([]utils.Post, error) {
 		OR (p.post_privacy = 'private' AND ppv.friend_id = ?)
 		)
 		ORDER BY p.createdAt DESC
+		LIMIT ? OFFSET ?
 		`
 
 	rows, err := Db.Query(query, profileOwnerID, viewerID)

@@ -5,11 +5,11 @@ import { debounce } from "@/utils/debounce";
 import Post from "../post/post";
 
 export default function PostSystem() {
+  const host = process.env.NEXT_PUBLIC_HOST;
   const [posts, setPosts] = useState([]);
-  const [offset, setOffset] = useState(10);
+  const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
-  const host = process.env.NEXT_PUBLIC_HOST;
   const LIMIT = 10;
 
   const fetchAllPosts = async () => {
@@ -28,7 +28,6 @@ export default function PostSystem() {
         // throw new Error("Failed to fetch posts");
       }
       const data = await response.json();
-      console.log("2222222222222222222222222222222");
 
       //   console.log(data.length, LIMIT);
       if (posts.length === 0 && data === null) {
@@ -43,7 +42,6 @@ export default function PostSystem() {
     } catch (err) {
       console.error("Fetch error:", err);
     } finally {
-      console.log("3333333333333333333333333333333333333333");
       console.log(loading, hasMore);
       // setHasMore(true)
       setLoading(false);
@@ -59,7 +57,8 @@ export default function PostSystem() {
 
   useEffect(() => {
     fetchAllPosts();
-  }, []);
+    return ()=> setPosts([])
+  },[]);
 
   const debouncedFetchPosts = useCallback(debounce(fetchAllPosts, 300), [
     offset,
@@ -70,14 +69,14 @@ export default function PostSystem() {
     <>
       {/* <CreatePost onPostCreated={addNewPost} /> */}
       <CreatePost onPostCreated={addNewPost} />
-      <Post posts={posts} />
+      <Post id={posts.uuid} posts={posts} />
       {hasMore ? (
         <button onClick={debouncedFetchPosts} disabled={loading}>
           {loading ? "Loading..." : "Load More"}
         </button>
       ) : (
         <button  >
-          {  "there are no more posts"}
+          {"there are no more posts"}
         </button>
       )}
     </>

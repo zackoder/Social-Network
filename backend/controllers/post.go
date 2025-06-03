@@ -84,9 +84,7 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("limiit", err)
 		return
 	}
-	fmt.Println("offset", offset)
-	fmt.Println("limiit", limit)
-
+ 
 	posts := models.QueryPosts(limit,offset,r)
 	utils.WriteJSON(w, posts, 200)
 }
