@@ -17,7 +17,7 @@ export default function GroupPage() {
   const [eventDescription, setEventDescription] = useState('');
   const [eventDatetime, setEventDatetime] = useState('');
   const fileInputRef = useRef(null);
-  const [events, setEvents] = useState([]);
+  // const [events, setEvents] = useState([]);
   const [posts, setPosts] = useState([]);
   const [groupData, setGroupData] = useState(null);
   const [answeredEvents, setAnsweredEvents] = useState([]);
@@ -232,7 +232,7 @@ const handleResponse = async (responseValue, eventId) => {
 
         <div className={styles.moyyen}>
           {/* <div className={styles.postsContainer}> */}
-          <Post_Groups />
+          <Post_Groups id ={id}/>
 
 
 
@@ -273,7 +273,7 @@ const handleResponse = async (responseValue, eventId) => {
         </div>
 
         <div className={styles.infer}>
-          <div className={styles.EventsCards}>
+          {/* <div className={styles.EventsCards}>
             {events.map((event) => (
 
 
@@ -311,7 +311,7 @@ const handleResponse = async (responseValue, eventId) => {
 
               </div>
             ))}
-          </div>
+          </div> */}
 
           {showPopup && (
             <div className={styles.overlay}>
