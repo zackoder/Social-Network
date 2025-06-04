@@ -1,19 +1,35 @@
 "use client";
 
 import LikeDislikeComment from "../likeDislikeComment/likeDislikeComment";
+import Post from "../post/post";
 import style from "./Posts-Groups.module.css";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
-async function GetData() {
+
+
+
+export default function Post_Groups({ post,id }) {
+  
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  
+  
+  async function GetData() {
 
 
   const host = process.env.NEXT_PUBLIC_HOST;
 
   try {
-    const response = await fetch(`${host}/api/postsGroups`,{
-      credentials:"include",
-      body:1
+  const response = await fetch(`${host}/api/postsGroups`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ id: parseInt(id) }),
+  
     });
 
     if (!response.ok) {
@@ -30,14 +46,6 @@ async function GetData() {
   }
 }
 
-
-export default function Post_Groups({ post }) {
-  let i = 0;
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  // If a single post is passed as prop, use it instead of fetching
   useEffect(() => {
     if (post) {
       setPosts([post]);

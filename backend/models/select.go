@@ -521,7 +521,15 @@ func GetPostsFromDatabase(groupeId int, r *http.Request) ([]utils.Post,error) {
 	host := r.Host
 	var posts []utils.Post
 
-	query := "SELECT id,post_privacy,title,content,user_id, first_name,imagePath,createdAtFROM posts WHERE groupe_id = ?"
+	query := `SELECT 
+ p.title, 
+  p.content, 
+  u.first_name, 
+  p.imagePath, 
+  p.createdAt
+FROM posts p
+JOIN users u ON p.user_id = u.id
+WHERE p.groupe_id = ?`
 	rows, err := Db.Query(query, groupeId)
 	if err != nil {
 		
@@ -530,7 +538,7 @@ func GetPostsFromDatabase(groupeId int, r *http.Request) ([]utils.Post,error) {
 	defer rows.Close()
 	for rows.Next() {
 		var post utils.Post
-		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt)
+		err := rows.Scan(  &post.Title, &post.Content, &post.Poster_name, &post.Image, &post.CreatedAt)
 		if err != nil {
 			fmt.Println("scaning error:", err)
 		}
