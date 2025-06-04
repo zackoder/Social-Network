@@ -11,7 +11,10 @@ async function GetData() {
   const host = process.env.NEXT_PUBLIC_HOST;
 
   try {
-    const response = await fetch(`${host}/api/posts`);
+    const response = await fetch(`${host}/api/postsGroups`,{
+      credentials:"include",
+      body:1
+    });
 
     if (!response.ok) {
       console.error("faild to fetch");
@@ -19,7 +22,7 @@ async function GetData() {
     }
 
     const data = await response.json();
-    console.log(data);
+    console.log("---------------------datadata-----------------------------------",data);
     return data;
   } catch (error) {
     console.error("Error", error);

@@ -13,7 +13,6 @@
 }
 
 .postsContainer {
-  background-color: #f00 !important;
   /* position: relative;
   width: 100%;
   height: 92%;
@@ -675,7 +674,6 @@
 
 /******************************************left div ************************************************************************************************************/
 .left{
-    background-color: orange;
     width: 20%;
     height: 100%;
     position: static;
