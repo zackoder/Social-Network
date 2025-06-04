@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import styles from "./groups.module.css";
-import Link from "next/link";
 import { useRouter } from "next/router";
+import GroupCard from "@/components/groupcard/groupCard";
 
 export default function Home() {
   const [groups, setGroups] = useState([]);
@@ -21,15 +21,15 @@ export default function Home() {
       });
       if (!res.ok) throw new Error("Erreur lors du fetch des groupes");
       const data = await res.json();
-      if (!data || data.length === 0) {
-        setGroups([]);
+      // if (!data || data.length === 0) {
+      //   setGroups([]);
 
-        setError("No available Groups");
-        return;
-      }
-      console.log(data);
+      //   setError("No available Groups");
+      //   return;
+      // }
+      // console.log(data);
 
-      setGroups(data);
+      setGroups(Array.isArray(data) ? data : []);
     } catch (err) {
       setGroups([]);
       setError(err.message || "Erreur inconnue");
@@ -74,7 +74,7 @@ export default function Home() {
   };
 
   return (
-    <div>
+    <>
       <div className={styles.div0}>
         <a
           href="#"
@@ -122,7 +122,6 @@ export default function Home() {
           </button>
         </div>
       </div>
-      {/* POPUP MODAL */}
       {isPopupOpen && (
         <div
           className={styles.modalOverlay}
@@ -160,33 +159,8 @@ export default function Home() {
           </div>
         </div>
       )}
-
-      <div className={styles.contenu} style={{ marginTop: "20px" }}>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-
-        {groups.length > 0 ? (
-          <ul>
-            {groups.map((groupe, i) => (
-              <li key={i}>
-                <Link
-                  href={{
-                    pathname: `/groups/${groupe.Id}`,
-                    query: {
-                      Id: groupe.Id,
-                      title: groupe.title,
-                      description: groupe.description,
-                    },
-                  }}
-                >
-                  <p>{groupe.title}</p>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          !error && <p>No groups to display.</p>
-        )}
-      </div>
-    </div>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <GroupCard groups={groups} />;
+    </>
   );
 }

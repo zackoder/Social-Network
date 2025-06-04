@@ -452,6 +452,7 @@ func CheckSender(group_id, sender_id int) bool {
 }
 
 func IsMember(groupID, userID int) bool {
+	log.Println(groupID, userID)
 	var exists bool
 	query := "SELECT EXISTS(SELECT 1 FROM group_members WHERE group_id = ? AND user_id = ?)"
 	err := Db.QueryRow(query, groupID, userID).Scan(&exists)
@@ -536,11 +537,29 @@ func GetGroups(user_id int) []string {
 	return res
 }
 
-func GetAllGroups() []utils.Groupe {
+func GetAllGroups(user_id int) []utils.Groupe {
 	var res []utils.Groupe
 
-	query := "SELECT id, name, description, group_oner FROM groups"
-	rows, err := Db.Query(query)
+	query := `
+		SELECT DISTINCT
+		    g.id,
+		    g.name,
+		    g.description,
+		    CASE
+		        WHEN gm.user_id IS NOT NULL THEN 'member'
+		        WHEN n.id IS NOT NULL THEN 'requested'
+		        ELSE ''
+		    END AS status
+		FROM
+		    groups g
+		LEFT JOIN group_members gm 
+		    ON gm.group_id = g.id AND gm.user_id = ?
+		LEFT JOIN notifications n 
+		    ON n.target_id = g.id 
+		    AND n.user_id = ?
+		    AND n.message = 'join request';
+	`
+	rows, err := Db.Query(query, user_id, user_id)
 	if err != nil {
 		fmt.Println("Error querying groups:", err)
 		return nil
@@ -549,7 +568,7 @@ func GetAllGroups() []utils.Groupe {
 
 	for rows.Next() {
 		var groupe utils.Groupe
-		err := rows.Scan(&groupe.Id, &groupe.Title, &groupe.Description, &groupe.CreatorId)
+		err := rows.Scan(&groupe.Id, &groupe.Title, &groupe.Description, &groupe.Status)
 		if err != nil {
 			fmt.Println("Error scanning row:", err)
 			return nil
