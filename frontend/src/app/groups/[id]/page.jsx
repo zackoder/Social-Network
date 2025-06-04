@@ -1,7 +1,7 @@
 "use client";
 import styles from "./id.module.css";
-import Post from "@/components/post/post";
 import Modal from "@/components/module/Modal";
+import Post_Groups from "@/components/Posts-Groups/postGroups";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import GroupChat from "@/components/groupchat/groupchat";
@@ -26,12 +26,78 @@ export default function GroupPage() {
   const searchParams = useSearchParams();
   const host = process.env.NEXT_PUBLIC_HOST;
 
+
+
+
+const handleResponse = async (responseValue, eventId) => {
+    try {
+      const res = await fetch(`${host}/api/event-response`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          event_id: eventId,
+          responce: responseValue,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Erreur lors de la requête');
+      }
+
+      const data = await res.json();
+      console.log('Réponse backend:', data);
+
+      setAnsweredEvents(prev => [...prev, eventId]);
+
+    } catch (error) {
+      console.error('Erreur:', error);
+    }
+  };
+
+
+
+
+
+  async function GetEvents() {
+    try {
+      const response = await fetch(`${host}/api/getevents`, {
+        credentials: "include",
+        method: "POST",
+        body: parseInt(id)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("---------------------------------------------------------------------", data);
+        console.log(convertEventTimes(data));
+
+        setEvents((data));
+      }
+
+    } catch (err) {
+      console.error("Erreur de requête:", err);
+      alert("Error: " + err.message);
+    }
+  }
+
+
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
     if (file && file.type.startsWith("image/")) {
       setImage(file);
     }
   };
+  function convertEventTimes(events) {
+    return events.map(event => {
+      return {
+        ...event,
+        event_time: new Date(event.event_time).toString()
+
+      };
+    });
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -89,6 +155,7 @@ export default function GroupPage() {
         console.error("Failed to fetch group data:", err);
       }
     }
+    GetEvents();
 
     getGroupData();
   }, [id, host]);
@@ -113,10 +180,10 @@ export default function GroupPage() {
       })
     });
     console.log(response.ok);
-    
+
     if (!response.ok) {
-     
-       setShowPopup(false);
+
+      setShowPopup(false);
 
       alert("failed to creat event")
       return
@@ -126,7 +193,7 @@ export default function GroupPage() {
     setEventTitle('');
     setEventDescription('');
     setEventDatetime('');
-      setShowPopup(false);
+    setShowPopup(false);
 
 
   };
@@ -139,6 +206,7 @@ export default function GroupPage() {
       setEvents(newEvents);
     }
   };
+
 
   if (!groupData) {
     return <div>Loading...</div>;
@@ -162,12 +230,12 @@ export default function GroupPage() {
 
         <div className={styles.moyyen}>
           {/* <div className={styles.postsContainer}> */}
-          <Post posts={posts} divclass="postsContainer" />
+          <Post_Groups />
 
 
 
           <div className={styles.creatPost}>
-            <button onClick={() => setIsModalOpen(true)} className={styles.addEventButton}>+Add Post</button>
+            <button onClick={() => setIsModalOpen(true)} className={styles.addEventButtone}>+Add Post</button>
 
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
 
@@ -203,6 +271,45 @@ export default function GroupPage() {
         </div>
 
         <div className={styles.infer}>
+          <div className={styles.EventsCards}>
+            {events.map((event) => (
+
+
+
+              <div className={styles.event} key={event.id}>
+
+                <div className={styles.Title}>
+                  {event.title}
+                </div>
+                <div className={styles.description} >
+                  {event.description}
+                </div>
+                <div className={styles.event_time}>
+                  {new Date(event.event_time).toString()}
+
+                </div>
+                {event.responce === "" && (
+                  <div className={styles.buttonContainer}>
+                    <button
+                      className={styles.goenButton}
+                      onClick={() => handleResponse("Goen", event.id)}
+                    >
+                      Goen
+                    </button>
+                    <button
+                      className={styles.notGoenButton}
+                      onClick={() => handleResponse("Not Goen", event.id)}
+                    >
+                      Not Goen
+                    </button>
+
+
+                  </div>
+                )}
+
+              </div>
+            ))}
+          </div>
 
           {showPopup && (
             <div className={styles.overlay}>

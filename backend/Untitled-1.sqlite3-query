@@ -1,0 +1,14 @@
+-- database: ./social_network.db
+
+SELECT * FROM events;
+SELECT
+    e.title,
+    e.description,
+    e.event_time,
+    coalesce(er.response, '') as response
+FROM
+    events e
+    LEFT JOIN event_responses er ON e.id = er.event_id
+    AND er.user_id = 1
+WHERE
+    e.group_id = 1;
