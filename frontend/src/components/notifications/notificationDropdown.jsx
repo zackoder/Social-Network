@@ -8,7 +8,7 @@ import { isAuthenticated } from '@/app/page';
 export default function NotificationDropdown({ isOpen, onClose }) {
   const dropdownRef = useRef(null);
   const [notifications, setNotifications] = useState([]);
-  const [idfollow, setIdFollow] = useState("");
+  const [responseData, setResponseData] = useState({id: "", action: ""})
 
   // const [offset, setOffset] = useState(0);
   // const [hasMore, setHasMore] = useState(true);
@@ -75,14 +75,14 @@ export default function NotificationDropdown({ isOpen, onClose }) {
   //send Request 
   useEffect(() => {
     const sendRequest = async () => {
-      if (!idfollow) return;
+      if (!responseData.id) return;
       try{
         const response = await fetch(`${host}/notiResp`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: {id: idfollow},
+          body: responseData,
           credentials: "include"
         });
         console.log("response -------", response);      
@@ -99,7 +99,7 @@ export default function NotificationDropdown({ isOpen, onClose }) {
       }
     }
     sendRequest();
-  }, [idfollow]);
+  }, [responseData.id]);
 
   return (
     <div ref={dropdownRef} className={styles.dropdown}>
@@ -115,15 +115,15 @@ export default function NotificationDropdown({ isOpen, onClose }) {
               notification.message === "event" ? (
                 <div key={index} className={styles.notificationItem}>
                   <p>{notification.message}</p>
-                  <button onClick={()=>setIdFollow(notification.id)} className={styles.btnNotification}>Going</button>
-                  <button onClick={()=>setIdFollow(notification.id)} className={styles.btnNotification}>Not Going</button>
+                  <button onClick={()=>setResponseData({id: notification.id, action: "going"})} className={styles.btnNotification}>Going</button>
+                  <button onClick={()=>setResponseData({id: notification.id, action: "not_going"})} className={styles.btnNotification}>Not Going</button>
                 </div>
               ) : (
 
                 <div key={index} className={styles.notificationItem}>
                   <p>{notification.message}</p>
-                  <button onClick={()=>setIdFollow(notification.id)} className={styles.btnNotification}>Accept</button>
-                  <button onClick={()=>setIdFollow(notification.id)} className={styles.btnNotification}>Reject</button>
+                  <button onClick={()=>setResponseData({id: notification.id, action: "accepted"})} className={styles.btnNotification}>Accept</button>
+                  <button onClick={()=>setResponseData({id: notification.id, action: "rejected"})} className={styles.btnNotification}>Reject</button>
                 </div>
               )
             )
