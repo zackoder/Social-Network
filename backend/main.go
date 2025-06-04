@@ -42,12 +42,15 @@ func main() {
 
 	mux.HandleFunc("/JouindGroupe", controllers.Jouind_Groupe)
 	mux.HandleFunc("/GetPostsFromGroupe", controllers.Get_all_post)
+	mux.Handle("/api/getevents", midleware.AuthMiddleware(controllers.GetEvents))
 
 	mux.Handle("POST /api/logout", midleware.AuthMiddleware(controllers.LogoutHandler))
 	mux.Handle("GET /GetGroups", midleware.AuthMiddleware(controllers.AllGroups))
 	mux.Handle("/GetJoinedGroups", midleware.AuthMiddleware(controllers.GetGroupsJoined))
 	mux.Handle("/GetMyGroups", midleware.WithCORS(http.HandlerFunc(controllers.GetGroupsCreatedByUser)))
 	mux.Handle("/group", midleware.AuthMiddleware(controllers.GetGroup))
+
+		mux.Handle("api/event-response", midleware.AuthMiddleware(controllers.EventResponce))
 
 	mux.HandleFunc("GET /uploads/", controllers.HandelPics)
 	mux.HandleFunc("/api/posts", (controllers.Posts))

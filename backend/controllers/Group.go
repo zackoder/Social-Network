@@ -328,7 +328,7 @@ func CreatEvent(w http.ResponseWriter, r *http.Request, userId int) {
 	json.NewEncoder(w).Encode(map[string]string{"message": "The event cried out successfully"})
 }
 
-func EventRrspponce(w http.ResponseWriter, r *http.Request) {
+func EventResponce(w http.ResponseWriter, r *http.Request,userId int) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)
 		return
@@ -351,6 +351,33 @@ func EventRrspponce(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "The answer was successfully added"})
+}
+
+func GetEvents(w http.ResponseWriter, r *http.Request, userId int) {
+	if r.Method != http.MethodPost {
+		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)
+		return
+	}
+	var groupeId int
+	err := json.NewDecoder(r.Body).Decode(&groupeId)
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest 3"}, http.StatusBadRequest)
+		return
+	}
+	if !models.IsMember(groupeId, userId) {
+		utils.WriteJSON(w, map[string]string{"error": "Access denied: you must be a member of the group to Fetchs Events."}, 403)
+		return
+	}
+	log.Println("qsdfqsdfqsdf",groupeId, userId)
+	Events, err := models.GetEventsFromDatabase(groupeId, userId)
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error."}, http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Println(Events, "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyypomol")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(Events)
 }
 
 func GetUserIdByCookie(r *http.Request) (int, error) {

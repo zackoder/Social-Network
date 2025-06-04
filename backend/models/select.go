@@ -482,6 +482,41 @@ func SearchGroupsInDatabase(tocken string) ([]utils.Groupe, error) {
 	return Groups, nil
 }
 
+func GetEventsFromDatabase(groupeId, userId int) ([]utils.Event, error) {
+	var Events []utils.Event
+	query := `SELECT
+    e.id,
+    e.title,
+    e.description,
+    e.event_time,
+    coalesce(er.response, '') as response
+FROM
+    events e
+    LEFT JOIN event_responses er ON e.id = er.event_id
+    AND er.user_id = ?
+WHERE
+    e.group_id = ?;`
+	rows, err := Db.Query(query, userId, groupeId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return Events, nil
+		}
+		return Events, err
+	}
+	for rows.Next() {
+		var Event utils.Event
+
+		err = rows.Scan(&Event.Id, &Event.Title, &Event.Description, &Event.EventTime, &Event.Responce)
+		if err != nil {
+			fmt.Println("error scaning the rows", err)
+			continue
+		}
+		Event.GroupID = groupeId
+		Events = append(Events, Event)
+	}
+	return Events, nil
+}
+
 func GetGroupsOfMember(user_id int) []utils.Groupe {
 	quirie0 := "SELECT group_id FROM group_members WHERE user_id = ?"
 	rows, err := Db.Query(quirie0, user_id)
