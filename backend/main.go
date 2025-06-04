@@ -50,7 +50,7 @@ func main() {
 	mux.Handle("/GetMyGroups", midleware.WithCORS(http.HandlerFunc(controllers.GetGroupsCreatedByUser)))
 	mux.Handle("/group", midleware.AuthMiddleware(controllers.GetGroup))
 
-		mux.Handle("api/event-response", midleware.AuthMiddleware(controllers.EventResponce))
+   mux.Handle("/api/event-response", midleware.AuthMiddleware(controllers.EventResponce))
 
 	mux.HandleFunc("GET /uploads/", controllers.HandelPics)
 	mux.HandleFunc("/api/posts", (controllers.Posts))
