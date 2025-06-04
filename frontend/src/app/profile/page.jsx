@@ -1,6 +1,5 @@
 "use client";
-import { FaUserPlus, FaUserCheck, FaUserClock } from "react-icons/fa";
-
+ 
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import ButtonFollow from "@/elements/buttonFollow/buttonFollow";
@@ -53,6 +52,7 @@ export default function ProfilePage() {
         `${host}/api/getProfilePosts?id=${profileId}&offset=${offset}&limit=${LIMIT}`,
         {
           cache: "no-store",
+          method: "GET",
           credentials: "include",
         }
       );
@@ -64,16 +64,10 @@ export default function ProfilePage() {
       if (data !== null && data.message === "this profile is private") {
         setPosts([]);
         return;
-      } else if (data === null) {
-        return;
-      }
-
-      if (posts.length === 0 || data === null) {
-        setPosts(Array.isArray(data) ? data : []);
-        setHasMore(true);
-        return;
-      }
-      if (posts.length < offset && data === null) {
+      }  
+      console.log('befoore entring the condition' ,hasMore);
+      if (posts.length <= offset &&data === null ) {
+        console.log('im here in the condition',hasMore);
         setHasMore(false); // No more posts available
         return;
       }
@@ -285,10 +279,8 @@ export default function ProfilePage() {
         {activeTab === "posts" &&
           (posts && posts.length > 0 ? (
             <>
-               
                 <Post posts={posts} />
-              
-              {hasMore ? (
+              {hasMore ?(
                 <button onClick={debouncedFetchPosts} disabled={loading}>
                   {loading ? "Loading..." : "Load More"}
                 </button>

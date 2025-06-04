@@ -4,11 +4,17 @@ import { FaCloudUploadAlt } from "react-icons/fa";
 import { LuSend } from "react-icons/lu";
 import "./likeDislikeComment.modules.css";
 import { BiLike, BiDislike } from "react-icons/bi";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { isAuthenticated } from "@/app/page";
+import { debounce } from "@/utils/debounce";
 // import styles from './likeDislikeComment.modules.css';
+const host = process.env.NEXT_PUBLIC_HOST;
+const LIMIT = 10;
 
 export default function LikeDislikeComment({ postId }) {
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
   const [likeNumber, setLikeNbr] = useState(0);
@@ -17,10 +23,103 @@ export default function LikeDislikeComment({ postId }) {
   const [comments, setComments] = useState([]);
   const [image, setImage] = useState("");
   const [showComments, setShowComments] = useState(false);
-
-  // const [submittedComment, setSubmittedComment] = useState("");
   const fileInputRef = useRef(null);
-  const host = process.env.NEXT_PUBLIC_HOST;
+
+
+  // *********************** comments logic ***********************//
+  const fetchComments = async () => {
+    if (loading || !hasMore) return;
+
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `${host}/getComments?postId=${postId}&offset=${offset}&limit=${LIMIT}`,
+        { method: "GET", credentials: "include" }
+      );
+
+      if (!res.ok) {
+        isAuthenticated(res.status);
+        return;
+      }
+
+      const data = await res.json();
+
+      if (!data || data.length === 0) {
+        setHasMore(false);
+        return;
+      }
+
+      setComments((prev) => [...prev, ...data]);
+      setOffset((prev) => prev + LIMIT);
+    } catch (err) {
+      console.error("Fetching comments error:", err);
+    } finally {
+      setLoading(false);
+      setShowComments(true);
+    }
+  };
+
+  const handleToggleComments = async () => {
+    if (showComments) {
+      // Hide and reset
+      setShowComments(false);
+      setComments([]);
+      setOffset(0);
+      setHasMore(true);
+    } else {
+      setShowComments(true);
+      await fetchComments();
+    }
+  };
+  const debouncedFetchComments = useCallback(debounce(fetchComments, 300), [
+    offset,
+    hasMore,
+    loading,
+  ]);
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    const commentData = {
+      content: comment,
+      postId: postId,
+    };
+    formData.append("commentData", JSON.stringify(commentData));
+    if (image) {
+      formData.append("avatar", image);
+    }
+    try {
+      const response = await fetch(`${host}/addComment`, {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+      const comment = await response.json();
+      //  const result = await response.json();
+      if (!response.ok) {
+        isAuthenticated(response.status, comment.error);
+        return;
+      }
+      if (comments.length === 0) {
+        await fetchComments();
+      } else {
+        setComments((prev) => [comment, ...prev]);
+      }
+      // setComments((prevComments) => [comment, ...prevComments]);
+      setShowComments(true);
+      setComment("");
+      setImage("");
+  
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    } catch (error) {
+      console.log("Submission Error", error);
+    }
+  };
+
+// *****************reaction logic ****************** //
+
 
   const getReactions = async (postId) => {
     try {
@@ -46,254 +145,61 @@ export default function LikeDislikeComment({ postId }) {
       console.error("Failed to fetch user reaction:", error);
     }
   };
-
-  // const handleLike = async () => {
-  //   try {
-  //     const response = await fetch(`${host}/addReaction`, {
-  //       method: "POST",
-  //       credentials: "include",
-  //       body: JSON.stringify({ postId: postId, reactionType: "like" }),
-  //     });
-  //     const data = await response.json();
-  //     if (!response.ok) {
-  //       // throw new Error(error);
-  //       console.log(error);
-  //       isAuthenticated(response.status, data.error);
-  //     }
-  //     // check status
-
-  //     if (
-  //       (await data.message) == "Reaction updated" &&
-  //       (await data.reaction.reactionType) == "like"
-  //     ) {
-  //       setLiked(true);
-  //       setDisliked(false);
-  //       // setLikeNbr(likeNumber+1)
-  //       // setDisLikeNbr(disLikeNumber-1)
-  //     } else if (data.message === "Reaction removed") {
-  //       // setLikeNbr(likeNumber-1)
-  //       setLiked(false);
-  //       setDisliked(false);
-  //     } else {
-  //       // setLikeNbr(likeNumber+1)
-  //       setLiked(true);
-  //       setDisliked(false);
-  //     }
-  //     // data.message
-  //     // umdate or remove
-  //   } catch (error) {
-  //     // console.log();
-  //   }
-  //   await getReactions(postId);
-
-  //   setLiked(!liked);
-  //   if (disliked) {
-  //     setDisliked(false);
-  //   }
-  // };
-  // // Id           int    `json:"id"`
-  // // PostId       int    `json:"postId"`
-  // // UserId       int    `json:"userId"`
-  // // ReactionType string `json:"reactionType"`
-  // // Date         int64  `json:"date"`
-  // const handleDislike = async () => {
-  //   try {
-  //     const response = await fetch(`${host}/addReaction`, {
-  //       method: "POST",
-  //       credentials: "include",
-  //       body: JSON.stringify({ postId: postId, reactionType: "dislike" }),
-  //     });
-  //     const data = await response.json();
-  //     if (!response.ok) {
-  //       isAuthenticated(response.status, data.error);
-  //       return;
-  //       // throw new Error(error);
-  //     }
-
-  //     // check status
-  //     if (
-  //       (await data.message) == "Reaction updated" &&
-  //       (await data.reaction.reactionType) == "dislike"
-  //     ) {
-  //       setLiked(false);
-  //       setDisliked(true);
-  //     } else if (data.message === "Reaction removed") {
-  //       setLiked(false);
-  //       setDisliked(false);
-  //     } else {
-  //       setLiked(false);
-  //       setDisliked(true);
-  //     }
-  //     // data.message
-  //     // umdate or remove
-  //   } catch (error) {
-  //     console.log();
-  //   }
-  //   await getReactions(postId);
-
-  //   setDisliked(!disliked);
-  //   if (liked) {
-  //     setLiked(false);
-  //   }
-  // };
-
+  
   useEffect(() => {
     getReactions(postId);
   }, []);
-
-
-
-
-
-
-
-
-
-const handleReaction = async (reactionType) => {
-  try {
-    const response = await fetch(`${host}/addReaction`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ postId, reactionType }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      isAuthenticated(response.status, data.error);
-      return;
-    }
-
-    const isLike = reactionType === "like";
-    const isDislike = reactionType === "dislike";
-    console.log(data);
-    
-
-    if (await data.message === "Reaction updated") {
-      // console.log("nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn", data.reaction.reactionType);
-      
-      if (await data.type === "like") {
-        setLiked(true);
-        setDisliked(false);
-      } else if (data.type === "dislike") {
-        setLiked(false);
-        setDisliked(true);
-        
-      }
-    } else if (data.message === "Reaction removed") {
-      setLiked(false);
-      setDisliked(false);
-    } else {
-      // Default: new reaction
-      setLiked(isLike);
-      setDisliked(isDislike);
-    }
-  } catch (error) {
-    console.error("Reaction error:", error);
-  }
-
-  await getReactions(postId);
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  /* handling show comments */
-  const handleClick = async () => {
-    if (showComments && comments.length !== 0) {
-      setShowComments(false);
-      return;
-    }
-
-    // if (comments.length === 0) {
-
+  
+  const handleReaction = async (reactionType) => {
     try {
-      const response = await fetch(`${host}/getComments?postId=${postId}`, {
-        // add an end point
-        method: "GET",
-        credentials: "include",
-      });
-
-      // console.log("fetching data response1111111", response);
-
-      if (!response.ok) {
-        console.log(`Error: ${response.status}`);
-        isAuthenticated(response.status);
-        return;
-      }
-      const data = await response.json();
-      // console.log("data the fetch posts------ ", data);
-
-      setComments(Array.isArray(data) ? data : []);
-      setShowComments(true);
-      // console.log("comments---", comments);
-
-      console.log("fetch comments: ", data); // for testing fetching
-    } catch (err) {
-      console.log("error", err);
-      // }
-    }
-  };
-
-  const handleCommentSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    const commentData = {
-      content: comment,
-      postId: postId,
-    };
-    formData.append("commentData", JSON.stringify(commentData));
-    if (image) {
-      formData.append("avatar", image);
-    }
-    try {
-      const response = await fetch(`${host}/addComment`, {
+      const response = await fetch(`${host}/addReaction`, {
         method: "POST",
-        body: formData,
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ postId, reactionType }),
       });
-      const comment = await response.json();
-      //  const result = await response.json();
+
+      const data = await response.json();
+
       if (!response.ok) {
-        isAuthenticated(response.status, comment.error);
+        isAuthenticated(response.status, data.error);
         return;
       }
-      if (comments.length === 0) {
-        await handleClick();
-      } else {
-        setComments((prev) => [comment, ...prev]);
-      }
-      // setComments((prevComments) => [comment, ...prevComments]);
-      setShowComments(true);
-      setComment("");
-      setImage("");
 
-      // Reset file input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+      const isLike = reactionType === "like";
+      const isDislike = reactionType === "dislike";
+      console.log(data);
+
+      if ((await data.message) === "Reaction updated") {
+        // console.log("nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn", data.reaction.reactionType);
+
+        if ((await data.type) === "like") {
+          setLiked(true);
+          setDisliked(false);
+        } else if (data.type === "dislike") {
+          setLiked(false);
+          setDisliked(true);
+        }
+      } else if (data.message === "Reaction removed") {
+        setLiked(false);
+        setDisliked(false);
+      } else {
+        // Default: new reaction
+        setLiked(isLike);
+        setDisliked(isDislike);
       }
     } catch (error) {
-      console.log("Submission Error", error);
+      console.error("Reaction error:", error);
     }
-    //end point
+
+    await getReactions(postId);
   };
+
+  /* handling show comments */
+
+
   return (
     //className={styles.reactionContainer}
     <div style={{ minWidth: "100%", margin: "5px auto" }}>
@@ -363,39 +269,42 @@ const handleReaction = async (reactionType) => {
       </form>
 
       {/* this is button the show Comments and display comments*/}
-      <button className="show" onClick={handleClick}>
+
+      <button className="show" onClick={handleToggleComments}>
         {showComments ? "Hide Comments" : "Show Comments"}
       </button>
 
       {showComments && (
         <div className="comments-container">
-          {comments.length === 0 ? (
-            <p style={{ color: "#aaa", textAlign: "center" }}>
-              No comments yet.
-            </p>
+          {comments.length === 0 && !loading ? (
+            <p className="no-comments">No comments yet.</p>
           ) : (
-            comments.map((comment, index) => (
-              <div className="comment" key={index}>
-                <div className="comment-header">
-                  <div className="comment-image">
-                    <img
-                      src={`${host}${comment.userAvatar}`}
-                      alt="image profile"
-                      // width={50}
-                      // height={50}
-                      // style={{ objectFit: "cover", borderRadius: "50%" }}
-                    />
+            <>
+              {comments.map((c, i) => (
+                <div className="comment" key={c._id || i}>
+                  <div className="comment-header">
+                    <div className="comment-image">
+                      <img src={`${host}${c.userAvatar}`} alt="profile" />
+                    </div>
+                    <span className="comment-author">{c.userName}</span>
+                    <span className="comment-date">
+                      {new Date(c.date * 1000).toLocaleString()}
+                    </span>
                   </div>
-                  <span className="comment-author">{comment.userName}</span>
-                  <span className="comment-date">
-                    {new Date(comment.date * 1000).toLocaleString()}
-                  </span>
+                  <div className="comment-content">
+                    <p>{c.content}</p>
+                  </div>
                 </div>
-                <div className="comment-content">
-                  <p>{comment.content}</p>
-                </div>
-              </div>
-            ))
+              ))}
+              {hasMore && (
+                <button onClick={debouncedFetchComments} disabled={loading}>
+                  {loading ? "Loading..." : "Load More"}
+                </button>
+              )}
+              {!hasMore && (
+                <p className="no-more-comments">No more comments to load.</p>
+              )}
+            </>
           )}
         </div>
       )}

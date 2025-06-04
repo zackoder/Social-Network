@@ -79,10 +79,10 @@ func AddComment(w http.ResponseWriter, r *http.Request, userID int) {
 	if filepath != "" {
 		comment.ImagePath = filepath
 	}
-	
-	if strings.TrimSpace(comment.Content) == ""{
+
+	if strings.TrimSpace(comment.Content) == "" {
 		utils.WriteJSON(w, map[string]string{"error": "Empty Message"}, http.StatusBadRequest)
-		return 
+		return
 	}
 	// Set the user ID from the session
 	comment.UserId = userID
@@ -146,6 +146,20 @@ func GetComments(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Method not allowed"}, http.StatusMethodNotAllowed)
 		return
 	}
+	offsetStr := r.URL.Query().Get("offset")
+	limitStr := r.URL.Query().Get("limit")
+	fmt.Println(offsetStr)
+
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil {
+		fmt.Println("offset", err)
+		return
+	}
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		fmt.Println("limiit", err)
+		return
+	}
 
 	// Get post ID from query parameters
 	postIdStr := r.URL.Query().Get("postId")
@@ -161,7 +175,7 @@ func GetComments(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get comments from database
-	comments, err := models.GetCommentsByPostId(postId)
+	comments, err := models.GetCommentsByPostId(postId, limit, offset)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Failed to retrieve comments"}, http.StatusInternalServerError)
 		return

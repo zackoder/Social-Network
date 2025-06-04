@@ -8,7 +8,7 @@ import (
 	"social-network/utils"
 )
 
-func GetUsers(w http.ResponseWriter, r *http.Request,userID int) {
+func GetUsersFrends(w http.ResponseWriter, r *http.Request,userID int) {
 	if r.Method != "GET" {
 		utils.WriteJSON(w, map[string]string{"error":"Method Not Allowd"}, http.StatusMethodNotAllowed)
 	}

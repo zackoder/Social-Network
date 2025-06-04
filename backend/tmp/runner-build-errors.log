@@ -1,0 +1,2 @@
+# social-network/controllers
+controllers/getmessages.go:23:26: undefined: models.QueryMsgs

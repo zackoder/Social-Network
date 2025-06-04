@@ -79,7 +79,7 @@ func main() {
 
 	// this endpoint is gonna be used to fetch the users for the chat pannel .
 	// the func GetFollowers and GetFollowers look the same but they are not
-	mux.HandleFunc("GET /api/getuserfriends", midleware.AuthMiddleware(controllers.GetUsers))
+	mux.HandleFunc("GET /api/getuserfriends", midleware.AuthMiddleware(controllers.GetUsersFrends))
 	fmt.Println("Server is running on port http://localhost:8080")
 	http.ListenAndServe(":8080", midleware.WithCORS(mux))
 }

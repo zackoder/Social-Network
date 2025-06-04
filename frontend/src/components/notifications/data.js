@@ -3,11 +3,11 @@ export const links = [
     {
         id: 1,
         title: "groupes",
-        url: "/about"
+        url: "/groups"
     },
     {
-        id: 3,
+        id: 2,
         title: "notification",
-        url: "/contact"
+        url: ""
     }
 ]
