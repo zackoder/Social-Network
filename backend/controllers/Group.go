@@ -24,7 +24,6 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
-	fmt.Println("hihi")
 	user_id, err := GetUserIdByCookie(r)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "You don't have access."}, http.StatusForbidden)
@@ -32,15 +31,11 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request) {
 	}
 	var Groupe utils.Groupe
 	err = json.NewDecoder(r.Body).Decode(&Groupe)
-	fmt.Println("datagroupe", Groupe)
 	if err != nil {
-		fmt.Println(err)
 		utils.WriteJSON(w, map[string]string{"error": "Bad Request"}, http.StatusBadRequest)
 		return
 	}
 	Groupe.CreatorId = user_id
-
-	fmt.Println(len(Groupe.Title), len(Groupe.Description))
 
 	if len(strings.TrimSpace(Groupe.Title)) < 2 || len(Groupe.Title) > 50 {
 		utils.WriteJSON(w, map[string]string{"error": "invalid group title"}, http.StatusBadRequest)
@@ -55,12 +50,10 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request) {
 	groupe_id, err := models.InsserGroupe(Groupe.Title, Groupe.Description, Groupe.CreatorId)
 	err = models.InsserMemmberInGroupe(groupe_id, user_id, "creator")
 	if err != nil {
-		fmt.Println(err)
 		if strings.Contains(err.Error(), "groups.name") {
 			utils.WriteJSON(w, map[string]string{"error": "This group already exists"}, http.StatusBadRequest)
 			return
 		}
-		fmt.Println("inserting group err", err)
 		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
 		return
 	}
@@ -105,7 +98,6 @@ func Jouind_Groupe(w http.ResponseWriter, r *http.Request) {
 		} else {
 			if !models.IsMember(requist.Groupe_id, requist.User_id) {
 				err = models.InsserMemmberInGroupe(requist.Groupe_id, requist.User_id, "member")
-				fmt.Println(err)
 				if err != nil {
 					utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
 					log.Println(err)
@@ -117,14 +109,12 @@ func Jouind_Groupe(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	fmt.Println("function stoped here")
 	utils.WriteJSON(w, map[string]string{"prossotion": "succeeded"}, http.StatusOK)
 }
 
 func Getgroupmsgs(w http.ResponseWriter, r *http.Request, user_id int) {
 	group_id, err := strconv.Atoi(r.URL.Query().Get("groupId"))
 	offset := r.URL.Query().Get("offset")
-	fmt.Println("hello")
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "invalid data"}, http.StatusForbidden)
 		return
@@ -147,12 +137,10 @@ func AllGroups(w http.ResponseWriter, r *http.Request, user_id int) {
 	}
 
 	Groups := models.GetAllGroups()
-	fmt.Println(Groups)
 	utils.WriteJSON(w, Groups, 200)
 }
 
 func GetGroupsJoined(w http.ResponseWriter, r *http.Request, user_id int) {
-	fmt.Println("ussssssssssssssssssssssssssssssserid", user_id)
 	cookie, err := r.Cookie("token")
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "You don't have access."}, http.StatusForbidden)
@@ -170,7 +158,6 @@ func GetGroupsJoined(w http.ResponseWriter, r *http.Request, user_id int) {
 	}
 
 	Groups := models.GetGroupsOfMember(userId)
-	fmt.Println(Groups)
 
 	utils.WriteJSON(w, Groups, 200)
 }
@@ -181,7 +168,6 @@ func GetGroupsCreatedByUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	cookie, err := r.Cookie("token")
-	fmt.Println(err)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "You don't have access."}, http.StatusForbidden)
 		return
@@ -192,7 +178,6 @@ func GetGroupsCreatedByUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	Groups := models.GroupsCreatedByUser(userId)
-	fmt.Println(Groups)
 
 	utils.WriteJSON(w, Groups, 200)
 }
@@ -222,7 +207,6 @@ func InviteUser(w http.ResponseWriter, r *http.Request /* , groupID uint */) {
 		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest"}, http.StatusBadRequest)
 		return
 	}
-	fmt.Println(noti)
 	if !models.IsMember(noti.Actor_id, noti.Sender_id) {
 		utils.WriteJSON(w, map[string]string{"error": "you are not a member of the group"}, http.StatusBadRequest)
 		return
@@ -327,7 +311,7 @@ func CreatEvent(w http.ResponseWriter, r *http.Request, userId int) {
 	json.NewEncoder(w).Encode(map[string]string{"message": "The event cried out successfully"})
 }
 
-func EventResponce(w http.ResponseWriter, r *http.Request,userId int) {
+func EventResponce(w http.ResponseWriter, r *http.Request, userId int) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)
 		return
@@ -338,8 +322,7 @@ func EventResponce(w http.ResponseWriter, r *http.Request,userId int) {
 		return
 	}
 
-  responce.UserID=userId
-	fmt.Println("responceeeeeeeeeeeeeee",responce)
+	responce.UserID = userId
 
 	if !models.IsMember(responce.GroupeId, responce.UserID) {
 		utils.WriteJSON(w, map[string]string{"error": "Access denied: you must be a member of the group to creat event."}, 403)
@@ -354,23 +337,27 @@ func EventResponce(w http.ResponseWriter, r *http.Request,userId int) {
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "The answer was successfully added"})
 }
-func GetPostsGroupe(w http.ResponseWriter, r *http.Request,userId int ){
+
+func GetPostsGroupe(w http.ResponseWriter, r *http.Request, userId int) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
-	var groupeId int
-	err := json.NewDecoder(r.Body).Decode(&groupeId)
+	type RequestDAta struct {
+		Groupe_id int `json:"id"`
+	}
+	var Groupe_id RequestDAta
+	err := json.NewDecoder(r.Body).Decode(&Groupe_id)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest 3"}, http.StatusBadRequest)
 		return
 	}
-	if !models.IsMember(groupeId, userId) {
+	if !models.IsMember(Groupe_id.Groupe_id, userId) {
 		utils.WriteJSON(w, map[string]string{"error": "Access denied: you must be a member of the group to Fetchs Posts."}, 403)
 		return
 	}
-	Posts,err :=  models.GetPostsFromDatabase(groupeId,r)
-	
+	Posts, err := models.GetPostsFromDatabase(Groupe_id.Groupe_id, r)
+	fmt.Println(err)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error."}, http.StatusInternalServerError)
 		return
@@ -379,6 +366,7 @@ func GetPostsGroupe(w http.ResponseWriter, r *http.Request,userId int ){
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(Posts)
 }
+
 func GetEvents(w http.ResponseWriter, r *http.Request, userId int) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)

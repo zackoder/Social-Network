@@ -58,7 +58,6 @@ export default function GroupChat({ groupData }) {
         }
       );
       const data = await resp.json();
-      console.log("data ----------------------------------------", data);
       setmessages(Array.isArray(data) ? data : []);
     }
     fetchdata();
