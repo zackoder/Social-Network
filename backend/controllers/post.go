@@ -74,12 +74,12 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 }
 
 func Posts(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("rani dakhl")
 	offset := 0
 	posts := models.QueryPosts(offset, r)
 	// fmt.Println("posts",posts)
 	utils.WriteJSON(w, posts, 200)
 }
+
 
 // func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
 // 	cookie, err := r.Cookie("token")
