@@ -302,7 +302,6 @@ func CreatEvent(w http.ResponseWriter, r *http.Request, userId int) {
 		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest1"}, http.StatusBadRequest)
 		return
 	}
-	log.Println(event)
 	notification.Target_id = event.GroupID
 	event.CreatedBy = userId
 	if len(event.Title) > 25 || len(event.Description) > 100 || len(strings.TrimSpace(event.Description)) < 2 || len(strings.TrimSpace(event.Title)) < 2 {
@@ -338,6 +337,9 @@ func EventResponce(w http.ResponseWriter, r *http.Request,userId int) {
 		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest 3"}, http.StatusBadRequest)
 		return
 	}
+
+  responce.UserID=userId
+	fmt.Println("responceeeeeeeeeeeeeee",responce)
 
 	if !models.IsMember(responce.GroupeId, responce.UserID) {
 		utils.WriteJSON(w, map[string]string{"error": "Access denied: you must be a member of the group to creat event."}, 403)
@@ -375,7 +377,6 @@ func GetEvents(w http.ResponseWriter, r *http.Request, userId int) {
 		return
 	}
 
-	fmt.Println(Events, "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyypomol")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(Events)
 }

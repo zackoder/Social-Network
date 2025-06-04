@@ -20,7 +20,7 @@ export default function GroupPage() {
   const [events, setEvents] = useState([]);
   const [posts, setPosts] = useState([]);
   const [groupData, setGroupData] = useState(null);
-
+  const [answeredEvents, setAnsweredEvents] = useState([]);
   const params = useParams();
   const { id } = params;
   const searchParams = useSearchParams();
@@ -30,13 +30,16 @@ export default function GroupPage() {
 
 
 const handleResponse = async (responseValue, eventId) => {
+  
     try {
       const res = await fetch(`${host}/api/event-response`, {
+        credentials:"include",
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          groupe_id:parseInt(id),
           event_id: eventId,
           responce: responseValue,
         }),
@@ -47,7 +50,6 @@ const handleResponse = async (responseValue, eventId) => {
       }
 
       const data = await res.json();
-      console.log('Réponse backend:', data);
 
       setAnsweredEvents(prev => [...prev, eventId]);
 
@@ -288,17 +290,17 @@ const handleResponse = async (responseValue, eventId) => {
                   {new Date(event.event_time).toString()}
 
                 </div>
-                {event.responce === "" && (
+                {event.responce === "" && !answeredEvents.includes(event.id) && (
                   <div className={styles.buttonContainer}>
                     <button
                       className={styles.goenButton}
-                      onClick={() => handleResponse("Goen", event.id)}
+                      onClick={() => handleResponse("going", event.id)}
                     >
                       Goen
                     </button>
                     <button
                       className={styles.notGoenButton}
-                      onClick={() => handleResponse("Not Goen", event.id)}
+                      onClick={() => handleResponse("not going", event.id)}
                     >
                       Not Goen
                     </button>
