@@ -104,6 +104,7 @@ type GroupInvitation struct {
 	UserId    int `json:"invited"`
 	CreatedAt time.Time
 }
+
 type Groupe struct {
 	Id          int
 	Title       string `json:"title"`
@@ -111,7 +112,9 @@ type Groupe struct {
 	CreatorId   int    `json:"cretorid"`
 	FirstName   string `json:"first_name"`
 	LasttName   string `json:"last_name"`
+	Status      string `json:"status"`
 }
+
 type Groupe_member struct {
 	User_id   int `json:"user_id"`
 	Groupe_id int `json:"groupe_id"`

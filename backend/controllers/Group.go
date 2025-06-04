@@ -19,7 +19,7 @@ func Group(w http.ResponseWriter, r *http.Request) {
 func EventResponse(w http.ResponseWriter, r *http.Request) {
 }
 
-func Creat_groupe(w http.ResponseWriter, r *http.Request) {
+func Creat_groupe(w http.ResponseWriter, r *http.Request, user_id int) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
@@ -43,6 +43,9 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	Groupe.CreatorId = user_id
+
+	log.Println("group:", Groupe.CreatorId)
 	groupInserted, err := models.InsserGroupe(Groupe.Title, Groupe.Description, Groupe.CreatorId)
 	if err != nil {
 		fmt.Println(err)
@@ -60,11 +63,13 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func Jouind_Groupe(w http.ResponseWriter, r *http.Request) {
+func Jouind_Groupe(w http.ResponseWriter, r *http.Request, user_id int) {
+	log.Println("-------------------------------------------------------------1")
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
+	log.Println("-------------------------------------------------------------2")
 
 	var requist utils.Groupe_member
 	err := json.NewDecoder(r.Body).Decode(&requist)
@@ -72,15 +77,23 @@ func Jouind_Groupe(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Bad Request"}, http.StatusBadRequest)
 		return
 	}
+	log.Println("-------------------------------------------------------------3")
+
+	requist.User_id = user_id
+	log.Println("group id", requist.Groupe_id, "user id", requist.User_id)
 	if models.IsMember(requist.Groupe_id, requist.User_id) {
 		utils.WriteJSON(w, map[string]string{"error": "you are already a member of this group"}, 403)
 		return
 	}
 
+	log.Println("-------------------------------------------------------------4")
+
 	if !models.CheckGroup(requist.Groupe_id) {
 		utils.WriteJSON(w, map[string]string{"error": "Group not found"}, http.StatusNotFound)
 		return
 	}
+	log.Println("-------------------------------------------------------------5")
+
 	var noti utils.Notification
 	noti.Target_id = models.GetGroupOwner(requist)
 	noti.Actor_id = requist.Groupe_id
@@ -96,22 +109,20 @@ func Jouind_Groupe(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 		utils.WriteJSON(w, map[string]string{"prossotion": "seccesfel"}, http.StatusOK)
-	} else {
-		utils.WriteJSON(w, map[string]string{"error": "you are redy member in this group"}, 403)
-		return
 	}
+	log.Println("-------------------------------------------------------------6")
+
 	fmt.Println("function stoped here")
 	utils.WriteJSON(w, map[string]string{"prossotion": "succeeded"}, http.StatusOK)
 }
 
-func AllGroups(w http.ResponseWriter, r *http.Request) {
+func AllGroups(w http.ResponseWriter, r *http.Request, user_id int) {
 	if r.Method != http.MethodGet {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
 
-	Groups := models.GetAllGroups()
-	fmt.Println(Groups)
+	Groups := models.GetAllGroups(user_id)
 	utils.WriteJSON(w, Groups, 200)
 }
 
@@ -138,24 +149,13 @@ func GetGroupsJoined(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, Groups, 200)
 }
 
-func GetGroupsCreatedByUser(w http.ResponseWriter, r *http.Request) {
+func GetGroupsCreatedByUser(w http.ResponseWriter, r *http.Request, user_id int) {
 	if r.Method != http.MethodGet {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
-	cookie, err := r.Cookie("token")
-	fmt.Println(err)
-	if err != nil {
-		utils.WriteJSON(w, map[string]string{"error": "You don't have access."}, http.StatusForbidden)
-		return
-	}
-	userId, err := models.Get_session(cookie.Value)
-	if err != nil {
-		utils.WriteJSON(w, map[string]string{"error": "Invalid session"}, http.StatusUnauthorized)
-		return
-	}
-	Groups := models.GroupsCreatedByUser(userId)
-	fmt.Println(Groups)
+
+	Groups := models.GroupsCreatedByUser(user_id)
 
 	utils.WriteJSON(w, Groups, 200)
 }
