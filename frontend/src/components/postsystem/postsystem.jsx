@@ -33,7 +33,7 @@ export default function PostSystem() {
       if (posts.length === 0 && data === null) {
         setPosts(Array.isArray(data) ? data : []);
       }
-      if (posts.length < offset && data === null) {
+      if (posts.length <= offset && data === null) {
         setHasMore(false); // No more posts available
         return;
       }
