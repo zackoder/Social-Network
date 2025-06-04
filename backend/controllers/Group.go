@@ -354,7 +354,31 @@ func EventResponce(w http.ResponseWriter, r *http.Request,userId int) {
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "The answer was successfully added"})
 }
+func GetPostsGroupe(w http.ResponseWriter, r *http.Request,userId int ){
+	if r.Method != http.MethodPost {
+		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)
+		return
+	}
+	var groupeId int
+	err := json.NewDecoder(r.Body).Decode(&groupeId)
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest 3"}, http.StatusBadRequest)
+		return
+	}
+	if !models.IsMember(groupeId, userId) {
+		utils.WriteJSON(w, map[string]string{"error": "Access denied: you must be a member of the group to Fetchs Posts."}, 403)
+		return
+	}
+	Posts,err :=  models.GetPostsFromDatabase(groupeId,r)
+	
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error."}, http.StatusInternalServerError)
+		return
+	}
 
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(Posts)
+}
 func GetEvents(w http.ResponseWriter, r *http.Request, userId int) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)
@@ -370,7 +394,6 @@ func GetEvents(w http.ResponseWriter, r *http.Request, userId int) {
 		utils.WriteJSON(w, map[string]string{"error": "Access denied: you must be a member of the group to Fetchs Events."}, 403)
 		return
 	}
-	log.Println("qsdfqsdfqsdf",groupeId, userId)
 	Events, err := models.GetEventsFromDatabase(groupeId, userId)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error."}, http.StatusInternalServerError)

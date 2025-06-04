@@ -517,6 +517,31 @@ WHERE
 	return Events, nil
 }
 
+func GetPostsFromDatabase(groupeId int, r *http.Request) ([]utils.Post,error) {
+	host := r.Host
+	var posts []utils.Post
+
+	query := "SELECT id,post_privacy,title,content,user_id, first_name,imagePath,createdAtFROM posts WHERE groupe_id = ?"
+	rows, err := Db.Query(query, groupeId)
+	if err != nil {
+		
+		return posts,err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var post utils.Post
+		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt)
+		if err != nil {
+			fmt.Println("scaning error:", err)
+		}
+		if post.Image != "" {
+			post.Image = host + post.Image
+		}
+		posts = append(posts, post)
+	}
+	return posts,nil
+}
+
 func GetGroupsOfMember(user_id int) []utils.Groupe {
 	quirie0 := "SELECT group_id FROM group_members WHERE user_id = ?"
 	rows, err := Db.Query(quirie0, user_id)
