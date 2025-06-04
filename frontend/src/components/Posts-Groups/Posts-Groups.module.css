@@ -1,0 +1,79 @@
+.divclass{
+    height: 312px;
+    width: 100%;
+    overflow: auto;
+}
+.poste {
+  background-color: #181515;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
+  padding: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.poste:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.containerHeader {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+}
+
+.imageContainer {
+  margin-right: 12px;
+}
+
+.imageContainer img {
+  border-radius: 50%;
+  border: 2px solid #eee;
+  object-fit: cover;
+}
+
+.header h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.content h3 {
+  font-size: 1.5rem;
+  margin: 10px 0 5px;
+  color: #2c3e50;
+}
+
+.content p {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+.imagePost {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.imagePost img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.reaction {
+  margin-top: 15px;
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+  display: flex;
+  justify-content: space-around;
+}

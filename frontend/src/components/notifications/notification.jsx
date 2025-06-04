@@ -47,8 +47,8 @@ export default function Notification() {
 
     return (
         <div className={styles.links}>
-            {links.map(link => (
-                <div key={link.id} className={styles.linkContainer}>
+            {links.map(link => ( 
+                <div key={link.id} className={styles.linkContainer}> 
                     <Link 
                         href={link.url} 
                         className={styles.link} 
@@ -59,17 +59,17 @@ export default function Notification() {
                             src={`/images/${link.title}.png`}
                             width={30}
                             height={30}
-                            title={link.title}
-                            alt={link.title}
+                            title= {link.title}
+                            alt="Groups"
                         />
                     </Link>
-                    {link.title === "notification" && (
+                     {link.title === "notification" && ( 
                         <NotificationDropdown 
                             isOpen={isNotificationOpen} 
                             onClose={() => setIsNotificationOpen(false)}
-                        />                    )}                
+                        />                     )}
                 </div>
-            ))}
+             ))}
         </div>
     );
 }
