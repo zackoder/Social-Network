@@ -12,7 +12,6 @@ import (
 func GetProfilePosts(w http.ResponseWriter, r *http.Request, userId int) {
 	offsetStr := r.URL.Query().Get("offset")
 	limitStr := r.URL.Query().Get("limit")
-	fmt.Println("cccccccccccccccccccccccccccccccccc", "l", limitStr , "O", offsetStr)
 	offset, err := strconv.Atoi(offsetStr)
 	if err != nil {
 		fmt.Println("offset", err)
@@ -25,13 +24,11 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request, userId int) {
 	}
 
 	profileOwnerIDStr := r.URL.Query().Get("id")
-	// fmt.Println("KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK", profileOwnerIDStr)
 	if profileOwnerIDStr == "" {
 		utils.WriteJSON(w, map[string]string{"error": "Profile ID is missing"}, http.StatusBadRequest)
 		return
 	}
 
-	fmt.Println("this is me ", userId)
 	// in casse u wanna see ur profile
 	if strconv.Itoa(userId) == profileOwnerIDStr {
 		allPosts, err := models.GetProfilePost(userId,limit,offset)
@@ -69,7 +66,7 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request, userId int) {
   // we fetch only the public posts    
 	if !profilePrivacy && !isFollower {
 		publicPosts, err := models.GetPuclicPosts(profileOwnerID,limit, offset)
-		fmt.Println("public posts", err, publicPosts)
+		// fmt.Println("public posts", err, publicPosts)
 		if err != nil {
 			fmt.Println("")
 			utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
@@ -89,7 +86,7 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request, userId int) {
 			utils.WriteJSON(w, map[string]string{"error": "Failed to fetch posts01"}, http.StatusInternalServerError)
 			return
 		}
-		fmt.Println(posts)
+		// fmt.Println(posts)
 		utils.WriteJSON(w, posts, 200)
 	}else{
 		utils.WriteJSON(w,map[string]string{"message": "this profile is private"}, 200)
