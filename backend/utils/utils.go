@@ -82,14 +82,17 @@ type Session struct {
 }
 
 type Message struct {
-	Sender_id   int    `json:"sender_id"`
-	Reciever_id int    `json:"receiver_id"`
-	Type        string `json:"type"`
-	Group_id    int    `json:"group_id"`
-	Content     string `json:"content"`
-	Mime        string `json:"mime"`
-	Filename    string `json:"filename"`
+	Sender_id     int    `json:"sender_id"`
+	Reciever_id   int    `json:"receiver_id"`
+	Type          string `json:"type"`
+	Group_id      int    `json:"group_id"`
+	Content       string `json:"content"`
+	Mime          string `json:"mime"`
+	Filename      string `json:"filename"`
+	Avatar        string `json:"avatar"`
+	Creation_date int    `json:"creation_date"`
 }
+
 
 type Err struct {
 	Error string `json:"error"`

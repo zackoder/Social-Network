@@ -12,7 +12,7 @@ import (
 )
 
 func QueryPosts(limit, offset int, r *http.Request) []utils.Post {
-	fmt.Println("bbbbbbbbbbbbbbbbbb", limit, offset)
+	// fmt.Println("bbbbbbbbbbbbbbbbbb", limit, offset)
 	host := r.Host
 	var posts []utils.Post
 	queryPosts := `SELECT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt, u.avatar
@@ -23,12 +23,12 @@ func QueryPosts(limit, offset int, r *http.Request) []utils.Post {
 	`
 
 	// cookie, _ := r.Cookie("token")
-	if 5 >= 4 {
-	}
+	// if 5 >= 4 {
+	// }
 	// id := 5
 	rows, err := Db.Query(queryPosts, limit, offset)
 	if err != nil {
-		fmt.Println("ana hnaa", err)
+		fmt.Println("queryPost error", err)
 		return nil
 	}
 	defer rows.Close()
@@ -293,6 +293,7 @@ func GetPuclicPosts(userID, limit, offset int) ([]utils.Post, error) {
 
 	rows, err := Db.Query(query, userID, limit, offset)
 	if err != nil {
+		fmt.Println("err querying the public posts", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -302,6 +303,7 @@ func GetPuclicPosts(userID, limit, offset int) ([]utils.Post, error) {
 		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content,
 			&post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt)
 		if err != nil {
+			fmt.Println("err scanning rows" ,err)
 			return nil, err
 		}
 
@@ -1010,4 +1012,54 @@ func GetUserById(userId int) (*utils.User, error) {
 		return nil, err
 	}
 	return &user, nil
+}
+func QueryMsgs(message utils.Message, host, offset string) ([]utils.Message, error) {
+	query := `
+		SELECT
+	    m.sender_id,
+	    m.reciever_id,
+	    m.content,
+	    m.imagePath,
+	    m.creation_date,
+	    u.avatar
+	FROM
+	    messages m
+	    JOIN users u ON m.sender_id = u.id
+	WHERE
+	    (m.sender_id = ? AND m.reciever_id = ?)
+	    OR (m.sender_id = ? AND m.reciever_id = ?)
+		ORDER BY
+    		m.id DESC
+		LIMIT 20 OFFSET ?;
+	`
+	rows, err := Db.Query(query, message.Sender_id, message.Reciever_id, message.Reciever_id, message.Sender_id, offset)
+	if err != nil {
+		log.Println("quering messages err:", err)
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var messages []utils.Message
+
+	for rows.Next() {
+
+		err := rows.Scan(
+			&message.Sender_id,
+			&message.Reciever_id,
+			&message.Content,
+			&message.Filename,
+			&message.Creation_date,
+			&message.Avatar,
+		)
+		if err != nil {
+			return nil, err
+		}
+		if message.Filename != "" {
+			message.Filename = host + message.Filename
+		}
+		message.Avatar = host + message.Avatar
+		messages = append(messages, message)
+	}
+	return messages, nil
 }
