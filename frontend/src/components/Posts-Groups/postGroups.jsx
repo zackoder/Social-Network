@@ -1,50 +1,123 @@
 "use client";
 
 import LikeDislikeComment from "../likeDislikeComment/likeDislikeComment";
-import Post from "../post/post";
 import style from "./Posts-Groups.module.css";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-
-
-
-
-export default function Post_Groups({ post,id }) {
-  
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  
-  
-  async function GetData() {
+import { useState, useEffect, useRef } from "react";
+import Modal from "../module/Modal";
 
 
   const host = process.env.NEXT_PUBLIC_HOST;
 
-  try {
-  const response = await fetch(`${host}/api/postsGroups`, {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ id: parseInt(id) }),
-  
-    });
 
-    if (!response.ok) {
-      console.error("faild to fetch");
-      return [];
+
+export default function Post_Groups({ post, id }) {
+
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [text, setText] = useState("");
+  const [image, setImage] = useState(null);
+  const [title, setTitle] = useState("")
+
+  const fileInputRef = useRef(null);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+
+    if (!text && !image) return;
+
+    const formData = new FormData();
+    const postData = {
+      groupe_id: parseInt(id),
+      title,
+      content: text,
+    }
+    formData.append("postData", JSON.stringify(postData));
+    formData.append("postData", text);
+    if (image) {
+      formData.append("image", image);
     }
 
-    const data = await response.json();
-    console.log("---------------------datadata-----------------------------------",data);
-    return data;
-  } catch (error) {
-    console.error("Error", error);
-    return [];
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+
+    try {
+      const response = await fetch(`${host}/addPost`, {
+        credentials: "include",
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+               
+
+        console.log("Post created successfully");
+        setText("");
+        setTitle("")
+        setImage(null);
+        setIsModalOpen(false)
+        handlingdata()
+      } 
+    } catch (err) {
+       alert("Failed to create post",err.message);;
+    }
+  };
+
+
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith("image/")) {
+      setImage(file);
+    }
+  };
+  function handlingdata(){
+      GetData().then((data) => {
+      setPosts(data);
+      setLoading(false);
+    })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      })
   }
+
+  async function GetData() {
+
+
+    const host = process.env.NEXT_PUBLIC_HOST;
+
+    try {
+      const response = await fetch(`${host}/api/postsGroups`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: parseInt(id) }),
+
+      });
+
+      if (!response.ok) {
+        console.error("faild to fetch");
+        return [];
+      }
+
+      const data = await response.json();
+      console.log("---------------------datadata-----------------------------------", data);
+      if (data && data.length > 0 ) {
+  return data;
+} else {
+  return [];
 }
+    } catch (error) {
+      console.error("Error", error);
+      return [];
+    }
+  }
 
   useEffect(() => {
     if (post) {
@@ -53,20 +126,19 @@ export default function Post_Groups({ post,id }) {
     }
 
     setLoading(true);
-    GetData().then((data) => {
+      GetData().then((data) => {
+        console.log(data);
+        
       setPosts(data);
-      setLoading(false);
-    })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
+      setLoading(false);})
+  
+  ;
   }, [post]);
 
   if (loading) return <div className={style.container}>Loading posts...</div>;
   if (error) return <div className={style.container}>Error: {error}</div>;
 
-  return (
+  return (<div>
     <div className={style.divclass}>
       {posts.map((post) => (
 
@@ -112,5 +184,41 @@ export default function Post_Groups({ post,id }) {
         </div>
       ))}
     </div>
+    <div className={style.creatPost}>
+
+      <div className={style.divbutton}>
+        <button onClick={() => setIsModalOpen(true)} className={style.addEventButtone}>+Add Post</button>
+      </div>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+
+
+        <h2 className={style.Createvent}>Create New Post</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            className={style.input2}
+            onChange={(e) => setTitle(e.target.value)}
+            value={title}
+            placeholder="Titre"
+            type="text"
+          />
+          <textarea
+            onChange={(e) => setText(e.target.value)}
+            value={text}
+            placeholder="Contenu"
+            className={style.input3}
+            rows={4}
+          />
+          <input
+            type="file"
+            className={style.input4}
+            onChange={(e) => setImage(e.target.files[0])}
+            ref={fileInputRef}
+          />
+          <button type="submit" className={style.button} >Publier</button>
+        </form>
+
+      </Modal>
+    </div>
+  </div>
   );
 }
