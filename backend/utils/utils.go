@@ -135,4 +135,3 @@ type UserD struct {
 	Firstname string `json:"firstName"`
 	Avatar    string `json:"avatar"`
 }
- 

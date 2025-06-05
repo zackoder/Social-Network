@@ -102,7 +102,7 @@ func BroadcastPrivateMessage(msg utils.Message, host string) {
 	log.Println(msg)
 	models.InsertMsg(msg)
 	if msg.Filename != "" {
-		msg.Filename = host + msg.Filename
+		msg.Filename = host + msg.Filename // host + msg.Filename
 	}
 	Broadcast(msg.Reciever_id, msg)
 	Broadcast(msg.Sender_id, msg)
