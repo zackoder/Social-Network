@@ -169,11 +169,20 @@ func SaveInvitation(Groupe_id, sender_id, resever_id int) error {
 	return err
 }
 
-func InsserGroupe(title, description string, creator_id int) (int, error) {
-	Query := "INSERT INTO groups (name, description, group_oner) VALUES (?,?,?)"
-	res, err := Db.Exec(Query, title, description, creator_id)
+func InsertGroupe(title, description string, creator_id int) (int, error) {
+	query := "INSERT INTO groups (name, description, group_oner) VALUES (?, ?, ?)"
+	res, err := Db.Exec(query, title, description, creator_id)
+	fmt.Println(err,"errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
+	if err != nil {
+		return 0, err
+	}
+
 	id, err := res.LastInsertId()
-	return int(id), err
+	if err != nil {
+		return 0, err
+	}
+
+	return int(id), nil
 }
 
 func InsserMemmberInGroupe(Groupe_id, User_id int, role string) error {

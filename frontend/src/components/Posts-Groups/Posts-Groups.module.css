@@ -77,3 +77,69 @@
   display: flex;
   justify-content: space-around;
 }
+/***********popup**************************/
+
+.Createvent {
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+  text-align: center;
+  color: #333;
+}
+
+
+.input2,
+.input3,
+.input4 {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-family: inherit;
+  margin-bottom: 1rem;
+  transition: border 0.3s;
+}
+
+.input2:focus,
+.input3:focus,
+.input4:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.button {
+  width: 100%;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+.addEventButtone {
+  position: relative;
+  display: block;
+  margin: -1px auto; /* ✅ centre horizontalement */
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.2rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+}
+.divbutton{
+  position: relative;
+  text-align: center;
+}
