@@ -51,16 +51,20 @@ export default function ProfilePage() {
       const response = await fetch(
         `${host}/api/getProfilePosts?id=${profileId}&offset=${offset}&limit=${LIMIT}`,
         {
-          cache: "no-store",
+          // cache: "no-store",
           method: "GET",
           credentials: "include",
         }
       );
+      console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
+      
       if (!response.ok) {
         // throw new Error("Failed to fetch posts");
-        console.log(response.error);
       }
+      console.log( "bbbbbbbbbbbbbbbbbbbbb",response);
       const data = await response.json();
+      console.log("nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",data);
+      
       if (data !== null && data.message === "this profile is private") {
         setPosts([]);
         return;
