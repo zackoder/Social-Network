@@ -1,18 +1,13 @@
 "use client";
-
-
-
-  const [events, setEvents] = useState([]);
-
-
+import { useEffect, useState } from "react";
+import styles from "./Events.module.css"
 
 
 
 
 
 
-
-export function Events (){
+const host = process.env.NEXT_PUBLIC_HOST;
 
 
 
@@ -23,45 +18,208 @@ export function Events (){
 
 
 
-return <div className={styles.EventsCards}>
+
+
+
+
+
+
+
+
+export function Events({ id }) {
+    const [events, setEvents] = useState([]);
+    const [answeredEvents, setAnsweredEvents] = useState([]);
+    const [showPopup, setShowPopup] = useState(false);
+    const [eventTitle, setEventTitle] = useState('');
+    const [eventDescription, setEventDescription] = useState('');
+    const [eventDatetime, setEventDatetime] = useState('');
+
+
+
+
+    const createEvent = async () => {
+        console.log("hyhy");
+
+        if (!eventTitle || !eventDatetime || !eventDescription) return;
+        const eventT = new Date(eventDatetime)
+        console.log("___________________________________----------------", eventT.getTime());
+        const response = await fetch(`${host}/CreatEvent`, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                groupe_id: parseInt(id),
+                title: eventTitle,
+                description: eventDescription,
+                event_time: (eventT.getTime() / 1000)
+            })
+        });
+        console.log(response.ok);
+
+        if (!response.ok) {
+
+            setShowPopup(false);
+
+            alert("failed to creat event")
+            return
+
+        }
+        // data = awai response.JSON()
+        setEventTitle('');
+        setEventDescription('');
+        setEventDatetime('');
+        setShowPopup(false);
+        GetEvents();
+
+
+    };
+
+
+
+    const handleResponse = async (responseValue, eventId) => {
+
+        try {
+            const res = await fetch(`${host}/api/event-response`, {
+                credentials: "include",
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    groupe_id: parseInt(id),
+                    event_id: eventId,
+                    responce: responseValue,
+                }),
+            });
+
+            if (!res.ok) {
+                throw new Error('Erreur lors de la requête');
+            }
+
+            const data = await res.json();
+
+            setAnsweredEvents(prev => [...prev, eventId]);
+
+        } catch (error) {
+            console.error('Erreur:', error);
+        }
+    };
+
+
+
+
+
+    async function GetEvents() {
+        try {
+            const response = await fetch(`${host}/api/getevents`, {
+                credentials: "include",
+                method: "POST",
+                body: parseInt(id)
+            });
+
+            if (response.ok) {
+                let data = await response.json();
+                if (!data) {data =[]};
+
+                setEvents((data));
+            }
+
+        } catch (err) {
+            console.log(err)
+            console.error("Erreur de requête:", err);
+        }
+    }
+
+
+    useEffect(() => {
+
+        GetEvents();
+
+    })
+
+    return <div>
+        <div className={styles.EventsCards}>
             {events.map((event) => (
 
 
 
-              <div className={styles.event} key={event.id}>
+                <div className={styles.event} key={event.id}>
 
-                <div className={styles.Title}>
-                  {event.title}
+                    <div className={styles.Title}>
+                        {event.title}
+                    </div>
+                    <div className={styles.description} >
+                        {event.description}
+                    </div>
+                    <div className={styles.event_time}>
+                        {new Date(event.event_time).toString()}
+
+                    </div>
+                    {event.responce === "" && !answeredEvents.includes(event.id) && (
+                        <div className={styles.buttonContainer}>
+                            <button
+                                className={styles.goenButton}
+                                onClick={() => handleResponse("going", event.id)}
+                            >
+                                Goen
+                            </button>
+                            <button
+                                className={styles.notGoenButton}
+                                onClick={() => handleResponse("not going", event.id)}
+                            >
+                                Not Goen
+                            </button>
+
+
+                        </div>
+                    )}
+
                 </div>
-                <div className={styles.description} >
-                  {event.description}
-                </div>
-                <div className={styles.event_time}>
-                  {new Date(event.event_time).toString()}
-
-                </div>
-                {event.responce === "" && !answeredEvents.includes(event.id) && (
-                  <div className={styles.buttonContainer}>
-                    <button
-                      className={styles.goenButton}
-                      onClick={() => handleResponse("going", event.id)}
-                    >
-                      Goen
-                    </button>
-                    <button
-                      className={styles.notGoenButton}
-                      onClick={() => handleResponse("not going", event.id)}
-                    >
-                      Not Goen
-                    </button>
-
-
-                  </div>
-                )}
-
-              </div>
             ))}
-          </div>
+        </div>
+
+        {
+            showPopup && (
+                <div className={styles.overlay}>
+                    <div className={styles.popup}>
+                        <button
+                            className={styles.closeButton}
+                            onClick={() => setShowPopup(false)}
+                        >
+                            ×
+                        </button>
+                        <h2 className={styles.Createvent}>Create an Event</h2>
+                        <input
+                            className={styles.input2}
+                            value={eventTitle}
+                            onChange={(e) => setEventTitle(e.target.value)}
+                            placeholder="Title"
+                        /><br /><br />
+                        <textarea
+                            className={styles.input3}
+                            value={eventDescription}
+                            onChange={(e) => setEventDescription(e.target.value)}
+                            placeholder="Description"
+                            rows={2}
+                        ></textarea><br /><br />
+                        <input
+                            className={styles.input4}
+                            type="datetime-local"
+                            value={eventDatetime}
+                            onChange={(e) => setEventDatetime(e.target.value)}
+                        /><br /><br />
+                        <button className={styles.button} onClick={createEvent}>Create the Event</button>
+                    </div>
+                </div>
+            )
+        }
+
+        <button className={styles.addEventButton} onClick={() => setShowPopup(true)}>
+            + Add Event
+        </button>
+    </div>
 
 
 }

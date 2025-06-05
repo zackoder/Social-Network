@@ -19,18 +19,16 @@ func Group(w http.ResponseWriter, r *http.Request) {
 func EventResponse(w http.ResponseWriter, r *http.Request) {
 }
 
-func Creat_groupe(w http.ResponseWriter, r *http.Request) {
+func Creat_groupe(w http.ResponseWriter, r *http.Request,user_id int) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
-	user_id, err := GetUserIdByCookie(r)
-	if err != nil {
-		utils.WriteJSON(w, map[string]string{"error": "You don't have access."}, http.StatusForbidden)
-		return
-	}
+	
 	var Groupe utils.Groupe
-	err = json.NewDecoder(r.Body).Decode(&Groupe)
+	err := json.NewDecoder(r.Body).Decode(&Groupe)
+	
+	
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Bad Request"}, http.StatusBadRequest)
 		return
@@ -47,9 +45,13 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	groupe_id, err := models.InsserGroupe(Groupe.Title, Groupe.Description, Groupe.CreatorId)
-	err = models.InsserMemmberInGroupe(groupe_id, user_id, "creator")
+	
+	Groupe.Id, err = models.InsertGroupe(Groupe.Title, Groupe.Description, user_id)
+	err = models.InsserMemmberInGroupe(Groupe.Id, user_id, "creator")
+	fmt.Println(err,"errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrp")
+
 	if err != nil {
+
 		if strings.Contains(err.Error(), "groups.name") {
 			utils.WriteJSON(w, map[string]string{"error": "This group already exists"}, http.StatusBadRequest)
 			return
@@ -57,7 +59,7 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
 		return
 	}
-	models.InsserMemmberInGroupe(groupe_id, Groupe.CreatorId, "creator")
+	// models.InsserMemmberInGroupe(groupe_id, Groupe.CreatorId, "creator")
 
 	utils.WriteJSON(w, map[string]string{"Groupe": "criete groupe seccesfel"}, http.StatusOK)
 	utils.WriteJSON(w, Groupe, http.StatusOK)
