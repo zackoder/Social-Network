@@ -1,33 +1,27 @@
 #!/bin/bash
 
+# Create .env file for frontend if it doesn't exist
 if [ ! -e "./frontend/.env" ]; then 
-    echo "NEXT_PUBLIC_HOST=http://localhost:8080" >>  ./frontend/.env
+    echo "NEXT_PUBLIC_HOST=http://localhost:8080" >> ./frontend/.env
 fi
 
-# cd frontend 
-# npm i
+# Function to open a new Terminal window and run a command
+run_in_new_terminal_mac() {
+  local CMD=$1
+  osascript <<EOF
+tell application "Terminal"
+    activate
+    do script "${CMD}"
+end tell
+EOF
+}
 
-# cd ../backend
-# export PATH="$PATH:$HOME/go/bin"
-# source ~/.bashrc
-# fresh -g
-# fresh
+# Build absolute paths
+FRONTEND_PATH=$(cd frontend && pwd)
+BACKEND_PATH=$(cd backend && pwd)
 
-# Start frontend in a new terminal
-gnome-terminal -- bash -c "
-cd frontend
-npm install
-npm run dev
-exec bash
-"
+# Start frontend in new terminal
+run_in_new_terminal_mac "cd '${FRONTEND_PATH}'; npm install; npm run dev"
 
 # Start backend in another new terminal
-gnome-terminal -- bash -c "
-cd backend
-go install github.com/zzwx/fresh@latest
-export PATH=\"\$PATH:\$HOME/go/bin\"
-source ~/.bashrc
-fresh -g
-fresh
-exec bash
-"
+run_in_new_terminal_mac "cd '${BACKEND_PATH}'; go install github.com/zzwx/fresh@latest; export PATH=\$PATH:\$HOME/go/bin; fresh"
