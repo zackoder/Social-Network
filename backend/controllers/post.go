@@ -21,6 +21,7 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 	postData := r.FormValue("postData")
 
 	err := json.Unmarshal([]byte(postData), &post)
+	fmt.Println(post.Image,"immmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmage")
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "internal server error\nparsing post"}, http.StatusInternalServerError)
 		fmt.Println("unmarshal err:", err)
