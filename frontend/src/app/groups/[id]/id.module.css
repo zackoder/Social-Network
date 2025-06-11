@@ -28,34 +28,10 @@
 }
 
 
-/* Titre principal */
-.header {
-  font-size: 3rem;
-  font-weight: 700;
-  color: #2c3e50;
-  letter-spacing: 0.5px;
-  text-transform: uppercase; /* Met en majuscules pour un effet dynamique */
-  animation: fadeIn 1s ease-out;
-}
 
-/* Description */
-.description {
-  font-size: 1.2rem;
-  color: #7f8c8d;
-  line-height: 1.6;
-  margin-bottom: 20px;
-  animation: fadeIn 1.2s ease-out;
-  opacity: 0.8;
-}
 
-/* Info Créateur */
-.creator {
-  font-size: 1rem;
-  color: #95a5a6;
-  font-style: italic;
-  opacity: 0.9;
-  animation: fadeIn 1.4s ease-out;
-}
+
+
 
 /* Animation fadeIn pour les textes */
 @keyframes fadeIn {
@@ -231,7 +207,6 @@
 
 /******************************************left div ************************************************************************************************************/
 .left {
-  background-color: orange;
   width: 20%;
   height: 100%;
   position: static;
@@ -289,7 +264,7 @@
 .header {
   font-size: 3rem;
   font-weight: 700;
-  color: #2c3e50;
+  color: #f3f9ff;
   letter-spacing: 0.5px;
   text-transform: uppercase; /* Met en majuscules pour un effet dynamique */
   animation: fadeIn 1s ease-out;
@@ -298,7 +273,7 @@
 /* Description */
 .description {
   font-size: 1.2rem;
-  color: #7f8c8d;
+  color: #e3e8e9;
   line-height: 1.6;
   margin-bottom: 20px;
   animation: fadeIn 1.2s ease-out;
@@ -308,7 +283,7 @@
 /* Info Créateur */
 .creator {
   font-size: 1rem;
-  color: #95a5a6;
+  color: #c3d2d3;
   font-style: italic;
   opacity: 0.9;
   animation: fadeIn 1.4s ease-out;
@@ -447,20 +422,13 @@
 
 
 /******************************************left div ************************************************************************************************************/
-.left{
-    width: 20%;
-    height: 100%;
-    position: static;
-    left: 0%;
-    right: 80%;
-}
+
 .soutitre0{
   position: relative;
   left: 4%;
 }
 /******************************************raight div********************************************************************************************************/
 .right{
-    background-color: rgb(0, 47, 255);
     width: 20%;
     height: 100%;
     position: static;
