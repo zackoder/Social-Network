@@ -129,7 +129,8 @@ export default function ChatBox({ contact, onClickClose }) {
       });
   
       const data = await response.json();
-  
+      console.log(data);
+      
       if (!response.ok) {
         isAuthenticated(response.status, data.error);
         return;

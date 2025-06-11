@@ -26,7 +26,7 @@ func HandleFollow(w http.ResponseWriter, r *http.Request, follower int) {
 		return
 	}
 
-	alreadyFriends, _ := models.FriendsChecker(noti.Sender_id, noti.Target_id)
+	alreadyFriends, _ := models.FriendsCheckerForFollow(noti.Sender_id, noti.Target_id)
 	if alreadyFriends {
 		models.Deletfollow(follower, followed)
 		utils.WriteJSON(w, map[string]string{"resp": "unfollowed seccessfoly"}, 200)
