@@ -55,7 +55,6 @@ func main() {
 	mux.HandleFunc("GET /uploads/", controllers.HandelPics)
 	mux.HandleFunc("/api/posts", (controllers.Posts))
 	mux.HandleFunc("GET /api/getProfilePosts", midleware.AuthMiddleware(controllers.GetProfilePosts))
-	mux.Handle("/event-resp", (http.HandlerFunc(controllers.EventResponse)))
 	// mux.HandleFunc("GET /group/{GroupName}", controllers.Group)
 	mux.HandleFunc("/ws", midleware.AuthMiddleware(controllers.Websocket))
 

@@ -13,11 +13,7 @@ import (
 	"social-network/utils"
 )
 
-func Group(w http.ResponseWriter, r *http.Request) {
-}
 
-func EventResponse(w http.ResponseWriter, r *http.Request) {
-}
 
 func Creat_groupe(w http.ResponseWriter, r *http.Request,user_id int) {
 	if r.Method != http.MethodPost {
@@ -48,7 +44,6 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request,user_id int) {
 	
 	Groupe.Id, err = models.InsertGroupe(Groupe.Title, Groupe.Description, user_id)
 	err = models.InsserMemmberInGroupe(Groupe.Id, user_id, "creator")
-	fmt.Println(err,"errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrp")
 
 	if err != nil {
 
@@ -61,7 +56,6 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request,user_id int) {
 	}
 	// models.InsserMemmberInGroupe(groupe_id, Groupe.CreatorId, "creator")
 
-	utils.WriteJSON(w, map[string]string{"Groupe": "criete groupe seccesfel"}, http.StatusOK)
 	utils.WriteJSON(w, Groupe, http.StatusOK)
 	return
 }
@@ -413,10 +407,12 @@ func GetGroup(w http.ResponseWriter, r *http.Request, user_id int) {
 		return
 	}
 	group, err := models.GetOneGroup(group_id)
+
 	group.Id = group_id
 	if err != nil {
 		if err == sql.ErrNoRows {
-			utils.WriteJSON(w, map[string]string{"error": "Forbidden"}, http.StatusForbidden)
+			fmt.Println("hhhhh khawi")
+			utils.WriteJSON(w, map[string]string{"error": "This group does not exist!"}, http.StatusBadRequest)
 		} else {
 			utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
 			log.Println("scan group error", err)

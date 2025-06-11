@@ -10,6 +10,8 @@ import ContactsPrivate from "@/components/contactprivate/contactprivate";
 export default function GroupPage() {
 
   const [groupData, setGroupData] = useState(null);
+  const [error, setError] = useState("");
+
   const params = useParams();
   const { id } = params;
   const host = process.env.NEXT_PUBLIC_HOST;
@@ -18,17 +20,25 @@ export default function GroupPage() {
 
 
 
-  async function getGroupData() {
-    try {
-      const resp = await fetch(`${host}/group?groupId=${id}`, {
-        credentials: "include"
-      });
-      const data = await resp.json();
-      setGroupData(data);
-    } catch (err) {
-      console.error("Failed to fetch group data:", err);
+async function getGroupData() {
+  try {
+    const resp = await fetch(`${host}/group?groupId=${id}`, {
+      credentials: "include",
+    });
+
+    const data = await resp.json();
+
+    if (!resp.ok) {
+      throw new Error(data.error || "Unknown error");
     }
+
+    setGroupData(data);
+  } catch (err) {
+    console.error("Failed to fetch group data:", err.message);
+    setGroupData(null); // facultatif si tu veux afficher une erreur
+    setError(err.message || "This group does not exist.");
   }
+}
 
 
 
@@ -40,6 +50,10 @@ export default function GroupPage() {
 
 
 
+if (error) {
+  return <div className={styles.error}>{error}</div>;
+}
+
 
 
 
@@ -48,6 +62,7 @@ export default function GroupPage() {
   }
 
   return (
+    
     <div className={styles.parant}>
       <div className={styles.left}>
         <div className={styles.soutitre0}>
