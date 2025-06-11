@@ -17,13 +17,13 @@ export default function Home() {
     setError(null);
     try {
       const res = await fetch(`${host}${url}`, { credentials: "include" });
-      if (!res.ok) throw new Error("Erreur lors du fetch des groupes");
+      if (!res.ok) throw new Error("An error occurred while fetching groups");
       const data = await res.json();
       setGroups(data.length ? data : []);
       if (!data.length) setError("No available Groups");
     } catch (err) {
       setGroups([]);
-      setError(err.message || "Erreur inconnue");
+      setError(err.message || "Unknown error");
     }
   };
 
@@ -41,26 +41,34 @@ export default function Home() {
     fetchGroups(endpoints[type]);
   };
 
-  const handleCreateGroup = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch(`${host}/creategroup`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, description }),
-      });
-      if (!res.ok) throw new Error("Group creation failed");
-      const newGroup = await res.json();
-      setGroups((prev) => [...prev, newGroup]);
-      setIsPopupOpen(false);
-      setTitle("");
-      setDescription("");
-      setError("");
-    } catch (err) {
-      alert(err.message || "Error creating group");
+const handleCreateGroup = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await fetch(`${host}/creategroup`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, description }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      
+      throw new Error(data.error || "Unknown error");
     }
-  };
+
+
+    setGroups((prev) => [...prev, data]);
+    setIsPopupOpen(false);
+    setTitle("");
+    setDescription("");
+    setError("");
+  } catch (err) {
+    alert(err.message || "Error creating group");
+  }
+};
+
 
   return (
     <div>
@@ -134,8 +142,7 @@ export default function Home() {
                     pathname: `/groups/${groupe.Id}`,
                     query: {
                       Id: groupe.Id,
-                      title: groupe.title,
-                      description: groupe.description,
+                     
                     },
                   }}
                 >
