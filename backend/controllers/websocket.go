@@ -89,7 +89,7 @@ func handleMessage(msgType int, payload []byte, host string, client *utils.Clien
 func BroadcastPrivateMessage(msg utils.Message, host string) {
 	errMsg := utils.Err{}
 
-	if ok, err := models.FriendsChecker(msg.Sender_id, msg.Reciever_id); err != nil || !ok {
+	if ok, err := models.FriendsCheckerForMessages(msg.Sender_id, msg.Reciever_id); err != nil || !ok {
 		if msg.Filename != "" {
 			if err := os.Remove("." + msg.Filename); err != nil {
 				fmt.Println("removin err: ", err)

@@ -457,8 +457,21 @@ func GetUserFriends(userId int, host string) ([]utils.Regester, error) {
 	return users, nil
 }
 
-func FriendsChecker(Sender_id, Reciever_id int) (bool, error) {
+func FriendsCheckerForFollow(Sender_id, Reciever_id int) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM followers WHERE follower_id = ? AND followed_id = ?)"
+	var friends bool
+	err := Db.QueryRow(query, Sender_id, Reciever_id, Reciever_id, Sender_id).Scan(&friends)
+	return friends, err
+}
+
+
+func FriendsCheckerForMessages(Sender_id, Reciever_id int) (bool, error) {
+	query := `
+		SELECT EXISTS(
+			SELECT 1 FROM followers 
+			WHERE (follower_id = ? AND followed_id = ?) 
+			   OR (follower_id = ? AND followed_id = ?)
+		)`
 	var friends bool
 	err := Db.QueryRow(query, Sender_id, Reciever_id, Reciever_id, Sender_id).Scan(&friends)
 	return friends, err
@@ -1030,7 +1043,7 @@ func QueryMsgs(message utils.Message, host, offset string) ([]utils.Message, err
 	    OR (m.sender_id = ? AND m.reciever_id = ?)
 		ORDER BY
     		m.id DESC
-		LIMIT 20 OFFSET ?;
+		LIMIT 10 OFFSET ?;
 	`
 	rows, err := Db.Query(query, message.Sender_id, message.Reciever_id, message.Reciever_id, message.Sender_id, offset)
 	if err != nil {
