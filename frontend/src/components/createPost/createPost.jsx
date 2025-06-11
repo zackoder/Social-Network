@@ -8,34 +8,38 @@ import ContactsPrivate from "../contactprivate/contactprivate";
 import { isAuthenticated } from "@/app/page";
 import { DataContext } from "@/contexts/dataContext";
 const host = process.env.NEXT_PUBLIC_HOST;
-useEffect(() => {
-  try {
-    const [userData, setUserData] = useState([])
-    const fetchUserData = async () => {
-      const response = await fetch(`${host}/userData`, {
-        credentials: "include",
-      })
-      if (!response.ok){
-          isAuthenticated(response.status, "you should login first")
-      }
-      const userdata = await response.json()
-      setUserData(userdata)
-    }
-    fetchUserData()
-  }catch (error) {
-    console.log("we cant fetch user data for post",error);
-    
-  }  
-}, [])
 export default function CreatePost({ onPostCreated }) {
+  const [userData, setUserData] = useState([]);
+  useEffect(() => {
+    try {
+      const fetchUserData = async () => {
+        const response = await fetch(`${host}/userData`, {
+          credentials: "include",
+        });
+        if (!response.ok) {
+          isAuthenticated(response.status, "you should login first");
+        }
+        const userdata = await response.json();
+
+        setUserData(userdata);
+        console.log("nnnnnnnnnnnnnnnnnnnnnnnnn", userdata);
+      };
+      fetchUserData();
+    } catch (error) {
+      console.log("we cant fetch user data for post", error);
+    }
+  }, []);
+  console.log("nnnnnnnnnnnnnnnnnnnnnnnnn", userData);
+
   let [privacy, setPrivacy] = useState("public");
   let [title, setTitle] = useState("");
   let [content, setContent] = useState("");
   let [image, setImage] = useState("");
-  const { selectedContactsIds, setSelectedContactsIds } = useContext(DataContext);
+  const { selectedContactsIds, setSelectedContactsIds } =
+    useContext(DataContext);
   let friends = selectedContactsIds;
   const fileInputRef = useRef(null);
- 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     // console.log("friends", friends);
@@ -87,25 +91,21 @@ export default function CreatePost({ onPostCreated }) {
       console.log("Submission error:", error);
     }
   };
-  
-  // const response = await fetch(`$`)
+
   return (
     <div className="postContainer">
       <form onSubmit={handleSubmit}>
         <div className="identityProfile">
           <div className="imageProfile">
-            {/* <Image
-                            className={styles.image}
-                            src="/images/post.png"
-                            alt="post"
-                            // width={500}
-                            // height={500}
-                            fill={true}
-                        /> */}
+            <img
+              className="imageProfile"
+              src={`http://${userData.avatar}`}
+              alt="profile"
+            />
           </div>
           <div className="nameProfile">
             <div className="name-privacy">
-              <h3>${userData.fisst}</h3>
+              <h3>{userData.firstName}</h3>
               <select
                 onChange={(e) => {
                   setPrivacy(e.target.value);
