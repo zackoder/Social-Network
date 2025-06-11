@@ -23,7 +23,7 @@ func GetMessages(w http.ResponseWriter, r *http.Request, user_id int) {
 	messages, err := models.QueryMsgs(message, r.Host, offset)
 	if err != nil {
 		log.Println("query error:", err)
-		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
+		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error11"}, http.StatusInternalServerError)
 		return
 	}
 	utils.WriteJSON(w, messages, 200)

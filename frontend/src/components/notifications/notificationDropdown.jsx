@@ -25,7 +25,7 @@ export default function NotificationDropdown({ isOpen, onClose }) {
         credentials: "include"
       });
       const data = await response.json();
-      console.log("notification", data);
+      if (data === null || Array.isArray(data.notification) ? data : [] )
       if (notifications.length === 0) {
         setNotifications(data);
       } else {
@@ -82,7 +82,7 @@ export default function NotificationDropdown({ isOpen, onClose }) {
           headers: {
             "Content-Type": "application/json",
           },
-          body: responseData,
+          body: JSON.stringify(responseData) ,
           credentials: "include"
         });
         console.log("response -------", response);      
@@ -115,15 +115,15 @@ export default function NotificationDropdown({ isOpen, onClose }) {
               notification.message === "event" ? (
                 <div key={index} className={styles.notificationItem}>
                   <p>{notification.message}</p>
-                  <button onClick={()=>setResponseData({id: notification.id, action: "going"})} className={styles.btnNotification}>Going</button>
-                  <button onClick={()=>setResponseData({id: notification.id, action: "not_going"})} className={styles.btnNotification}>Not Going</button>
+                  <button onClick={()=>setResponseData({id: notification.id, message: "going"})} className={styles.btnNotification}>Going</button>
+                  <button onClick={()=>setResponseData({id: notification.id, message: "not_going"})} className={styles.btnNotification}>Not Going</button>
                 </div>
               ) : (
 
                 <div key={index} className={styles.notificationItem}>
                   <p>{notification.message}</p>
-                  <button onClick={()=>setResponseData({id: notification.id, action: "accepted"})} className={styles.btnNotification}>Accept</button>
-                  <button onClick={()=>setResponseData({id: notification.id, action: "rejected"})} className={styles.btnNotification}>Reject</button>
+                  <button onClick={()=>setResponseData({id: notification.id, message: "accepted"})} className={styles.btnNotification}>Accept</button>
+                  <button onClick={()=>setResponseData({id: notification.id, message: "rejected"})} className={styles.btnNotification}>Reject</button>
                 </div>
               )
             )

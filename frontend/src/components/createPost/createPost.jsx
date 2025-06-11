@@ -1,13 +1,32 @@
 "use client";
 import { FaCloudUploadAlt } from "react-icons/fa";
-import { use, useState, useContext } from "react";
+import { use, useState, useContext, useEffect } from "react";
 import "./createPost.modules.css";
 import { getData } from "../post/post";
 import { useRef } from "react";
 import ContactsPrivate from "../contactprivate/contactprivate";
 import { isAuthenticated } from "@/app/page";
 import { DataContext } from "@/contexts/dataContext";
-
+const host = process.env.NEXT_PUBLIC_HOST;
+useEffect(() => {
+  try {
+    const [userData, setUserData] = useState([])
+    const fetchUserData = async () => {
+      const response = await fetch(`${host}/userData`, {
+        credentials: "include",
+      })
+      if (!response.ok){
+          isAuthenticated(response.status, "you should login first")
+      }
+      const userdata = await response.json()
+      setUserData(userdata)
+    }
+    fetchUserData()
+  }catch (error) {
+    console.log("we cant fetch user data for post",error);
+    
+  }  
+}, [])
 export default function CreatePost({ onPostCreated }) {
   let [privacy, setPrivacy] = useState("public");
   let [title, setTitle] = useState("");
@@ -16,12 +35,10 @@ export default function CreatePost({ onPostCreated }) {
   const { selectedContactsIds, setSelectedContactsIds } = useContext(DataContext);
   let friends = selectedContactsIds;
   const fileInputRef = useRef(null);
-  const host = process.env.NEXT_PUBLIC_HOST;
-
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("friends", friends);
-    
+    // console.log("friends", friends);
     const formData = new FormData();
     const postData = {
       privacy,
@@ -70,7 +87,8 @@ export default function CreatePost({ onPostCreated }) {
       console.log("Submission error:", error);
     }
   };
-
+  
+  // const response = await fetch(`$`)
   return (
     <div className="postContainer">
       <form onSubmit={handleSubmit}>
@@ -87,7 +105,7 @@ export default function CreatePost({ onPostCreated }) {
           </div>
           <div className="nameProfile">
             <div className="name-privacy">
-              <h3>full name</h3>
+              <h3>${userData.fisst}</h3>
               <select
                 onChange={(e) => {
                   setPrivacy(e.target.value);
