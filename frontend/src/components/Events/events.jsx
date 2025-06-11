@@ -8,22 +8,10 @@ import styles from "./Events.module.css"
 
 
 const host = process.env.NEXT_PUBLIC_HOST;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+const isDateInFuture = (selectedDate) => {
+    const now = new Date();
+    return selectedDate > now;
+};
 
 
 export function Events({ id }) {
@@ -38,10 +26,20 @@ export function Events({ id }) {
 
 
     const createEvent = async () => {
-        console.log("hyhy");
 
         if (!eventTitle || !eventDatetime || !eventDescription) return;
         const eventT = new Date(eventDatetime)
+        
+        
+        if (isNaN(eventT)){
+            alert("Please enter a valid date!")
+            return
+        }
+        if(!isDateInFuture(eventT)){
+            alert("Please choose a date in the future!")
+            return
+        }
+        
         console.log("___________________________________----------------", eventT.getTime());
         const response = await fetch(`${host}/CreatEvent`, {
             method: "POST",
@@ -154,7 +152,7 @@ export function Events({ id }) {
                         {event.description}
                     </div>
                     <div className={styles.event_time}>
-                        {new Date(event.event_time).toString()}
+                        {new Date(event.event_time *1000).toISOString()}
 
                     </div>
                     {event.responce === "" && !answeredEvents.includes(event.id) && (
@@ -188,7 +186,7 @@ export function Events({ id }) {
                             className={styles.closeButton}
                             onClick={() => setShowPopup(false)}
                         >
-                            ×
+                            X
                         </button>
                         <h2 className={styles.Createvent}>Create an Event</h2>
                         <input

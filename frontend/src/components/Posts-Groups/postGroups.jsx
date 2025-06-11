@@ -7,7 +7,7 @@ import { useState, useEffect, useRef } from "react";
 import Modal from "../module/Modal";
 
 
-  const host = process.env.NEXT_PUBLIC_HOST;
+const host = process.env.NEXT_PUBLIC_HOST;
 
 
 
@@ -24,10 +24,16 @@ export default function Post_Groups({ post, id }) {
 
   const fileInputRef = useRef(null);
   const handleSubmit = async (e) => {
+    console.log(image);
+
     e.preventDefault();
 
 
-    if (!text && !image) return;
+    if (!text || !title) {
+      alert("title and description are required")
+      return
+
+    };
 
     const formData = new FormData();
     const postData = {
@@ -36,10 +42,11 @@ export default function Post_Groups({ post, id }) {
       content: text,
     }
     formData.append("postData", JSON.stringify(postData));
-    formData.append("postData", text);
     if (image) {
-      formData.append("image", image);
+      formData.append("avatar", image);
     }
+    console.log([...formData.entries()]); // pour voir ce qu'il contient
+
 
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -53,7 +60,7 @@ export default function Post_Groups({ post, id }) {
       });
 
       if (response.ok) {
-               
+
 
         console.log("Post created successfully");
         setText("");
@@ -61,9 +68,9 @@ export default function Post_Groups({ post, id }) {
         setImage(null);
         setIsModalOpen(false)
         handlingdata()
-      } 
+      }
     } catch (err) {
-       alert("Failed to create post",err.message);;
+      alert("Failed to create post", err.message);;
     }
   };
 
@@ -74,8 +81,8 @@ export default function Post_Groups({ post, id }) {
       setImage(file);
     }
   };
-  function handlingdata(){
-      GetData().then((data) => {
+  function handlingdata() {
+    GetData().then((data) => {
       setPosts(data);
       setLoading(false);
     })
@@ -107,12 +114,11 @@ export default function Post_Groups({ post, id }) {
       }
 
       const data = await response.json();
-      console.log("---------------------datadata-----------------------------------", data);
-      if (data && data.length > 0 ) {
-  return data;
-} else {
-  return [];
-}
+      if (data && data.length > 0) {
+        return data;
+      } else {
+        return [];
+      }
     } catch (error) {
       console.error("Error", error);
       return [];
@@ -126,13 +132,13 @@ export default function Post_Groups({ post, id }) {
     }
 
     setLoading(true);
-      GetData().then((data) => {
-        console.log(data);
-        
+    GetData().then((data) => {
+
       setPosts(data);
-      setLoading(false);})
-  
-  ;
+      setLoading(false);
+    })
+
+      ;
   }, [post]);
 
   if (loading) return <div className={style.container}>Loading posts...</div>;
