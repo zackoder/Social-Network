@@ -1,6 +1,7 @@
 .divclass{
-    height: 345px;
+    height: 360px;
     width: 100%;
+    padding: 5px;
     overflow: auto;
 }
 .poste {
@@ -134,7 +135,7 @@
   background-color: #007bff;
   color: white;
   border: none;
-  padding: 0.6rem 26px;
+  padding: 10px 126px;
   font-size: 1rem;
   border-radius: 0.5rem;
   cursor: pointer;
@@ -144,5 +145,7 @@
 }
 .divbutton{
   position: relative;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content:center;
 }

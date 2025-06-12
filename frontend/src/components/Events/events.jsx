@@ -138,6 +138,11 @@ export function Events({ id }) {
     })
 
     return <div>
+        <div className={styles.EventTitle}>
+           <header className={styles.TextHedear}>
+            Events
+           </header>
+        </div>
         <div className={styles.EventsCards}>
             {events.map((event) => (
 
@@ -215,7 +220,7 @@ export function Events({ id }) {
         }
 
         <button className={styles.addEventButton} onClick={() => setShowPopup(true)}>
-            + Add Event
+            +Add Event
         </button>
     </div>
 

@@ -1,6 +1,26 @@
+.EventTitle{
+  background-color: #06d6a0;
+  width: 100%;
+  height: 45px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 30px 30px 0px 0px;
+}
+.TextHedear{
+font-size: 22px;
+font-weight: 800;
+
+
+}
+
+
+
 .EventsCards{
   width: 100%;
-  height: 284px;
+  height: 311px;
   overflow: auto;
 }
 .event {
@@ -80,7 +100,7 @@
   background-color: #007bff;
   color: white;
   border: none;
-  padding: 0.6rem 1.2rem;
+  padding: 10px 121px;
   font-size: 1rem;
   border-radius: 0.5rem;
   cursor: pointer;
@@ -166,21 +186,7 @@
   outline: none;
   border-color: #007bff;
 }
-.addEventButtone {
-  position: relative;
-  display: block;
-  margin: 33px auto; /* ✅ centre horizontalement */
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  font-size: 1rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  font-weight: 500;
-  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
-}
+
 .addEventButton:hover {
   background-color: #0056b3;
   transform: translateY(-2px);
@@ -202,18 +208,3 @@
   background-color: #0056b3;
 }
 
-.addEventButtone {
-  position: relative;
-  display: block;
-  margin: 33px auto; /* ✅ centre horizontalement */
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  font-size: 1rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  font-weight: 500;
-  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
-}
