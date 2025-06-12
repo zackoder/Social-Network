@@ -82,6 +82,10 @@ if (error) {
         </div>
 
         <div className={styles.moyyen}>
+          <div className={styles.PostsTitle}>
+            <header className={styles.textTitle}>Posts</header>
+
+          </div>
           <Post_Groups id={id} />
         </div>
 
