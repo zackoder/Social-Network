@@ -96,7 +96,7 @@ font-weight: 800;
 .addEventButton {
   position: relative;
   display: block;
-  margin: 2px auto; /* ✅ centre horizontalement */
+  margin: 2px auto; 
   background-color: #007bff;
   color: white;
   border: none;
