@@ -525,15 +525,19 @@ func GetPostsFromDatabase(groupeId int, r *http.Request) ([]utils.Post, error) {
 	host := r.Host
 	var posts []utils.Post
 
-	query := `SELECT 
- p.title, 
-  p.content, 
-  u.first_name, 
-  p.imagePath, 
-  p.createdAt
-FROM posts p
-JOIN users u ON p.user_id = u.id
-WHERE p.groupe_id = ?`
+	query := `
+	SELECT 
+		p.id,
+ 		p.title, 
+		p.content, 
+  		u.first_name,
+		u.avatar,
+  		p.imagePath, 
+  		p.createdAt
+	FROM posts p
+	JOIN users u ON p.user_id = u.id
+	WHERE p.groupe_id = ?
+	`
 	rows, err := Db.Query(query, groupeId)
 	if err != nil {
 
@@ -542,7 +546,7 @@ WHERE p.groupe_id = ?`
 	defer rows.Close()
 	for rows.Next() {
 		var post utils.Post
-		err := rows.Scan(&post.Title, &post.Content, &post.Poster_name, &post.Image, &post.CreatedAt)
+		err := rows.Scan(&post.Id, &post.Title, &post.Content, &post.Poster_name, &post.Avatar, &post.Image, &post.CreatedAt)
 		if err != nil {
 			fmt.Println("scaning error:", err)
 		}
@@ -702,53 +706,6 @@ func GetAllGroups(user_id int) []utils.Groupe {
 
 	return res
 }
-
-// func GetAllGroups(user_id int) []utils.Groupe {
-// 	var res []utils.Groupe
-
-// 	query := `
-// 		SELECT DISTINCT
-// 		    g.id,
-// 		    g.name,
-// 		    g.description,
-// 		    CASE
-// 		        WHEN gm.user_id IS NOT NULL THEN 'member'
-// 		        WHEN n.id IS NOT NULL THEN 'requested'
-// 		        ELSE ''
-// 		    END AS status
-// 		FROM
-// 		    groups g
-// 		LEFT JOIN group_members gm
-// 		    ON gm.group_id = g.id AND gm.user_id = ?
-// 		LEFT JOIN notifications n
-// 		    ON n.target_id = g.id
-// 		    AND n.user_id = ?
-// 		    AND n.message = 'join request';
-// 	`
-// 	rows, err := Db.Query(query, user_id, user_id)
-// 	if err != nil {
-// 		fmt.Println("Error querying groups:", err)
-// 		return nil
-// 	}
-// 	defer rows.Close()
-
-// 	for rows.Next() {
-// 		var groupe utils.Groupe
-// 		err := rows.Scan(&groupe.Id, &groupe.Title, &groupe.Description, &groupe.Status)
-// 		if err != nil {
-// 			fmt.Println("Error scanning row:", err)
-// 			return nil
-// 		}
-// 		res = append(res, groupe)
-// 	}
-
-// 	if err := rows.Err(); err != nil {
-// 		fmt.Println("Error iterating over rows:", err)
-// 		return nil
-// 	}
-
-// 	return res
-// }
 
 func MyGroupes(user_id int) []string {
 	var res []string

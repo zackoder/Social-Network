@@ -21,7 +21,6 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 	postData := r.FormValue("postData")
 
 	err := json.Unmarshal([]byte(postData), &post)
-	fmt.Println(post.Image, "immmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmage")
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "internal server error\nparsing post"}, http.StatusInternalServerError)
 		fmt.Println("unmarshal err:", err)
@@ -33,8 +32,13 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 		return
 	}
 
-	post.Poster_id = 10
-
+	post.Poster_id = userId
+	if post.Groupe_id != 0 {
+		if !models.IsMember(post.Groupe_id, userId) {
+			utils.WriteJSON(w, map[string]string{"error": "Forbidden"}, http.StatusForbidden)
+			return
+		}
+	}
 	filepath, err := utils.UploadImage(r)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": err.Error()}, http.StatusInternalServerError)
