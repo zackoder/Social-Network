@@ -240,7 +240,7 @@ export default function ProfilePage() {
           <div>
             {/* Add null/undefined check before accessing length */}
             {posts && posts.length > 0 ? (
-              posts.map((post) => <PostWrapper key={post.id} post={post} />)
+              posts.map((post, index) => <PostWrapper key={index} post={post} />)
             ) : (
               <div className={styles.noContent}>No posts to display</div>
             )}
