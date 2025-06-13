@@ -22,10 +22,12 @@ export default function Contacts({ onContactClick, activeContactId }) {
           // throw new Error(data.error);
           console.log(data.error);
         }
+        if (!response.ok){
+          isAuthenticated(response.status, "you should login first");
+        }
 
       } catch (error) {
-        // console.error("Failed to fetch contacts:", error);
-        isAuthenticated(response.status, "you should login first");
+        console.log("Failed to fetch contacts:", error);
       }
     };
     fetchContacts();
