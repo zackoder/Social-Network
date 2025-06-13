@@ -1,6 +1,6 @@
 "use client";
 import { FaCloudUploadAlt } from "react-icons/fa";
-import { use, useState, useContext } from "react";
+import { use, useState, useContext, useEffect } from "react";
 import "./createPost.modules.css";
 import { getData } from "../post/post";
 import { useRef } from "react";
@@ -69,6 +69,12 @@ export default function CreatePost({ onPostCreated }) {
     }
   };
 
+  useEffect(async() => {
+    const response = await fetch(`${host}/`, {
+      credentials: "include"
+    })
+  }, []);
+
   return (
     <div className="postContainer">
       <form onSubmit={handleSubmit}>
@@ -114,7 +120,7 @@ export default function CreatePost({ onPostCreated }) {
             value={title}
             type="text"
             name="title"
-            placeholder="enter your title"
+            placeholder="Enter your title"
           />
         </div>
         <div className="content">
