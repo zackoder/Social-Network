@@ -25,24 +25,24 @@ export default function NotificationDropdown({ isOpen, onClose }) {
       const data = await response.json();
       console.log("notification", data);
       if (notifications.length === 0) {
-        setNotifications([]);
+        setNotifications([...data]);
       } else {
         setNotifications((prev) => [...prev, ...data]);
-      }
+      }     
 
       // setHasMore(data.hasMore);
       // setOffset((prev) => prev + data.notifications.length);
     } catch (error) {
-      console.error("Error fetching notifications:", error);
+      console.log("Error fetching notifications:", error);
     } finally {
       setLoading(false);
     }
   };
 
   // Load more notifications
-  const handleLoadMore = () => {
-    fetchNotifications();
-  };
+  // const handleLoadMore = () => {
+  //   fetchNotifications();
+  // };
 
   // Close dropdown when clicking outside
   useEffect(() => {
