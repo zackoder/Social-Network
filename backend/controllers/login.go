@@ -52,6 +52,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "internaInternal Server Error"}, http.StatusInternalServerError)
 		return
 	}
+	userData.SessionId, err = utils.GenerateSessionID()
+	if err != nil {
+		fmt.Println(err)
+		utils.WriteJSON(w, map[string]string{"error": "internaInternal Server Error"}, http.StatusInternalServerError)
+		return
+	}
 
 	err = models.InsertSession(&userData)
 	if err != nil {

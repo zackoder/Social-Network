@@ -2,28 +2,24 @@ package controllers
 
 import (
 	"net/http"
-	"social-network/utils"
 	"strings"
+
+	"social-network/utils"
 )
 
-func HandelPics(w http.ResponseWriter, r *http.Request) {
+func HandelPics(w http.ResponseWriter, r *http.Request, user int) {
 	if r.Method != http.MethodGet {
 		utils.WriteJSON(w, map[string]string{"error:": "mehtod not allowed"}, http.StatusMethodNotAllowed)
 		return
 	}
-
-	/*
-		cookie, err := r.Cookie("token")
-		if err != nil {
-			utils.WriteJSON(w, map[string]string{"error:": "Unauthorized"}, http.StatusUnauthorized)
-			return
-		}
-	*/
-	path := strings.TrimPrefix(r.URL.Path, "/uploads/")
-	if path == "" {
-		utils.WriteJSON(w, map[string]string{"error": "forbidden"}, http.StatusForbidden)
+	
+	path := r.URL.Path
+	validpath := strings.TrimPrefix(r.URL.Path, "/uploads/")
+	validpath = strings.TrimPrefix(r.URL.Path, "/defaultIMG/")
+	if validpath == "" {
+		utils.WriteJSON(w, map[string]string{"error": "Forbidden"}, http.StatusForbidden)
 		return
 	}
 
-	http.ServeFile(w, r, "./uploads/"+path)
+	http.ServeFile(w, r, "."+path)
 }

@@ -94,7 +94,7 @@ func Join_Group(w http.ResponseWriter, r *http.Request, user_id int) {
 	noti.Actor_id = requist.Groupe_id
 	noti.Sender_id = requist.User_id
 	noti.Message = "join request"
-	err = models.InsertNotification(noti)
+	noti.Id, err = models.InsertNotification(noti)
 	if err != nil {
 		log.Println("error lksdfjgksdfglkjdsglkjgl", err)
 		os.Exit(10)
@@ -106,7 +106,7 @@ func Join_Group(w http.ResponseWriter, r *http.Request, user_id int) {
 		}
 		return
 	}
-
+	Broadcast(noti.Target_id, noti)
 	// if !models.IsMember(requist.Groupe_id, requist.User_id) {
 	// 	err = models.InsserMemmberInGroupe(requist.Groupe_id, requist.User_id, "member")
 	// 	if err != nil {
@@ -227,9 +227,9 @@ func InviteUser(w http.ResponseWriter, r *http.Request /* , groupID uint */) {
 		utils.WriteJSON(w, map[string]string{"error": "already a group member"}, 409)
 		return
 	}
-
+	var err error
 	noti.Message = "group invitation"
-	err := models.InsertNotification(noti)
+	noti.Id, err = models.InsertNotification(noti)
 	// err := models.SaveInvitation(invitaion.GroupID, invitaion.InvitedBy, invitaion.UserId)
 	if err != nil {
 		log.Println("saving invitation", err)
@@ -312,7 +312,7 @@ func CreatEvent(w http.ResponseWriter, r *http.Request, userId int) {
 	notification.Actor_id, err = models.InsserEventInDatabase(event)
 	notification.Message = "event"
 	notification.Sender_id = userId
-	err = models.InsertNotification(notification)
+	notification.Id, err = models.InsertNotification(notification)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
 		return

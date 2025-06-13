@@ -2,10 +2,19 @@
 
 import styles from "./chatbox.module.css";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { IoIosSend } from "react-icons/io";
 import { socket } from "../websocket/websocket";
+import { isAuthenticated } from "@/app/page";
+
+const host = process.env.NEXT_PUBLIC_HOST;
+
+function getCookie(name) {
+  const value = `; {${document.cookie}}`;
+  const parts = value.split(`${name}=`);
+  if (parts.length === 2) return parts.pop().split(";").shift();
+}
 
 export default function ChatBox({ contact, onClickClose }) {
   const [message, setMessage] = useState("");
@@ -13,7 +22,11 @@ export default function ChatBox({ contact, onClickClose }) {
   const [image, setImage] = useState(null);
   const [showEmojis, setShowEmojis] = useState(false);
   const bottomRef = useRef(null);
+  const [offset, setOffset] = useState(0);
+  const limit = 20;
   const userId = parseInt(localStorage.getItem("user-id"));
+
+  const token = getCookie("token");
 
   const emojis = [
     "😁",
@@ -66,50 +79,45 @@ export default function ChatBox({ contact, onClickClose }) {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) setImage(file);
+    if (file) {
+      setImage(file);
+      console.log("file image ", file);
+
+      e.target.value = "";
+    }
   };
 
   useEffect(() => {
-    setMessages([]);
-  }, [contact.id]);
+    bottomRef.current?.scrollIntoView({ behavior: "auto" });
+  }, [messages]);
 
   useEffect(() => {
     const handleMessage = (event) => {
-      console.log(
-        "Effect --------------------------------------------------------"
-      );
-
       try {
         const data =
           typeof event.data === "string"
             ? JSON.parse(event.data)
             : parseBinaryMessage(event.data);
       } catch (err) {
-        // console.error("Failed to parse message:", event.data);
+        console.error("Failed to parse message:", event.data);
       }
     };
 
-    socket.addEventListener("message", () => {
-      if (socket.readyState !== WebSocket.OPEN) {
-        alert("connection opened again");
-        socket.addEventListener("open");
-      }
-      handleMessage;
-    });
+    socket.addEventListener("message", handleMessage);
     return () => socket.removeEventListener("message", handleMessage);
   }, [contact.id]); // Add contact.id as dependency
 
   useEffect(() => {
-    // Filter messages to only show those relevant to current contact
-    const filteredMessages = messages.filter(
-      (msg) => msg.receiver_id === contact.id || msg.sender_id === userId
-    );
-    setMessages(filteredMessages);
-  }, [contact.id]); // Reset messages when contact changes
+    const container = document.querySelector(`${styles.readmessages}`);
+    container?.addEventListener("scroll", handleScroll);
+
+    return () => container?.removeEventListener("scroll");
+  }, [offset]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!message.trim() && image === null) return;
     if (image) {
       const reader = new FileReader();
       reader.onload = () => {
@@ -117,7 +125,8 @@ export default function ChatBox({ contact, onClickClose }) {
           sender_id: userId,
           receiver_id: contact.id,
           type: "image",
-          token: "online",
+          token: { token },
+          content: message,
           mime: image.type,
           filename: image.name,
         };
@@ -127,19 +136,12 @@ export default function ChatBox({ contact, onClickClose }) {
           console.log("------------------------------------ waaaaaaaaaa 11111");
 
         // Add optimistic update for better UX
-        setMessages((prev) => [
-          ...prev,
-          {
-            ...metadata,
-            content: "[Image]",
-          },
-        ]);
       };
       reader.readAsArrayBuffer(image);
       setImage(null);
-    }
-
-    if (message.trim() !== "") {
+      setMessage("");
+      setImage(null);
+    } else {
       const newMsg = {
         sender_id: userId,
         receiver_id: contact.id,
@@ -150,13 +152,7 @@ export default function ChatBox({ contact, onClickClose }) {
 
       // Optimistic update
       setMessages((prev) => [...prev, newMsg]);
-      if (socket.readyState === WebSocket.OPEN)
-        socket.send(JSON.stringify(newMsg));
-      else
-        console.log(
-          "------------------------------------------------ waaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 2"
-        );
-
+      socket.send(JSON.stringify(newMsg));
       setMessage("");
     }
   };
@@ -165,15 +161,16 @@ export default function ChatBox({ contact, onClickClose }) {
     <div className={styles.chatBox}>
       <div className={styles.header}>
         <div className={styles.imgProfile}>
-          <Image
-            src="/profile/profile.png"
+          <img
+            src={`http://${contact.avatar}`}
             alt="image profile"
-            fill
+            width={50}
+            height={50}
             style={{ objectFit: "cover", borderRadius: "50%" }}
           />
         </div>
         <div className={styles.infoProfile}>
-          <h3>{contact.name}</h3>
+          <h3>{`${contact.firstName} ${contact.lastName}`}</h3>
           <p>Chat started...</p>
         </div>
         <div className={styles.close} onClick={onClickClose}>
@@ -185,73 +182,51 @@ export default function ChatBox({ contact, onClickClose }) {
         {messages.map((msg, index) => (
           <div
             key={index}
-            className={msg.sender_id === 1 ? styles.me : styles.sender}
+            className={msg.sender_id === userId ? styles.me : styles.sender}
           >
-            {msg.sender_id !== 1 && (
+            {msg.sender_id !== userId && (
               <div className={styles.profileImage}>
-                <Image
-                  src="/profile/profile.png"
+                <img
+                  src={`http://${contact.avatar}`}
                   alt="profile"
-                  fill
+                  width={50}
+                  height={50}
                   style={{ objectFit: "cover", borderRadius: "50%" }}
                 />
               </div>
             )}
+
             <div className={styles.message}>
-              {msg.type === "image" ? (
+              {msg.filename ? (
                 <div className={styles.imageContainer}>
-                  {console.log(
-                    `link the image ${process.env.NEXT_PUBLIC_HOST}/uploads/${msg.filename}`
-                  )}
-                  {console.log(`msg content ${msg.filename}`)}
-                  {/* const metadata = {
-                                    sender_id: 1,
-                                    receiver_id: contact.id,
-                                    type: 'image',
-                                    token: 'online',
-                                    mime: image.type,
-                                    filename: image.name,
-                                    timestamp: new Date().toISOString()
-                                    }; */}
                   <img
-                    // src={`${process.env.NEXT_PUBLIC_HOST}/uploads/${msg.filename}`}
+                    src={`http://${msg.filename}`}
                     alt="sent-image"
                     width={250} // Set appropriate dimensions
                     height={250}
                     className={styles.imageMessage}
-                    onError={(e) => {
-                      e.target.src = "/default-error-image.png"; // Add fallback image
-                    }}
                   />
                   <span className={styles.timeStamp}>
-                    {new Date(msg.timestamp).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                    {formatDate(msg.creation_date)}
                   </span>
                 </div>
               ) : (
                 <div className={styles.textMessage}>
                   <p>{msg.content}</p>
                   <span className={styles.timeStamp}>
-                    {new Date(msg.timestamp).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                    {formatDate(msg.creation_date)}
                   </span>
                 </div>
               )}
             </div>
-            {/* <div className={styles.message}>
-                            <p>{msg.content}</p>
-                            <span>{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                        </div> */}
-            {msg.sender_id === 1 && (
+
+            {msg.sender_id === userId && (
               <div className={styles.profileImage}>
-                <Image
+                <img
                   src="/profile/profile.png"
                   alt="profile"
-                  fill
+                  width={50} // Set appropriate dimensions
+                  height={50}
                   style={{ objectFit: "cover", borderRadius: "50%" }}
                 />
               </div>
@@ -320,4 +295,29 @@ function buildBinaryMessage(metadata, fileBuffer) {
   combined.set(metaBuffer, 0);
   combined.set(new Uint8Array(fileBuffer), metaBuffer.length);
   return combined;
+}
+
+const oneday = 60 * 60 * 24;
+const onehour = 60 * 60;
+const oneminut = 60;
+
+export function formatDate(time) {
+  if (!time) time = Date.now() / 1000 - 1;
+  let timeText;
+  const date = Date.now() / 1000;
+  const elapsed = date - time;
+  let days = Math.floor(elapsed / oneday);
+  let hours = Math.floor((elapsed % oneday) / onehour);
+  let minutes = Math.floor((elapsed % onehour) / oneminut);
+  let seconds = Math.floor(elapsed % oneminut);
+  if (days > 0) {
+    timeText = `${days}d`;
+  } else if (hours > 0) {
+    timeText = `${hours}h`;
+  } else if (minutes > 0) {
+    timeText = `${minutes}min`;
+  } else {
+    timeText = `${seconds}s`;
+  }
+  return timeText;
 }

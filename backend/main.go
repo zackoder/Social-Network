@@ -37,26 +37,28 @@ func main() {
 	mux.Handle("/JouindGroupe", midleware.AuthMiddleware(controllers.Join_Group))
 	mux.Handle("POST /creategroup", midleware.AuthMiddleware(controllers.Creat_groupe))
 	mux.Handle("/CreatEvent", midleware.AuthMiddleware(controllers.CreatEvent))
+	mux.Handle("/GetMessages", midleware.AuthMiddleware(controllers.GetMessages))
 
 	mux.Handle("GET /groupmessages", midleware.AuthMiddleware(controllers.Getgroupmsgs))
 	mux.Handle("/group", midleware.AuthMiddleware(controllers.GetGroup))
 	mux.Handle("/GetMyGroups", midleware.AuthMiddleware(controllers.GetGroupsCreatedByUser))
+
 	mux.Handle("/groupInvitarion", http.HandlerFunc(controllers.InviteUser))
 
 	mux.HandleFunc("/GetPostsFromGroupe", controllers.Get_all_post)
 	mux.Handle("/api/getevents", midleware.AuthMiddleware(controllers.GetEvents))
 
 	mux.Handle("POST /api/logout", midleware.AuthMiddleware(controllers.LogoutHandler))
+	mux.Handle("GET /uploads/", midleware.AuthMiddleware(controllers.HandelPics))
+	mux.Handle("GET /defaultIMG/", midleware.AuthMiddleware(controllers.HandelPics))
+	mux.Handle("/api/posts", http.HandlerFunc(controllers.Posts))
+	mux.Handle("/ws", midleware.AuthMiddleware(controllers.Websocket))
 	mux.Handle("GET /GetGroups", midleware.AuthMiddleware(controllers.AllGroups))
 	mux.Handle("/GetJoinedGroups", midleware.AuthMiddleware(controllers.GetGroupsJoined))
 
 	mux.Handle("/api/event-response", midleware.AuthMiddleware(controllers.EventResponce))
 	mux.Handle("/api/postsGroups", midleware.AuthMiddleware(controllers.GetPostsGroupe))
-	mux.HandleFunc("GET /uploads/", controllers.HandelPics)
-	mux.HandleFunc("/api/posts", (controllers.Posts))
 	mux.HandleFunc("GET /api/getProfilePosts", midleware.AuthMiddleware(controllers.GetProfilePosts))
-	// mux.HandleFunc("GET /group/{GroupName}", controllers.Group)
-	mux.HandleFunc("/ws", midleware.AuthMiddleware(controllers.Websocket))
 
 	// Comment handlers
 	mux.Handle("GET /getComments", http.HandlerFunc(controllers.GetComments))
@@ -70,9 +72,6 @@ func main() {
 
 	mux.Handle("/getNotifications", midleware.AuthMiddleware(controllers.GetNotifications))
 	mux.Handle("/notiResp", midleware.AuthMiddleware(controllers.NotiResp))
-	// mux.Handle("/private-messages", http.HandlerFunc(controllers.GetNotifications))
-
-	// mux.HandleFunc("GET /group/{GroupName}", controllers.Group)
 
 	// note for walid
 	// this endpoint is gonna be used to fetch the users for the post privacy

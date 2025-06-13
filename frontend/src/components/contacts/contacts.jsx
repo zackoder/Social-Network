@@ -22,7 +22,7 @@ export default function Contacts({ onContactClick, activeContactId }) {
           // throw new Error(data.error);
           console.log(data.error);
         }
-        console.log(data);
+
       } catch (error) {
         // console.error("Failed to fetch contacts:", error);
         isAuthenticated(response.status, "you should login first");
@@ -30,25 +30,24 @@ export default function Contacts({ onContactClick, activeContactId }) {
     };
     fetchContacts();
   }, []);
-  if (!contacts || contacts.length == 0) {
-    return;
-  }
+  // if (!contacts || contacts.length == 0) {
+  //   return;
+  // }
 
   return (
     <div className={styles.container}>
       {contacts.map((contact) => (
         <div
           key={contact.id}
-          className={`${styles.profile} ${
-            activeContactId === contact.id ? styles.active : ""
-          }`}
+          className={`${styles.profile} ${activeContactId === contact.id ? styles.active : ""
+            }`}
           onClick={() => onContactClick(contact)}
           role="button"
           tabIndex={0}
           onKeyDown={(e) => e.key === "Enter" && onContactClick(contact)}
         >
           <div className={styles.imgProfile}>
-            <Image
+            <img
               src={`http://${contact.avatar}`}
               width={50}
               height={50}

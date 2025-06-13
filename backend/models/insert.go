@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"time"
 
 	"social-network/utils"
 )
@@ -126,8 +127,8 @@ func InsertSession(userData *utils.User) error {
 }
 
 func InsertMsg(msg utils.Message) error {
-	query := "INSERT INTO messages (sender_id, reciever_id, content, imagePath) VALUES (?,?,?,?)"
-	_, err := Db.Exec(query, msg.Sender_id, msg.Reciever_id, msg.Content, msg.Filename)
+	query := "INSERT INTO messages (sender_id, reciever_id, content, imagePath, creation_date) VALUES (?,?,?,?,?)"
+	_, err := Db.Exec(query, msg.Sender_id, msg.Reciever_id, msg.Content, msg.Filename, time.Now().Unix())
 	if err != nil {
 		fmt.Println("inserting error:", err)
 	} else {
@@ -147,20 +148,24 @@ func InsertGroupMSG(msg utils.Message) error {
 	return err
 }
 
-func InsertNotification(noti utils.Notification) error {
+func InsertNotification(noti utils.Notification) (int, error) {
 	var oldNoti utils.Notification
+	var noti_id int
 	SelectOneNoti(&oldNoti)
 	var err error
 	if oldNoti.Id != 0 {
 		err = UpdateNoti(oldNoti, noti)
 	} else {
 		query := "INSERT INTO notifications (user_id, target_id, actor_id, message) VALUES (?,?,?,?)"
-		_, err = Db.Exec(query, noti.Sender_id, noti.Target_id, noti.Actor_id, noti.Message)
+		res, err := Db.Exec(query, noti.Sender_id, noti.Target_id, noti.Actor_id, noti.Message)
 		if err != nil {
 			log.Println("inserting notin error: ", err)
 		}
+		lastId, _ := res.LastInsertId()
+		noti_id = int(lastId)
 	}
-	return err
+
+	return noti_id, err
 }
 
 func SaveInvitation(Groupe_id, sender_id, resever_id int) error {
@@ -203,7 +208,7 @@ func InsserEventInDatabase(event utils.Event) (int, error) {
 
 func InsserResponceInDatabase(responce utils.EventResponse) error {
 	Quirie := "INSERT INTO event_responses (user_id,event_id,response) VALUES (?,?,?)"
-	
+
 	_, err := Db.Exec(Quirie, responce.UserID, responce.EventID, responce.Response)
 	fmt.Println(err)
 	return err
@@ -255,4 +260,3 @@ func AddOrUpdateReaction(userID, postID int, reactionType string) error {
 		return err
 	}
 }
-
