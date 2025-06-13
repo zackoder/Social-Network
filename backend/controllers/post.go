@@ -21,7 +21,7 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 	postData := r.FormValue("postData")
 
 	err := json.Unmarshal([]byte(postData), &post)
-	fmt.Println(post.Image,"immmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmage")
+	fmt.Println(post.Image, "immmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmage")
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "internal server error\nparsing post"}, http.StatusInternalServerError)
 		fmt.Println("unmarshal err:", err)
@@ -44,10 +44,6 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 
 	post.Image = filepath
 
-	if filepath == "" {
-		post.Image = "/uploads/defaulte.jpg"
-	}
-
 	user, _ := models.GetUserById(userId)
 	// log.Println(user)
 	post.Poster_name = user.FirstName
@@ -66,10 +62,13 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 		models.InsertFriends(post.Id, post.Friendes)
 		post.Friendes = []int{}
 	}
-	post.Image = host + post.Image
 
 	if filepath != "" {
 		post.Image = host + post.Image
+
+		if filepath != "" {
+			post.Image = host + post.Image
+		}
 	}
 	utils.WriteJSON(w, post, 200)
 }
@@ -80,7 +79,6 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 	// fmt.Println("posts",posts)
 	utils.WriteJSON(w, posts, 200)
 }
-
 
 // func GetProfilePosts(w http.ResponseWriter, r *http.Request) {
 // 	cookie, err := r.Cookie("token")

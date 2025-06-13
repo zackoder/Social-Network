@@ -29,14 +29,7 @@ export function Websocket() {
       reject(err);
     });
 
-    // Listen for messages
-    // socket.addEventListener("message", (event) => {
-    //     console.log("Message from server ", event.data);
-    //     let data = JSON.parse(event.data)
-    //     if (data.reciever_id){
+    });
+    return websocketConnection;
 
-    //     }
-    // });
-  });
-  return websocketConnection;
 }

@@ -14,7 +14,7 @@ import (
 func QueryPosts(offset int, r *http.Request) []utils.Post {
 	host := r.Host
 	var posts []utils.Post
-	queryPosts := `SELECT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt
+	queryPosts := `SELECT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt, u.avatar
 	FROM posts p
 	JOIN users u ON p.user_id = u.id`
 	// cookie, _ := r.Cookie("token")
@@ -28,12 +28,15 @@ func QueryPosts(offset int, r *http.Request) []utils.Post {
 	defer rows.Close()
 	for rows.Next() {
 		var post utils.Post
-		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt)
+		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt, &post.Avatar)
 		if err != nil {
 			fmt.Println("scaning error:", err)
 		}
 		if post.Image != "" {
 			post.Image = host + post.Image
+		}
+		if post.Avatar != "" {
+			post.Avatar = host + post.Avatar
 		}
 		posts = append(posts, post)
 	}
@@ -671,7 +674,7 @@ func GetAllGroups(user_id int) []utils.Groupe {
 		LEFT JOIN group_members gm 
 		    ON gm.group_id = g.id AND gm.user_id = ?
 		LEFT JOIN notifications n 
-		    ON n.target_id = g.id 
+		    ON n.actor_id = g.id 
 		    AND n.user_id = ?
 		    AND n.message = 'join request';
 	`
@@ -699,6 +702,53 @@ func GetAllGroups(user_id int) []utils.Groupe {
 
 	return res
 }
+
+// func GetAllGroups(user_id int) []utils.Groupe {
+// 	var res []utils.Groupe
+
+// 	query := `
+// 		SELECT DISTINCT
+// 		    g.id,
+// 		    g.name,
+// 		    g.description,
+// 		    CASE
+// 		        WHEN gm.user_id IS NOT NULL THEN 'member'
+// 		        WHEN n.id IS NOT NULL THEN 'requested'
+// 		        ELSE ''
+// 		    END AS status
+// 		FROM
+// 		    groups g
+// 		LEFT JOIN group_members gm
+// 		    ON gm.group_id = g.id AND gm.user_id = ?
+// 		LEFT JOIN notifications n
+// 		    ON n.target_id = g.id
+// 		    AND n.user_id = ?
+// 		    AND n.message = 'join request';
+// 	`
+// 	rows, err := Db.Query(query, user_id, user_id)
+// 	if err != nil {
+// 		fmt.Println("Error querying groups:", err)
+// 		return nil
+// 	}
+// 	defer rows.Close()
+
+// 	for rows.Next() {
+// 		var groupe utils.Groupe
+// 		err := rows.Scan(&groupe.Id, &groupe.Title, &groupe.Description, &groupe.Status)
+// 		if err != nil {
+// 			fmt.Println("Error scanning row:", err)
+// 			return nil
+// 		}
+// 		res = append(res, groupe)
+// 	}
+
+// 	if err := rows.Err(); err != nil {
+// 		fmt.Println("Error iterating over rows:", err)
+// 		return nil
+// 	}
+
+// 	return res
+// }
 
 func MyGroupes(user_id int) []string {
 	var res []string
@@ -756,10 +806,11 @@ func SelectNotifications(user_id int) ([]utils.Notification, error) {
 	var notis []utils.Notification
 	quetyNotifications := `
 	SELECT DISTINCT
+		n.id,
     	n.actor_id,
     	n.user_id,
     	n.target_id,
-    	n.message,
+    	n.message
 	FROM
 	    notifications n
 	    INNER JOIN group_members gm ON gm.group_id = n.target_id
@@ -772,7 +823,7 @@ func SelectNotifications(user_id int) ([]utils.Notification, error) {
 	        n.message <> 'event'
 	        AND n.target_id = ?
     );`
-	rows, err := Db.Query(quetyNotifications, user_id)
+	rows, err := Db.Query(quetyNotifications, user_id, user_id)
 	if err != nil {
 		return notis, err
 	}
@@ -782,6 +833,7 @@ func SelectNotifications(user_id int) ([]utils.Notification, error) {
 		if err := rows.Scan(&noti.Id, &noti.Sender_id, &noti.Actor_id, &noti.Target_id, &noti.Message); err != nil {
 			log.Println("scaning notifacations error:", err)
 		}
+		log.Println(noti)
 		notis = append(notis, noti)
 	}
 
@@ -960,6 +1012,57 @@ func GetNotifications(userId int, limit int, offset int) ([]utils.Notification, 
 	}
 
 	return notifications, nil
+}
+
+func QueryMsgs(message utils.Message, host, offset string) ([]utils.Message, error) {
+	query := `
+		SELECT
+	    m.sender_id,
+	    m.reciever_id,
+	    m.content,
+	    m.imagePath,
+	    m.creation_date,
+	    u.avatar
+	FROM
+	    messages m
+	    JOIN users u ON m.sender_id = u.id
+	WHERE
+	    (m.sender_id = ? AND m.reciever_id = ?)
+	    OR (m.sender_id = ? AND m.reciever_id = ?)
+		ORDER BY
+    		m.id DESC
+		LIMIT 20 OFFSET ?;
+	`
+	rows, err := Db.Query(query, message.Sender_id, message.Reciever_id, message.Reciever_id, message.Sender_id, offset)
+	if err != nil {
+		log.Println("quering messages err:", err)
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var messages []utils.Message
+
+	for rows.Next() {
+
+		err := rows.Scan(
+			&message.Sender_id,
+			&message.Reciever_id,
+			&message.Content,
+			&message.Filename,
+			&message.Creation_date,
+			&message.Avatar,
+		)
+		if err != nil {
+			return nil, err
+		}
+		if message.Filename != "" {
+			message.Filename = host + message.Filename
+		}
+		message.Avatar = host + message.Avatar
+		messages = append(messages, message)
+	}
+	return messages, nil
 }
 
 func GetOneGroup(group_id int) (utils.Groupe, error) {

@@ -30,9 +30,9 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  const headerList = headers();
-  const path = headerList.get("x-invoke-path") || "";
-  const isAuthPage = path.startsWith("/login") || path.startsWith("/sign-up");
+  // const headerList = headers();
+  // const path = headerList.get("x-invoke-path") || "";
+  // const isAuthPage = path.startsWith("/login") || path.startsWith("/sign-up");
   return (
     <html lang="en">
       <body className={`${bodyFont.className}`}>

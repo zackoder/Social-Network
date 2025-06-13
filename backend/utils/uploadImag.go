@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -48,10 +49,16 @@ func UploadMsgImg(pyload []byte) (Message, error) {
 	if len(parts) != 2 {
 		return message, fmt.Errorf("Send a valid data")
 	}
-	
+
+	// if err := os.WriteFile("test.txt", pyload, 0o644); err != nil {
+	// 	fmt.Println("writing file error ", err)
+	// 	return message, fmt.Errorf("internal sercer error")
+	// }
+	// log.Println("file was created")
+
 	metaPart := parts[0]
 	filePart := parts[1]
-
+	log.Println("metta data:", string(metaPart))
 	err := json.Unmarshal(metaPart, &message)
 	if err != nil {
 		fmt.Println("invalid meta data", err)
@@ -59,10 +66,6 @@ func UploadMsgImg(pyload []byte) (Message, error) {
 	}
 
 	// file to visulize the pyload
-	if err := os.WriteFile("test.txt", pyload, 0644); err != nil {
-		fmt.Println("writing file error ", err)
-		return message, fmt.Errorf("internal sercer error")
-	}
 
 	if !strings.Contains(message.Mime, "image/") {
 		return message, fmt.Errorf("invalid file type you can only send images")
@@ -71,7 +74,7 @@ func UploadMsgImg(pyload []byte) (Message, error) {
 
 	message.Filename = fmt.Sprintf("uploads/%d_%s", time.Now().Unix(), message.Filename)
 
-	if err := os.WriteFile(message.Filename, filePart, 0644); err != nil {
+	if err := os.WriteFile(message.Filename, filePart, 0o644); err != nil {
 		fmt.Println("writing file error ", err)
 		return message, fmt.Errorf("internal sercer error")
 	}

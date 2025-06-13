@@ -5,6 +5,7 @@ import { use, useEffect, useState } from "react";
 
 export default function GroupCard({ groups }) {
   const [groupsData, setGroupStatuses] = useState([]);
+
   useEffect(() => {
     setGroupStatuses(groups);
   }, [groups]);

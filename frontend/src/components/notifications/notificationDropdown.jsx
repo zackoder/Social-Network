@@ -1,39 +1,39 @@
-"use client";
-
-import { useState, useEffect, useRef } from 'react';
-import styles from './notificationDropdown.module.css';
+import { useEffect, useRef, useState } from "react";
+import styles from "./notificationDropdown.module.css";
+import { socket } from "../websocket/websocket";
+import { isAuthenticated } from "@/app/page";
 
 export default function NotificationDropdown({ isOpen, onClose }) {
-  const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [offset, setOffset] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
   const dropdownRef = useRef(null);
+  const [notifications, setNotifications] = useState([]);
+  const [responseData, setResponseData] = useState({ id: "", action: "" });
 
-  // Fetch notifications
+  // const [offset, setOffset] = useState(0);
+  // const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const host = process.env.NEXT_PUBLIC_HOST;
+
   const fetchNotifications = async () => {
-    if (loading || !hasMore) return;
-    
+    if (loading) return;
+    setLoading(true);
+
     try {
-      setLoading(true);
-      const response = await fetch(`/api/notifications?limit=5&offset=${offset}`);
-      
-      if (!response.ok) {
-        // throw new Error('Failed to fetch notifications');
-      }
-      
+      const response = await fetch(`${host}/getNotifications`, {
+        credentials: "include",
+      });
       const data = await response.json();
-      
-      if (offset === 0) {
-        setNotifications(data.notifications);
+      console.log("notification", data);
+      if (notifications.length === 0) {
+        setNotifications([]);
       } else {
-        setNotifications(prev => [...prev, ...data.notifications]);
+        setNotifications((prev) => [...prev, ...data]);
       }
-      
-      setHasMore(data.hasMore);
-      setOffset(prev => prev + data.notifications.length);
+
+      // setHasMore(data.hasMore);
+      // setOffset((prev) => prev + data.notifications.length);
     } catch (error) {
-      // console.error('Error fetching notifications:', error);
+      console.error("Error fetching notifications:", error);
     } finally {
       setLoading(false);
     }
@@ -46,65 +46,118 @@ export default function NotificationDropdown({ isOpen, onClose }) {
 
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        onClose();
+    const handleSocketMessage = (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        setNotifications((prev) => [data, ...prev]);
+      } catch (err) {
+        console.log("failed to notification: ", err);
       }
+      socket.addEventListener("message", handleSocketMessage);
+      return () => socket.removeEventListener("message", handleSocketMessage);
     };
+  }, [isOpen]);
 
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen, onClose]);
-
-  // Fetch notifications when dropdown is opened
   useEffect(() => {
     if (isOpen) {
-      setOffset(0);
-      setHasMore(true);
       fetchNotifications();
     }
   }, [isOpen]);
-
   if (!isOpen) return null;
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleString();
-  };
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        onClose(); // call parent to close dropdown
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [onClose]);
+
+  //send Request
+  useEffect(() => {
+    const sendRequest = async () => {
+      if (!responseData.id) return;
+      try {
+        const response = await fetch(`${host}/notiResp`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: responseData,
+          credentials: "include",
+        });
+        console.log("response -------", response);
+
+        if (!response.ok) {
+          console.log("Failed to send notification");
+          isAuthenticated(response.status);
+          return;
+        }
+      } catch (err) {
+        console.log("failed to send request the notification");
+      }
+    };
+    sendRequest();
+  }, [responseData.id]);
 
   return (
-    <div className={styles.dropdown} ref={dropdownRef}>
+    <div ref={dropdownRef} className={styles.dropdown}>
       <div className={styles.header}>
         <h3>Notifications</h3>
       </div>
-      
       <div className={styles.notificationsList}>
-        {notifications.length === 0 && !loading ? (
-          <div className={styles.emptyState}>No notifications</div>
+        {notifications.length === 0 ? (
+          <p>No notifications</p>
         ) : (
-          <>
-            {notifications.map((notification) => (
-              <div key={notification.id} className={styles.notificationItem}>
-                <div className={styles.message}>{notification.message}</div>
-                <div className={styles.time}>{formatDate(notification.created_at)}</div>
+          notifications.map((notification, index) =>
+            notification.message === "event" ? (
+              <div key={index} className={styles.notificationItem}>
+                <p>{notification.message}</p>
+                <button
+                  onClick={() =>
+                    setResponseData({ id: notification.id, action: "going" })
+                  }
+                  className={styles.btnNotification}
+                >
+                  Going
+                </button>
+                <button
+                  onClick={() =>
+                    setResponseData({
+                      id: notification.id,
+                      action: "not_going",
+                    })
+                  }
+                  className={styles.btnNotification}
+                >
+                  Not Going
+                </button>
               </div>
-            ))}
-            
-            {hasMore && (
-              <button 
-                className={styles.loadMoreBtn} 
-                onClick={handleLoadMore}
-                disabled={loading}
-              >
-                {loading ? 'Loading...' : 'Load More'}
-              </button>
-            )}
-          </>
+            ) : (
+              <div key={index} className={styles.notificationItem}>
+                <p>{notification.message}</p>
+                <button
+                  onClick={() =>
+                    setResponseData({ id: notification.id, action: "accepted" })
+                  }
+                  className={styles.btnNotification}
+                >
+                  Accept
+                </button>
+                <button
+                  onClick={() =>
+                    setResponseData({ id: notification.id, action: "rejected" })
+                  }
+                  className={styles.btnNotification}
+                >
+                  Reject
+                </button>
+              </div>
+            )
+          )
         )}
       </div>
     </div>
