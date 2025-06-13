@@ -17,16 +17,15 @@ export default function Contacts({ onContactClick, activeContactId }) {
           credentials: "include",
         });
         const data = await response.json();
-        setContacts(data);
-        if (data &&data.error) {
+        setContacts(Array.isArray(data) ? data : []);
+        if (data && data.error) {
           // throw new Error(data.error);
           console.log(data.error);
         }
         console.log(data);
       } catch (error) {
         // console.error("Failed to fetch contacts:", error);
-        isAuthenticated(response.status, "you should login first")
-        
+        isAuthenticated(response.status, "you should login first");
       }
     };
     fetchContacts();

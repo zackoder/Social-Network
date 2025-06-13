@@ -1,5 +1,5 @@
 .groupscard {
-  height: 40vh;
+  height: 70vh;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   width: 100%;

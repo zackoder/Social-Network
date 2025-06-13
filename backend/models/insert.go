@@ -172,7 +172,6 @@ func SaveInvitation(Groupe_id, sender_id, resever_id int) error {
 func InsertGroupe(title, description string, creator_id int) (int, error) {
 	query := "INSERT INTO groups (name, description, group_oner) VALUES (?, ?, ?)"
 	res, err := Db.Exec(query, title, description, creator_id)
-	fmt.Println(err,"errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
 	if err != nil {
 		return 0, err
 	}
@@ -188,7 +187,6 @@ func InsertGroupe(title, description string, creator_id int) (int, error) {
 func InsserMemmberInGroupe(Groupe_id, User_id int, role string) error {
 	Quirie := "INSERT INTO group_members (group_id,user_id,role) VALUES (?,?,?)"
 	_, err := Db.Exec(Quirie, Groupe_id, User_id, role)
-	fmt.Println("errrrrrrrrrrrrr", err)
 	return err
 }
 

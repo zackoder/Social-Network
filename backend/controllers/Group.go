@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -60,7 +61,7 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request, user_id int) {
 	return
 }
 
-func Jouind_Groupe(w http.ResponseWriter, r *http.Request, user_id int) {
+func Join_Group(w http.ResponseWriter, r *http.Request, user_id int) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
@@ -74,7 +75,6 @@ func Jouind_Groupe(w http.ResponseWriter, r *http.Request, user_id int) {
 	}
 
 	requist.User_id = user_id
-	log.Println("group id", requist.Groupe_id, "user id", requist.User_id)
 	if models.IsMember(requist.Groupe_id, requist.User_id) {
 		utils.WriteJSON(w, map[string]string{"error": "you are already a member of this group"}, 403)
 		return
@@ -87,32 +87,37 @@ func Jouind_Groupe(w http.ResponseWriter, r *http.Request, user_id int) {
 
 	var noti utils.Notification
 	noti.Target_id = models.GetGroupOwner(requist)
+	if noti.Target_id == user_id {
+		utils.WriteJSON(w, map[string]string{"error": "Forbidden"}, http.StatusForbidden)
+		return
+	}
 	noti.Actor_id = requist.Groupe_id
 	noti.Sender_id = requist.User_id
 	noti.Message = "join request"
 	err = models.InsertNotification(noti)
 	if err != nil {
-		log.Println("error", err)
+		log.Println("error lksdfjgksdfglkjdsglkjgl", err)
+		os.Exit(10)
 		if err.Error() != "" && strings.Contains(err.Error(), "FOREIGN KEY") {
 			utils.WriteJSON(w, map[string]string{"error": "check your data"}, http.StatusBadRequest)
 		} else {
 			utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
 			log.Println(err)
 		}
-		utils.WriteJSON(w, map[string]string{"prossotion": "seccesfel"}, http.StatusOK)
-	}
-
-	if !models.IsMember(requist.Groupe_id, requist.User_id) {
-		err = models.InsserMemmberInGroupe(requist.Groupe_id, requist.User_id, "member")
-		if err != nil {
-			utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
-			log.Println(err)
-		}
-		utils.WriteJSON(w, map[string]string{"prossotion": "seccesfel"}, http.StatusOK)
-	} else {
-		utils.WriteJSON(w, map[string]string{"error": "you are redy member in this group"}, 403)
 		return
 	}
+
+	// if !models.IsMember(requist.Groupe_id, requist.User_id) {
+	// 	err = models.InsserMemmberInGroupe(requist.Groupe_id, requist.User_id, "member")
+	// 	if err != nil {
+	// 		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
+	// 		log.Println(err)
+	// 	}
+	// 	utils.WriteJSON(w, map[string]string{"prossotion": "seccesfel"}, http.StatusOK)
+	// } else {
+	// 	utils.WriteJSON(w, map[string]string{"error": "you are redy member in this group"}, 403)
+	// 	return
+	// }
 	utils.WriteJSON(w, map[string]string{"prossotion": "succeeded"}, http.StatusOK)
 }
 
