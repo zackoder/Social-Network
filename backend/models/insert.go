@@ -257,3 +257,4 @@ func AddOrUpdateReaction(userID, postID int, reactionType string) error {
 		return err
 	}
 }
+
