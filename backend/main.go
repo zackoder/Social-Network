@@ -34,21 +34,21 @@ func main() {
 	mux.Handle("POST /updatePrivacy", midleware.AuthMiddleware(controllers.UpdatePrivacy))
 	mux.Handle("POST /addPost", midleware.AuthMiddleware(controllers.AddPost))
 	mux.Handle("POST /followReq", midleware.AuthMiddleware(controllers.HandleFollow))
+	mux.Handle("/JouindGroupe", midleware.AuthMiddleware(controllers.Jouind_Groupe))
 	mux.Handle("POST /creategroup",midleware.AuthMiddleware(controllers.Creat_groupe))
 	mux.Handle("/CreatEvent", midleware.AuthMiddleware(controllers.CreatEvent))
 
 	mux.Handle("GET /groupmessages", midleware.AuthMiddleware(controllers.Getgroupmsgs))
+	mux.Handle("/group", midleware.AuthMiddleware(controllers.GetGroup))
+	mux.Handle("/GetMyGroups", midleware.AuthMiddleware(controllers.GetGroupsCreatedByUser))
 	mux.Handle("/groupInvitarion", http.HandlerFunc(controllers.InviteUser))
 
-	mux.HandleFunc("/JouindGroupe", controllers.Jouind_Groupe)
 	mux.HandleFunc("/GetPostsFromGroupe", controllers.Get_all_post)
 	mux.Handle("/api/getevents", midleware.AuthMiddleware(controllers.GetEvents))
 
 	mux.Handle("POST /api/logout", midleware.AuthMiddleware(controllers.LogoutHandler))
 	mux.Handle("GET /GetGroups", midleware.AuthMiddleware(controllers.AllGroups))
 	mux.Handle("/GetJoinedGroups", midleware.AuthMiddleware(controllers.GetGroupsJoined))
-	mux.Handle("/GetMyGroups", midleware.WithCORS(http.HandlerFunc(controllers.GetGroupsCreatedByUser)))
-	mux.Handle("/group", midleware.AuthMiddleware(controllers.GetGroup))
 
    mux.Handle("/api/event-response", midleware.AuthMiddleware(controllers.EventResponce))
     mux.Handle("/api/postsGroups", midleware.AuthMiddleware(controllers.GetPostsGroupe))
@@ -79,8 +79,6 @@ func main() {
 	mux.HandleFunc("GET /api/getfollowers", midleware.AuthMiddleware(controllers.GetFollowers))
 	mux.HandleFunc("GET /api/getfollowinglist", controllers.Getfollowings)
 	mux.HandleFunc("GET /api/registrationData", midleware.AuthMiddleware(controllers.GetRegistrationData))
-	// Notification handler
-	mux.Handle("GET /api/notifications", midleware.AuthMiddleware(controllers.GetNotifications))
 
 	// this endpoint is gonna be used to fetch the users for the chat pannel .
 	// the func GetFollowers and GetFollowers they look the same but they are not
