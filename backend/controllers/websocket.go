@@ -133,7 +133,7 @@ func BroadcastPrivateMessage(msg utils.Message, host string) {
 	}
 
 	if msg.Filename != "" {
-		msg.Filename = host + msg.Filename
+		msg.Filename = host + msg.Filename // host + msg.Filename
 	}
 
 	Broadcast(msg.Reciever_id, msg)

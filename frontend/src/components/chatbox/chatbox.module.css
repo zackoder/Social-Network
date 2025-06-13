@@ -75,6 +75,9 @@
     border-radius: 50%;
     position: relative;
 }
+.readmessages .sender .message {
+    margin-left: 10px;
+}
 .readmessages .message p{
     width: 100%;
     padding: 10px;
@@ -106,6 +109,7 @@
     display: flex;
     flex-wrap: wrap;
     padding: 0.2rem;
+    margin-bottom: 10px;
     border: 1px solid #ccc;
     background: white;
     border-radius: 8px;
@@ -197,4 +201,9 @@
 
 .iconSend:hover{
     color: #01694ec9;
+}
+
+.imageMessage{
+    border-radius: 4px;
+    display: block;
 }
