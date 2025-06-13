@@ -165,7 +165,7 @@ export default function Home() {
           </div>
         )}
         {error && <p style={{ color: "red" }}>{error}</p>}
-        <GroupCard groups={groups} />;
+        <GroupCard groups={groups} />
         {/* <div className={styles.contenu} style={{ marginTop: "20px" }}>
         {error && <p style={{ color: "red" }}>{error}</p>}
         {groups.length > 0 ? (

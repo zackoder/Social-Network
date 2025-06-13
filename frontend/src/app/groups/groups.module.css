@@ -7,21 +7,20 @@
 }
 
 /* Style des liens */
-.lien{
+.lien {
   width: 350px;
   text-decoration: none;
-  color:#06d6a0;
- 
+  color: #06d6a0;
+
   background-color: #453f3f;
   box-shadow: rgba(0, 0, 0, 0.25) -3px 0px 10px inset;
   font-size: 18px;
   font-weight: bold;
-  padding:22px 59px 22px 59px;
+  padding: 22px 59px 22px 59px;
   margin-right: -18px;
   border: 1px solid #000;
   border-radius: 4px;
   transition: background-color 0.3s ease, color 0.3s ease;
-  
 }
 
 /* Effet au survol des liens */
@@ -35,41 +34,35 @@
   text-align: center;
 }
 
-
-
 /* Conteneur pour le texte modifié */
 .content-container {
   margin-top: 40px;
   text-align: center;
 }
 
-
-.div0{
-position: absolute;
-top: 18%;
-left: 25%;
-display: flex;
-gap: 20px;
-margin: 0 auto;
+.div0 {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  margin-bottom: 20px;
 }
 
 /*******************************************Creat groupe button******************************************************************************************/
 
-.div3{
-  position:fixed;
+/* .div3 {
+  position: fixed;
   bottom: 20%;
   right: 20%;
-}
-
+} */
 
 .active {
-  background-color: #007BFF;
+  background-color: #007bff;
   color: white;
 }
 /*******************************************Creat groupe button******************************************************************************************/
 
 .button {
-  background-color: #4f46e5; 
+  background-color: #4f46e5;
   color: #ffffff;
   padding: 12px 24px;
   border: none;
@@ -82,7 +75,7 @@ margin: 0 auto;
 }
 
 .button:hover {
-  background-color: #4338ca; 
+  background-color: #4338ca;
   transform: translateY(-2px);
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
 }
@@ -120,10 +113,7 @@ margin: 0 auto;
   font-weight: 600;
 }
 
-
-
 /*************************************************popup***************************************************************************************/
-
 
 .modal input,
 .modal textarea {
