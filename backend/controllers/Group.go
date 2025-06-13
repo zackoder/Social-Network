@@ -344,6 +344,8 @@ func EventResponce(w http.ResponseWriter, r *http.Request, userId int) {
 		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
 		return
 	}
+	log.Println("hna ta7lwiz", responce)
+	models.RemoveNoti(responce)
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "The answer was successfully added"})
@@ -374,8 +376,9 @@ func GetPostsGroupe(w http.ResponseWriter, r *http.Request, userId int) {
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(Posts)
+	// w.WriteHeader(http.StatusCreated)
+	utils.WriteJSON(w, Posts, http.StatusCreated)
+	// json.NewEncoder(w).Encode(Posts)
 }
 
 func GetEvents(w http.ResponseWriter, r *http.Request, userId int) {
