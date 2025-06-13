@@ -2,6 +2,7 @@ package models
 
 import (
 	"net/http"
+	"social-network/utils"
 )
 
 func Deletfollow(follower int, followed string) error {
@@ -26,4 +27,11 @@ func DeleteNoti(noti_id int) error {
 	deleteNoti := "DELETE FROM notifications WHERE id = ?"
 	_, err := Db.Exec(deleteNoti, noti_id)
 	return err
+}
+
+func RemoveNoti(res utils.EventResponse) {
+	deleteNoti := `
+		DELET FROM notifications WHERE 
+	`
+	_ = deleteNoti
 }

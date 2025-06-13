@@ -43,6 +43,7 @@ func Websocket(w http.ResponseWriter, r *http.Request, user_id int) {
 	}
 
 	for {
+		log.Println("dslkdfjqlskjflsjf")
 		msgType, payload, err := conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
