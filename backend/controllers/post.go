@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -34,6 +35,9 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 		fmt.Println("Upload Image error:", err)
 		return
 	}
+
+	log.Println(filepath == "" && (strings.TrimSpace(post.Title) == "" && strings.TrimSpace(post.Content) == ""))
+
 	if filepath == "" || (strings.TrimSpace(post.Title) == "" && strings.TrimSpace(post.Content) == "") {
 		utils.WriteJSON(w, map[string]string{"error": "title or content is empty"}, http.StatusBadRequest)
 		return
@@ -63,11 +67,8 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 
 	if filepath != "" {
 		post.Image = host + post.Image
-
-		if filepath != "" {
-			post.Image = host + post.Image
-		}
 	}
+
 	utils.WriteJSON(w, post, 200)
 }
 
