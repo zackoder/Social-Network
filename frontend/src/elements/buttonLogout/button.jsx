@@ -14,6 +14,7 @@ export default function ButtonLogout(){
                     method: "POST",
                     credentials: "include"
                 });
+                localStorage.removeItem("user-id")
                 redirect('/login')
             }}    
         >

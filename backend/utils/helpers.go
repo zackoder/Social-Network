@@ -30,9 +30,11 @@ func RemoveIMG(filepath string) {
 }
 
 func CheckExtension(FileExtension string) bool {
-	extensions := []string{".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp", ".ico", ".heif", ".apng"}
+	extensions := []string{"jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "ico", "heif", "apng"}
 	for _, extension := range extensions {
-		if strings.Contains(FileExtension, extension) {
+		if strings.Contains(FileExtension, strings.ToUpper(extension)) {
+			return true
+		}else if strings.Contains(FileExtension, extension) {
 			return true
 		}
 	}
