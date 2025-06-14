@@ -260,3 +260,44 @@ func AddOrUpdateReaction(userID, postID int, reactionType string) error {
 		return err
 	}
 }
+
+func InsertComment(comment *utils.Comment) (int, error) {
+	query := `
+		INSERT INTO comments (user_id, post_id, comment, imagePath, date) 
+		VALUES (?, ?, ?, ?, strftime('%s', 'now'))
+	`
+
+	result, err := Db.Exec(query, comment.UserId, comment.PostId, comment.Content, comment.ImagePath)
+	if err != nil {
+		fmt.Println("Error inserting comment:", err)
+		return 0, err
+	}
+
+	lastId, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(lastId), nil
+}
+
+// InsertReaction adds a new reaction to the database
+func InsertReaction(reaction *utils.Reaction) (int, error) {
+	query := `
+		INSERT INTO reactions (user_id, post_id, reaction_type, date) 
+		VALUES (?, ?, ?, strftime('%s', 'now'))
+	`
+
+	result, err := Db.Exec(query, reaction.UserId, reaction.PostId, reaction.ReactionType)
+	if err != nil {
+		fmt.Println("Error inserting reaction:", err)
+		return 0, err
+	}
+
+	lastId, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	return int(lastId), nil
+}
+

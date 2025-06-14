@@ -26,7 +26,7 @@ func HandleFollow(w http.ResponseWriter, r *http.Request, follower int) {
 		return
 	}
 
-	alreadyFriends, _ := models.FriendsChecker(noti.Sender_id, noti.Target_id)
+	alreadyFriends, _ := models.FriendsCheckerForFollow(noti.Sender_id, noti.Target_id)
 	if alreadyFriends {
 		models.Deletfollow(follower, followed)
 		utils.WriteJSON(w, map[string]string{"resp": "unfollowed seccessfoly"}, 200)
@@ -50,6 +50,7 @@ func HandleFollow(w http.ResponseWriter, r *http.Request, follower int) {
 
 func UpdatePrivacy(w http.ResponseWriter, r *http.Request, user_id int) {
 	privacy := models.UpdateProfile(user_id)
+	fmt.Println(privacy)
 	utils.WriteJSON(w, map[string]string{"profile_status": privacy}, 200)
 }
 
@@ -64,8 +65,8 @@ func UserData(w http.ResponseWriter, r *http.Request, user_id int) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	userD.Id = user_id
 	userD.Firstname = user.FirstName
+	userD.Id = user_id
 	userD.Avatar = r.Host + user.Avatar
 
 	utils.WriteJSON(w, userD, 200)

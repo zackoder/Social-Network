@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"social-network/models"
@@ -27,22 +28,14 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 		return
 	}
 
-	if strings.TrimSpace(post.Title) == "" || strings.TrimSpace(post.Content) == "" {
-		utils.WriteJSON(w, map[string]string{"error": "title or content is empty"}, http.StatusBadRequest)
-		return
-	}
-
-	post.Poster_id = userId
-	if post.Groupe_id != 0 {
-		if !models.IsMember(post.Groupe_id, userId) {
-			utils.WriteJSON(w, map[string]string{"error": "Forbidden"}, http.StatusForbidden)
-			return
-		}
-	}
 	filepath, err := utils.UploadImage(r)
 	if err != nil {
-		utils.WriteJSON(w, map[string]string{"error": err.Error()}, http.StatusInternalServerError)
+		utils.WriteJSON(w, map[string]string{"error": err.Error()}, http.StatusBadRequest)
 		fmt.Println("Upload Image error:", err)
+		return
+	}
+	if filepath == "" || (strings.TrimSpace(post.Title) == "" && strings.TrimSpace(post.Content) == "") {
+		utils.WriteJSON(w, map[string]string{"error": "title or content is empty"}, http.StatusBadRequest)
 		return
 	}
 
@@ -55,6 +48,7 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 
 	post.Image = filepath
 
+	fmt.Println(post.Poster_id)
 	post.Id, err = models.InsertPost(post)
 	if err != nil {
 		utils.RemoveIMG(filepath)
@@ -78,9 +72,21 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 }
 
 func Posts(w http.ResponseWriter, r *http.Request) {
-	offset := 0
-	posts := models.QueryPosts(offset, r)
-	// fmt.Println("posts",posts)
+	offsetStr := r.URL.Query().Get("offset")
+	limitStr := r.URL.Query().Get("limit")
+
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil {
+		fmt.Println("offset", err)
+		return
+	}
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		fmt.Println("limiit", err)
+		return
+	}
+
+	posts := models.QueryPosts(limit, offset, r)
 	utils.WriteJSON(w, posts, 200)
 }
 

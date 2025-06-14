@@ -22,6 +22,7 @@ export default function ChatBox({ contact, onClickClose }) {
   const [image, setImage] = useState(null);
   const [showEmojis, setShowEmojis] = useState(false);
   const bottomRef = useRef(null);
+  const scrollContainerRef = useRef(null); // ✅ Scroll container ref
   const [offset, setOffset] = useState(0);
   const limit = 20;
   const userId = parseInt(localStorage.getItem("user-id"));
@@ -104,14 +105,66 @@ export default function ChatBox({ contact, onClickClose }) {
     };
 
     socket.addEventListener("message", handleMessage);
-    return () => socket.removeEventListener("message", handleMessage);
-  }, [contact.id]); // Add contact.id as dependency
+
+    return () => {
+      // 🔥 Clean up the old listener to avoid duplicates
+      socket.removeEventListener("message", handleMessage);
+    };
+  }, [contact.id]);
+
+  const fetchMessages = async (offsetValue = 0) => {
+    const container = scrollContainerRef.current;
+    const previousScrollHeight = container?.scrollHeight || 0; // 👈 record scroll height
+  
+    try {
+      const response = await fetch(`${host}/GetMessages?receiver_id=${contact.id}&offset=${offsetValue}`, {
+        credentials: "include",
+        method: "GET"
+      });
+  
+      const data = await response.json();
+      console.log(data);
+      
+      if (!response.ok) {
+        isAuthenticated(response.status, data.error);
+        return;
+      }
+  
+      if (Array.isArray(data) && data.length > 0) {
+        setMessages((prev) => [...data.reverse(), ...prev]);
+        setOffset(offsetValue + limit);
+  
+        // ⏳ Wait until new messages render
+        setTimeout(() => {
+          const newScrollHeight = container?.scrollHeight || 0;
+          if (container) {
+            container.scrollTop = newScrollHeight - previousScrollHeight; // 👈 restore position
+          }
+        }, 0); // short delay to allow rendering
+      }
+    } catch (err) {
+      console.log("Error fetching messages", err);
+    }
+  };
 
   useEffect(() => {
-    const container = document.querySelector(`${styles.readmessages}`);
-    container?.addEventListener("scroll", handleScroll);
+    setMessages([]);
+    setOffset(0);
+    fetchMessages(0);
+  }, [contact.id]);
 
-    return () => container?.removeEventListener("scroll");
+  const handleScroll = (e) => {
+    if (e.target.scrollTop === 0) {
+      fetchMessages(offset);
+    }
+  };
+  
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+  
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
   }, [offset]);
 
   const handleSubmit = async (e) => {
@@ -177,8 +230,14 @@ export default function ChatBox({ contact, onClickClose }) {
           x
         </div>
       </div>
-
-      <div className={styles.readmessages}>
+  
+      {/* ✅ Attach scroll ref and handler */}
+      <div
+        className={styles.readmessages}
+        ref={scrollContainerRef}
+        // onScroll={handleScroll}
+       
+      >
         {messages.map((msg, index) => (
           <div
             key={index}
@@ -195,14 +254,14 @@ export default function ChatBox({ contact, onClickClose }) {
                 />
               </div>
             )}
-
+  
             <div className={styles.message}>
               {msg.filename ? (
                 <div className={styles.imageContainer}>
                   <img
                     src={`http://${msg.filename}`}
                     alt="sent-image"
-                    width={250} // Set appropriate dimensions
+                    width={250}
                     height={250}
                     className={styles.imageMessage}
                   />
@@ -219,13 +278,13 @@ export default function ChatBox({ contact, onClickClose }) {
                 </div>
               )}
             </div>
-
+  
             {msg.sender_id === userId && (
               <div className={styles.profileImage}>
                 <img
                   src="/profile/profile.png"
                   alt="profile"
-                  width={50} // Set appropriate dimensions
+                  width={50}
                   height={50}
                   style={{ objectFit: "cover", borderRadius: "50%" }}
                 />
@@ -235,7 +294,7 @@ export default function ChatBox({ contact, onClickClose }) {
         ))}
         <div ref={bottomRef} />
       </div>
-
+  
       <div className={styles.sendmessages}>
         <form onSubmit={handleSubmit}>
           {showEmojis && (
@@ -285,6 +344,7 @@ export default function ChatBox({ contact, onClickClose }) {
       </div>
     </div>
   );
+  
 }
 
 function buildBinaryMessage(metadata, fileBuffer) {

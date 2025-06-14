@@ -23,7 +23,7 @@ export default function NotificationDropdown({ isOpen, onClose }) {
         credentials: "include",
       });
       const data = await response.json();
-      console.log("notification", data);
+      if (data === null || Array.isArray(data.notification) ? data : [] )
       if (notifications.length === 0) {
         setNotifications([...data]);
       } else {

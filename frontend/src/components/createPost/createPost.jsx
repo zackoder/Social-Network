@@ -1,25 +1,48 @@
 "use client";
 import { FaCloudUploadAlt } from "react-icons/fa";
-import { use, useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import "./createPost.modules.css";
-import { getData } from "../post/post";
+// import { getData } from "../post/post";
 import { useRef } from "react";
 import ContactsPrivate from "../contactprivate/contactprivate";
 import { isAuthenticated } from "@/app/page";
 import { DataContext } from "@/contexts/dataContext";
-
+const host = process.env.NEXT_PUBLIC_HOST;
 export default function CreatePost({ onPostCreated }) {
+  const [userData, setUserData] = useState([]);
+  useEffect(() => {
+    try {
+      const fetchUserData = async () => {
+        const response = await fetch(`${host}/userData`, {
+          credentials: "include",
+        });
+        if (!response.ok) {
+          isAuthenticated(response.status, "you should login first");
+        }
+        const userdata = await response.json();
+
+        setUserData(userdata);
+        console.log("nnnnnnnnnnnnnnnnnnnnnnnnn", userdata);
+      };
+      fetchUserData();
+    } catch (error) {
+      console.log("we cant fetch user data for post", error);
+    }
+  }, []);
+  console.log("nnnnnnnnnnnnnnnnnnnnnnnnn", userData);
+
   let [privacy, setPrivacy] = useState("public");
   let [title, setTitle] = useState("");
   let [content, setContent] = useState("");
   let [image, setImage] = useState("");
-  const { selectedContactsIds } = useContext(DataContext);
+  const { selectedContactsIds, setSelectedContactsIds } =
+    useContext(DataContext);
   let friends = selectedContactsIds;
   const fileInputRef = useRef(null);
-  const host = process.env.NEXT_PUBLIC_HOST;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // console.log("friends", friends);
     const formData = new FormData();
     const postData = {
       privacy,
@@ -52,7 +75,7 @@ export default function CreatePost({ onPostCreated }) {
         setTitle("");
         setContent("");
         setImage("");
-        setAllowedIds([]);
+        setSelectedContactsIds([]);
       }
 
       // Reset file input
@@ -74,18 +97,15 @@ export default function CreatePost({ onPostCreated }) {
       <form onSubmit={handleSubmit}>
         <div className="identityProfile">
           <div className="imageProfile">
-            {/* <Image
-                            className={styles.image}
-                            src="/images/post.png"
-                            alt="post"
-                            // width={500}
-                            // height={500}
-                            fill={true}
-                        /> */}
+            <img
+              className="imageProfile"
+              src={`http://${userData.avatar}`}
+              alt="profile"
+            />
           </div>
           <div className="nameProfile">
             <div className="name-privacy">
-              <h3>full name</h3>
+              <h3>{userData.firstName}</h3>
               <select
                 onChange={(e) => {
                   setPrivacy(e.target.value);
