@@ -20,54 +20,46 @@ export default function GroupPage() {
 
 
 
-async function getGroupData() {
-  try {
-    const resp = await fetch(`${host}/group?groupId=${id}`, {
-      credentials: "include",
-    });
+  async function getGroupData() {
+    try {
+      const resp = await fetch(`${host}/group?groupId=${id}`, {
+        credentials: "include",
+      });
 
-    const data = await resp.json();
+      const data = await resp.json();
 
-    if (!resp.ok) {
-      throw new Error(data.error || "Unknown error");
+      if (!resp.ok) {
+        setError(data.error || "This group does not exist.");
+        // throw new Error(data.error || "Unknown error");
+      }
+
+      setGroupData(data);
+    } catch (err) {
+      console.error("Failed to fetch group data:", err.message);
+      setGroupData(null); // facultatif si tu veux afficher une erreur
+      setError(err.message || "This group does not exist.");
     }
-
-    setGroupData(data);
-  } catch (err) {
-    console.error("Failed to fetch group data:", err.message);
-    setGroupData(null); // facultatif si tu veux afficher une erreur
-    setError(err.message || "This group does not exist.");
   }
-}
-
-
 
   useEffect(() => {
-
-
     getGroupData();
   }, [id, host]);
 
-
-
-if (error) {
-  return <div className={styles.error}>{error}</div>;
-}
-
-
-
+  if (error) {
+    return <div className={styles.error}>{error}</div>;
+  }
 
   if (!groupData) {
     return <div>Loading...</div>;
   }
 
   return (
-    
+
     <div className={styles.parant}>
       <div className={styles.left}>
         <div className={styles.soutitre0}>
           <p>All users</p>
-          <ContactsPrivate/>
+          <ContactsPrivate />
         </div>
         <div className={styles.chatbox0}></div>
       </div>
