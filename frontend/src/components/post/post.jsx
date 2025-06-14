@@ -1,3 +1,5 @@
+ 
+
 "use client";
 
 import LikeDislikeComment from "../likeDislikeComment/likeDislikeComment";
@@ -5,55 +7,43 @@ import styles from "./post.module.css";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
-async function GetData() {
-  const host = process.env.NEXT_PUBLIC_HOST;
+ 
 
-  try {
-    const response = await fetch(`${host}/api/posts`);
-
-    if (!response.ok) {
-      console.log("Failed to Fetch Data");
-    }
-    return response.json();
-  } catch (error) {
-    console.error("Error", error);
-    return [];
-  }
-}
-
-export default function Post({ post, divclass = "container" }) {
-  let i = 0;
+export default  function Post({ post = null, posts: propsPosts = null }) {
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  // If a single post is passed as prop, use it instead of fetching
   useEffect(() => {
+    // If an array of posts is passed as a prop
+    if (propsPosts && Array.isArray(propsPosts)) {
+      setPosts(propsPosts);
+      return;
+    }
+
+    // If a single post is passed
     if (post) {
       setPosts([post]);
       return;
     }
 
-    setLoading(true);
-    GetData()
-      .then((data) => {
-        console.log(data);
-        setPosts(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, [post]);
+    // If no props, fetch all posts
+    // setLoading(true);
+        // GetData()
+     
+        // setPosts(Array.isArray(data) ? data : []);
+        // setLoading(false);
+      
+  
+        // setError(err.message);
+        // setLoading(false);
+    
+  }, [post, propsPosts]);
 
-  if (loading) return <div className={styles.container}>Loading posts...</div>;
-  if (error) return <div className={styles.container}>Error: {error}</div>;
+  // if (loading) return <div className={styles.container}>Loading posts...</div>;
+  // if (error) return <div className={styles.container}>Error: {error}</div>;
 
   return (
-    <div className={divclass}>
-      {posts.map((post) => (
-        <div className={styles.post} key={post.id}>
+    <div className={styles.container}>
+      {posts.map((post, index) => (
+        <div className={styles.post} key={index}>
           <div className={styles.header}>
             <Link
               href={`/profile?id=${post.poster}&profile=${post.first_name}`}
@@ -76,8 +66,9 @@ export default function Post({ post, divclass = "container" }) {
             <h3>{post.title}</h3>
             <p>{post.content}</p>
           </div>
+
           <div className={styles.imagePost}>
-            {post.image ? (
+            {post.image && (
               <img
                 className={styles.image}
                 src={`http://${post.image}`}
@@ -85,7 +76,7 @@ export default function Post({ post, divclass = "container" }) {
                 width={500}
                 height={300}
               />
-            ) : null}
+            )}
           </div>
 
           <div className={styles.reaction}>
@@ -95,4 +86,5 @@ export default function Post({ post, divclass = "container" }) {
       ))}
     </div>
   );
+
 }

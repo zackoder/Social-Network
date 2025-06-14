@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
+
 	"social-network/models"
 	"social-network/utils"
-	"strconv"
 )
 
 // UserProfileInfo holds user avatar and name information
@@ -17,7 +19,7 @@ type UserProfileInfo struct {
 }
 
 // GetUserAvatarAndUserName retrieves the avatar URL and full name for a user by ID
-func GetUserAvatarAndUserName(userId int) utils.User {
+func GetUserAvatarAndUserName(userId int) *utils.User {
 	user, err := models.GetUserById(userId)
 	if err != nil {
 		log.Println(err)
@@ -27,6 +29,7 @@ func GetUserAvatarAndUserName(userId int) utils.User {
 
 // AddComment handles adding a new comment to a post
 func AddComment(w http.ResponseWriter, r *http.Request, userID int) {
+	fmt.Println("data is hereeeeeeeeeeeeeeee")
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method not allowed"}, http.StatusMethodNotAllowed)
 		return
@@ -38,6 +41,8 @@ func AddComment(w http.ResponseWriter, r *http.Request, userID int) {
 	}
 
 	postData := r.FormValue("commentData")
+	fmt.Println("this id postdata ", postData)
+
 	// Get the file path for the uploaded image
 	filepath, err := utils.UploadImage(r)
 	if err != nil {
@@ -68,9 +73,13 @@ func AddComment(w http.ResponseWriter, r *http.Request, userID int) {
 		comment.ImagePath = filepath
 	}
 
+	if strings.TrimSpace(comment.Content) == "" {
+		utils.WriteJSON(w, map[string]string{"error": "Empty Message"}, http.StatusBadRequest)
+		return
+	}
 	// Set the user ID from the session
 	comment.UserId = userID
-
+	fmt.Println("comment", comment.UserId, comment.Content, comment.PostId)
 	// Check if post exists
 	postExists, err := models.PostExists(comment.PostId)
 	if err != nil || !postExists {
@@ -130,6 +139,20 @@ func GetComments(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Method not allowed"}, http.StatusMethodNotAllowed)
 		return
 	}
+	offsetStr := r.URL.Query().Get("offset")
+	limitStr := r.URL.Query().Get("limit")
+	fmt.Println(offsetStr)
+
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil {
+		fmt.Println("offset", err)
+		return
+	}
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		fmt.Println("limiit", err)
+		return
+	}
 
 	// Get post ID from query parameters
 	postIdStr := r.URL.Query().Get("postId")
@@ -137,7 +160,7 @@ func GetComments(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "Post ID is required"}, http.StatusBadRequest)
 		return
 	}
-
+	log.Println("working")
 	postId, err := strconv.Atoi(postIdStr)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Invalid post ID"}, http.StatusBadRequest)
@@ -145,7 +168,7 @@ func GetComments(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get comments from database
-	comments, err := models.GetCommentsByPostId(postId)
+	comments, err := models.GetCommentsByPostId(postId, limit, offset)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Failed to retrieve comments"}, http.StatusInternalServerError)
 		return

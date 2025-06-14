@@ -1,6 +1,6 @@
 "use client";
-
-import { useEffect, useState } from "react";
+ 
+import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import ButtonFollow from "@/elements/buttonFollow/buttonFollow";
 import styles from "./profile.module.css";
@@ -8,28 +8,29 @@ import Image from "next/image";
 import Post from "@/components/post/post";
 import { FaLock, FaLockOpen } from "react-icons/fa";
 import { isAuthenticated } from "../page";
-
-// Create a non-async wrapper for Post
-function PostWrapper({ post }) {
-  return <Post post={post} />;
-}
+import { debounce } from "@/utils/debounce";
 
 export default function ProfilePage() {
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const LIMIT = 10;
+
   const searchParams = useSearchParams();
   const profileId = searchParams.get("id");
-
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
-  // const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [isPrivate, setIsPrivate] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("posts");
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState({ title: "", data: [] });
-  const host = process.env.NEXT_PUBLIC_HOST
+  const host = process.env.NEXT_PUBLIC_HOST;
   const [error, setError] = useState("");
+
+  console.log("get id of the user ", profileId);
 
   useEffect(() => {
     if (profileId) {
@@ -37,8 +38,52 @@ export default function ProfilePage() {
     }
   }, [profileId]);
 
+  const debouncedFetchPosts = useCallback(debounce(fetchProfileposts, 300), [
+    offset,
+    hasMore,
+    loading,
+  ]);
+
+  async function fetchProfileposts() {
+    if (loading || !hasMore) return;
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${host}/api/getProfilePosts?id=${profileId}&offset=${offset}&limit=${LIMIT}`,
+        {
+          // cache: "no-store",
+          method: "GET",
+          credentials: "include",
+        }
+      );
+      if (!response.ok) {
+        // throw new Error("Failed to fetch posts");
+      }
+      const data = await response.json();
+      if (data !== null && data.message === "this profile is private") {
+        setPosts([]);
+        return;
+      }  
+      console.log('befoore entring the condition' ,hasMore);
+      if (posts.length <= offset &&data === null ) {
+        console.log('im here in the condition',hasMore);
+        setHasMore(false); // No more posts available
+        return;
+      }
+      setPosts((prev) => [...prev, ...data]);
+      setOffset((prev) => prev + LIMIT);
+    } catch (err) {
+      console.error("Fetch error:", err);
+    } finally {
+      console.log(loading, hasMore);
+      // setHasMore(true);
+      setLoading(false);
+    }
+  }
+
   const fetchProfileData = async () => {
     setIsLoading(true);
+    await fetchProfileposts();
     try {
       // Fetch profile information
       const profileResponse = await fetch(
@@ -46,96 +91,83 @@ export default function ProfilePage() {
         { credentials: "include" }
       );
       const profileData = await profileResponse.json();
-      
+
       if (!profileResponse.ok) {
         console.log(`Profile response error: ${profileResponse.status}`);
-        isAuthenticated(profileResponse.status, profileData.error)
+        isAuthenticated(profileResponse.status, profileData.error);
       }
 
-      
-      console.log("Profile data:", profileData);
       setProfile(profileData.registration_data);
       setIsPrivate(profileData.profile_status);
-      console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk",profileData.profile_status);
-      
-      // setIsOwnProfile(profileData.isOwnProfile);
 
-      // Fetch posts with similar safeguards
-      
-      const postsResponse = await fetch(
-        `${host}/api/getProfilePosts?id=${profileId}`,
-        {
-          credentials: "include",
-        }
-      );
-      const posts = await postsResponse.json()
+      // const postsResponse = await fetch(
+      //   `${host}/api/getProfilePosts?id=${profileId}`,
+      //   {
+      //     credentials: "include",
+      //   }
+      // );
+      // const posts = await postsResponse.json();
 
-     console.log("this is for posts", posts);
-     
-        // Ensure posts is always an array
-        setPosts(Array.isArray(posts) ? posts : []);
-        // console.error("Failed to fetch posts");
-        // setPosts([]); // Set empty array on error
+      //  console.log("this is for posts", posts);
+
+      // Ensure posts is always an array
+      // setPosts(Array.isArray(posts) ? posts : []);
+      // console.error("Failed to fetch posts");
+      // setPosts([]); // Set empty array on error
 
       // Fetch followers
-      const followersResponse = await fetch(
+      const followers = await fetch(
         `${host}/api/getfollowers?id=${profileId}`,
         {
           credentials: "include",
         }
       );
-      const followersData = await followersResponse.json();
+      const followersData = await followers.json();
 
-      if (followersResponse.ok) {
+      if (followers.ok) {
         setFollowers(Array.isArray(followersData) ? followersData : []);
-      } else {
-        // console.error("Failed to fetch followers" , error);
-        setFollowers([]);
       }
-       console.log("followersResponse.ok", followersResponse);
- 
+      //  console.log("followersResponse.ok", followers);
+
       // Fetch following
-      const followingResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_HOST}/api/getfollowinglist?id=${profileId}`,
+      const following = await fetch(
+        `${host}/api/getfollowinglist?id=${profileId}`,
         {
           credentials: "include",
         }
       );
 
-      if (followingResponse.ok) {
-        const followingData = await followingResponse.json();
+      if (following.ok) {
+        const followingData = await following.json();
         setFollowing(Array.isArray(followingData) ? followingData : []);
-      } else {
-        setError("Failed to fetch following");
-        setFollowing([]);
       }
-      console.log("followersResponse.ok", followingResponse);
+      // console.log("followers.ok", following);
     } catch (error) {
       // console.error("Error in profile data fetch:", error);
       setError(error.message || "Error loading profile");
     } finally {
       setIsLoading(false);
     }
+    // if (isPrivate === "private" || isPrivate === "public") {
+    //   await handlePrivacyToggle();
+    // }
   };
 
   const handlePrivacyToggle = async () => {
     try {
-      const response = await fetch(
-        `${host}/api/updatePrivacy`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ isPrivate: isPrivate }),
-        }
-      );
+      const response = await fetch(`${host}/updatePrivacy`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ isPrivate: isPrivate }),
+      });
+      const data = await response.json();
+      // console.log(";;;;;;;;;;;;;;;;;;;;;;;;;;", data.profile_status);
 
       if (response.ok) {
-        // setIsPrivate(!isPrivate);
-      } else {
-      console.log("Failed to update privacy settings");
+        setIsPrivate(data.profile_status);
       }
     } catch (error) {
       console.log("Error updating privacy settings", error);
@@ -185,20 +217,26 @@ export default function ProfilePage() {
             {profile.nickName && <p>@{profile.nickName}</p>}
             <p>{profile.aboutMe}</p>
 
-            {isPrivate ?/* (isPrivate === "private" ? "private" : "public" ( */
+            {["public", "private"].includes(isPrivate) ? (
               <div className={styles.privacyToggle}>
-                <span>{isPrivate /* {? <FaLock /> : <FaLockOpen />} */}</span>
+                <span>
+                  {isPrivate === "private" ? <FaLock /> : <FaLockOpen />}
+                </span>
                 <label className={styles.toggleSwitch}>
                   <input
                     type="checkbox"
-                    checked={isPrivate}
+                    checked={isPrivate === "private"}
                     onChange={handlePrivacyToggle}
                   />
                   <span className={styles.slider}></span>
                 </label>
-                <span>{isPrivate ? "Private Profile" : "Public Profile"}</span>
+                <span>
+                  {isPrivate === "private"
+                    ? "Private Profile"
+                    : "Public Profile"}
+                </span>
               </div>
-            /* )) */ : (
+            ) : (
               <ButtonFollow profileId={profileId} />
             )}
           </div>
@@ -236,17 +274,35 @@ export default function ProfilePage() {
       </div>
 
       <main>
-        {activeTab === "posts" && (
-          <div>
-            {/* Add null/undefined check before accessing length */}
-            {posts && posts.length > 0 ? (
-              posts.map((post, index) => <PostWrapper key={index} post={post} />)
-            ) : (
-              <div className={styles.noContent}>No posts to display</div>
-            )}
-          </div>
-        )}
 
+        {activeTab === "posts" &&
+          (posts && posts.length > 0 ? (
+            <>
+                <Post posts={posts} />
+              {hasMore ?(
+                <button onClick={debouncedFetchPosts} disabled={loading}>
+                  {loading ? "Loading..." : "Load More"}
+                </button>
+              ) : (
+                <button>{"there are no more posts"}</button>
+              )}
+            </>
+          ) : (
+            <div className={styles.noContent}>No posts to display</div>
+          ))}
+        {/* {activeTab === "posts" &&
+          (posts && posts.length > 0 ? (
+            <>
+              <Post posts={posts} />
+              {hasMore && (
+                <button onClick={debouncedFetchPosts} disabled={loading}>
+                  {loading ? "Loading..." : "Load More"}
+                </button>
+              )}
+            </>
+          ) : (
+            <div className={styles.noContent}>No posts to display</div>
+          ))} */}
         {activeTab === "about" && (
           <div className={styles.aboutUser}>
             <h4>User Information</h4>

@@ -16,7 +16,7 @@
     width: 50px;
     aspect-ratio: 1/1;
     border-radius: 50%;
-    background-color: var(--color-primary);
+    /* background-color: var(--color-primary); */
 }
 
 .nameProfile{
@@ -99,3 +99,5 @@ select{
     cursor: pointer;
     color: var(--color-primary);
 }
+
+ 
