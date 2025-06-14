@@ -63,7 +63,7 @@ type Notification struct {
 type User struct {
 	ID        int64
 	Nickname  string `json:"nickname"`
-	Age       uint8  `json:"age"`
+	Age       int  `json:"age"`
 	Gender    string `json:"gender"`
 	FirstName string `json:"firstname"`
 	LastName  string `json:"lastname"`
@@ -94,6 +94,7 @@ type Message struct {
 	Avatar        string `json:"avatar"`
 	Creation_date int    `json:"creation_date"`
 }
+
 
 type Err struct {
 	Error string `json:"error"`

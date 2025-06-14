@@ -2,6 +2,7 @@ package models
 
 import (
 	"net/http"
+
 	"social-network/utils"
 )
 
@@ -34,4 +35,22 @@ func RemoveNoti(res utils.EventResponse) {
 		DELET FROM notifications WHERE 
 	`
 	_ = deleteNoti
+}
+
+// DeleteReaction removes a user's reaction from a post
+func DeleteReaction(userId, postId int) error {
+	query := "DELETE FROM reactions WHERE user_id = ? AND post_id = ?"
+	_, err := Db.Exec(query, userId, postId)
+	return err
+}
+
+// CountReactionsByType counts reactions by type for a given list of reactions
+func CountReactionsByType(reactions []utils.Reaction) map[string]int {
+	counts := make(map[string]int)
+
+	for _, reaction := range reactions {
+		counts[reaction.ReactionType]++
+	}
+
+	return counts
 }

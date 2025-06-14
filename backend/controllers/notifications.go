@@ -24,10 +24,11 @@ func NotiResp(w http.ResponseWriter, r *http.Request, userId int) {
 	var noti utils.Notification
 	err := json.NewDecoder(r.Body).Decode(&noti)
 	if err != nil {
-		log.Println("decoding json", err)
+		log.Println("decoding json11", err)
 		return
 	}
 	resp := noti.Message
+	println("im the resp", noti.Message)
 	models.SelectOneNoti(&noti)
 	if noti.Message == "event" {
 		log.Println("this is an event")

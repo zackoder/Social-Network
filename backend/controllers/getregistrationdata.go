@@ -14,7 +14,7 @@ func GetRegistrationData(w http.ResponseWriter, r *http.Request,userID int)  {
 	profileOwnerIDStr := r.URL.Query().Get("id")
 	profileOwnerInt, err := strconv.Atoi(profileOwnerIDStr)
 	if err != nil{
-		utils.WriteJSON(w, map[string]string{"error":"Bad Request"},http.StatusBadRequest)
+		utils.WriteJSON(w, map[string]string{"error":"Bad Request1111"},http.StatusBadRequest)
 		return
 	}
 	
