@@ -28,15 +28,14 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 		return
 	}
 
-	if strings.TrimSpace(post.Title) == "" || strings.TrimSpace(post.Content) == "" {
-		utils.WriteJSON(w, map[string]string{"error": "title or content is empty"}, http.StatusBadRequest)
-		return
-	}
-
 	filepath, err := utils.UploadImage(r)
 	if err != nil {
-		utils.WriteJSON(w, map[string]string{"error": err.Error()}, http.StatusInternalServerError)
+		utils.WriteJSON(w, map[string]string{"error": err.Error()}, http.StatusBadRequest)
 		fmt.Println("Upload Image error:", err)
+		return
+	}
+	if filepath == "" || (strings.TrimSpace(post.Title) == "" && strings.TrimSpace(post.Content) == "") {
+		utils.WriteJSON(w, map[string]string{"error": "title or content is empty"}, http.StatusBadRequest)
 		return
 	}
 
@@ -84,8 +83,8 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("limiit", err)
 		return
 	}
- 
-	posts := models.QueryPosts(limit,offset,r)
+
+	posts := models.QueryPosts(limit, offset, r)
 	utils.WriteJSON(w, posts, 200)
 }
 
