@@ -1,8 +1,9 @@
 "use client";
 
-import styles from "./page.module.css"; 
+import styles from "./page.module.css";
 import { useEffect, useState } from "react";
 import ButtonFollow from "@/elements/buttonFollow/buttonFollow";
+import Link from "next/link";
 
 export default function Members() {
   const host = process.env.NEXT_PUBLIC_HOST;
@@ -16,6 +17,7 @@ export default function Members() {
         credentials: "include",
       });
       const data = await response.json();
+
       setAllUsers(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -36,33 +38,30 @@ export default function Members() {
     return <h2>No members found.</h2>;
   }
 
-
-return (
-  <div className={styles.container}>
-    <h1 className={styles.title}>All Members</h1>
-    <ul className={styles.userList}>
-      {allUsers.map((user) => (
-        <li key={user.ID} className={styles.userItem}>
-          <div className={styles.userInfo}>
-            <img
-              src={`${host}${user.avatar}`}
-              alt={`${user.firstname} ${user.lastname}`}
-              className={styles.avatar}
-            />
-            <div>
-              <div className={styles.name}>
-                {user.firstname} {user.lastname}
+  return (
+    <div className={styles.container}>
+      <h1 className={styles.title}>All Members</h1>
+      <ul className={styles.userList}>
+        {allUsers.map((user) => (
+          <li key={user.ID} className={styles.userItem}>
+            <Link href={`/profile?id=${user.ID}&profile=${user.firstname}`}>
+              <div className={styles.userInfo}>
+                <img
+                  src={`${host}${user.avatar}`}
+                  alt={`${user.firstname} ${user.lastname}`}
+                  className={styles.avatar}
+                />
+                <div>
+                  <div className={styles.name}>
+                    {user.firstname} {user.lastname}
+                  </div>
+                </div>
               </div>
-              {user.nickname && (
-                <div className={styles.nickname}>@{user.nickname}</div>
-              )}
-            </div>
-          </div>
-          <ButtonFollow profileId={user.ID} />
-        </li>
-      ))}
-    </ul>
-  </div>
-);
-
+            </Link>
+            <ButtonFollow profileId={user.ID} />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
