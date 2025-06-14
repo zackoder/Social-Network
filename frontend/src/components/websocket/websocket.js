@@ -15,7 +15,6 @@ export function Websocket() {
             // socket.send("Hello Server!");
             console.log("Websocket Connected");
             resolve(socket);
-
         });
 
         //Websocket Closed
@@ -30,7 +29,6 @@ export function Websocket() {
             console.log("WebSocket error", err);
             reject(err);
         });
-
         // Listen for messages
         // socket.addEventListener("message", (event) => {
         //     let data = JSON.parse(event.data)

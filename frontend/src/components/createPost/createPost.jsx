@@ -1,8 +1,8 @@
 "use client";
 import { FaCloudUploadAlt } from "react-icons/fa";
-import { use, useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import "./createPost.modules.css";
-import { getData } from "../post/post";
+// import { getData } from "../post/post";
 import { useRef } from "react";
 import ContactsPrivate from "../contactprivate/contactprivate";
 import { isAuthenticated } from "@/app/page";

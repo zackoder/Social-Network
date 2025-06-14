@@ -7,7 +7,6 @@ import { FaUserPlus, FaUserCheck, FaUserClock } from "react-icons/fa";
 
 export default function ButtonFollow({ profileId }) {
   const [followstatus, setfollowststus] = useState("");
-  // const [isFollowing, setIsFollowing] = useState(false);
   // const [isPending, setIsPending] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -24,7 +23,6 @@ export default function ButtonFollow({ profileId }) {
         // console.log("jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj", data);
 
         setCurrentUserId(data.id);
-        // Now check follow status
         if (profileId && data.id) {
           checkFollowStatus(data.id, profileId);
         }
@@ -39,8 +37,6 @@ export default function ButtonFollow({ profileId }) {
     fetchCurrentUser();
   }, [profileId]);
 
-  // Check if the current user is following the prof   setIsFollowing(data.isFollowing === true);
-  // setIsPending(data.isPending === true);ile
   const checkFollowStatus = async (follower, followed) => {
     if (!follower || !followed) return;
 
@@ -63,9 +59,6 @@ export default function ButtonFollow({ profileId }) {
   };
 
   const handleFollowToggle = async () => {
-    // if (!currentUserId || !profileId || isLoading) return;
-
-    // Don't allow following yourself
     if (currentUserId.toString() === profileId.toString()) {
       console.log("You cannot follow yourself");
       return;
@@ -92,12 +85,10 @@ export default function ButtonFollow({ profileId }) {
     }
   };
 
-  // Don't show button when viewing your own profile or during initial load
   if (currentUserId && currentUserId.toString() === profileId?.toString()) {
     return null;
   }
   
-  // Don't show button while loading
   if (isLoading) {
     return (
       <button className={styles.button} disabled>
