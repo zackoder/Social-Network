@@ -1076,3 +1076,51 @@ func QueryMsgs(message utils.Message, host, offset string) ([]utils.Message, err
 	}
 	return messages, nil
 }
+// type User struct {
+// 	ID        int64
+// 	Nickname  string `json:"nickname"`
+// 	Age       int  `json:"age"`
+// 	Gender    string `json:"gender"`
+// 	FirstName string `json:"firstname"`
+// 	LastName  string `json:"lastname"`
+// 	Email     string `json:"email"`
+// 	Password  string `json:"password"`
+// 	SessionId string
+// 	Avatar    string `json:"avatar"`
+// 	AboutMe   string `json:"aboutme"`
+// 	Privacy   string `json:"privacy"`
+// }
+func GetThemAll(userid int) ([]utils.User, error){
+	query := `SELECT id,first_name, last_name, avatar FROM users WHERE id != ? `
+	rows, err := Db.Query(query, userid)
+	if err != nil {
+		return nil, fmt.Errorf("query error: %w", err)
+	}
+	var users []utils.User
+	for rows.Next() {
+		var user utils.User
+		err := rows.Scan(&user.ID, &user.FirstName, &user.LastName,&user.Avatar)
+		if err != nil {
+			return nil, fmt.Errorf("scan error: %w", err)
+		}
+		users = append(users, user)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows error: %w", err)
+	}
+
+	return users, nil
+}
+
+
+
+
+
+
+
+
+
+
+
+ 
