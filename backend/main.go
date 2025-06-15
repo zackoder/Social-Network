@@ -51,7 +51,7 @@ func main() {
 	mux.Handle("POST /api/logout", midleware.AuthMiddleware(controllers.LogoutHandler))
 	mux.Handle("GET /uploads/", midleware.AuthMiddleware(controllers.HandelPics))
 	mux.Handle("GET /defaultIMG/", midleware.AuthMiddleware(controllers.HandelPics))
-	mux.Handle("/api/posts", http.HandlerFunc(controllers.Posts))
+	mux.Handle("/api/posts", midleware.AuthMiddleware(controllers.Posts))
 	mux.Handle("/ws", midleware.AuthMiddleware(controllers.Websocket))
 	mux.Handle("GET /GetGroups", midleware.AuthMiddleware(controllers.AllGroups))
 	mux.Handle("/GetJoinedGroups", midleware.AuthMiddleware(controllers.GetGroupsJoined))

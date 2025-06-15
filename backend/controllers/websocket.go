@@ -31,10 +31,11 @@ func Websocket(w http.ResponseWriter, r *http.Request, user_id int) {
 	cookie, _ := r.Cookie("token")
 	client := utils.CreateClient(conn, Manager, user_id, cookie.Value)
 	log.Println("client tres to log", client)
-	go Manager.AddClient(client)
+	Manager.AddClient(client)
 	defer func() {
 		log.Println("1", client)
-		go Manager.RemoveClient(client)
+		conn.Close()
+		Manager.RemoveClient(client)
 		log.Println("Client disconnected:", user_id)
 	}()
 
@@ -165,6 +166,7 @@ func BroadcastGroupMessage(msg utils.Message, host string) error {
 
 func Broadcast(receiverID int, msg any) {
 	if connections, exists := Manager.UsersList[receiverID]; exists {
+		log.Println("(((((((((())))))))))", exists)
 		for _, conn := range connections {
 			if err := conn.Connection.WriteJSON(msg); err != nil {
 				log.Println("WriteJSON failed for user", receiverID, ":", err)

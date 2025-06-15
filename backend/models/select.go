@@ -11,22 +11,42 @@ import (
 	"social-network/utils"
 )
 
-func QueryPosts(limit, offset int, r *http.Request) []utils.Post {
+func QueryPosts(limit, offset, user_id int, r *http.Request) []utils.Post {
 	// fmt.Println("bbbbbbbbbbbbbbbbbb", limit, offset)
 	host := r.Host
 	var posts []utils.Post
-	queryPosts := `SELECT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt, u.avatar
-	FROM posts p
-	JOIN users u ON p.user_id = u.id
-	ORDER BY p.createdAt DESC 
-	  LIMIT ? OFFSET ?
+	queryPosts := `
+		SELECT DISTINCT
+		    p.id,
+		    p.post_privacy,
+		    p.title,
+		    p.content,
+		    p.user_id,
+		    u.first_name,
+		    p.imagePath,
+		    p.createdAt,
+			u.avatar
+		FROM
+		    posts p
+		    JOIN users u ON p.user_id = u.id
+		    LEFT JOIN friends ppv ON p.id = ppv.post_id
+			LEFT JOIN followers f on f.follower_id = ? AND f.followed_id = u.id
+		WHERE
+
+
+		        p.post_privacy = 'public'
+		        OR (p.post_privacy = 'almostPrivate' AND followed_id is not null)
+		        OR (
+		            p.post_privacy = 'private'
+		            AND ppv.friend_id = ?
+		        )
+
+		ORDER BY
+		    p.createdAt DESC 
+			  LIMIT ? OFFSET ?;
 	`
 
-	// cookie, _ := r.Cookie("token")
-	// if 5 >= 4 {
-	// }
-	// id := 5
-	rows, err := Db.Query(queryPosts, limit, offset)
+	rows, err := Db.Query(queryPosts, user_id, user_id, limit, offset)
 	if err != nil {
 		fmt.Println("queryPost error", err)
 		return nil
@@ -46,18 +66,30 @@ func QueryPosts(limit, offset int, r *http.Request) []utils.Post {
 		}
 		posts = append(posts, post)
 	}
-	fmt.Println(posts)
 	return posts
 }
 
 func GetProfilePost(user_id, limit, offset int) ([]utils.Post, error) {
 	var posts []utils.Post
 	// fmt.Printf("Querying posts for user_id=%d with offset=%d\n", user_id)
-	fmt.Println("database", limit, offset)
+	// fmt.Println("database", limit, offset)
 	query := `
-		SELECT * FROM posts WHERE user_id = ?
-		ORDER BY id DESC
-		LIMIT ? OFFSET ? 		
+		SELECT
+		    p.id,
+		    p.post_privacy,
+		    p.title,
+		    p.content,
+		    p.user_id,
+		    u.first_name,
+		    p.imagePath,
+		    p.createdAt,
+		    u.avatar
+		FROM
+		    posts p
+		    JOIN users u ON p.user_id = u.id
+		WHERE p.user_id = ?
+		ORDER BY p.createdAt DESC
+		LIMIT ? OFFSET ? 			
 		`
 	rows, err := Db.Query(query, user_id, limit, offset)
 	if err != nil {
@@ -68,7 +100,7 @@ func GetProfilePost(user_id, limit, offset int) ([]utils.Post, error) {
 	for rows.Next() {
 		var post utils.Post
 
-		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Image, &post.CreatedAt)
+		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt, &post.Avatar)
 		if err != nil {
 			fmt.Println("error scaning the rows", err)
 		}
@@ -303,7 +335,7 @@ func GetPuclicPosts(userID, limit, offset int) ([]utils.Post, error) {
 		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content,
 			&post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt)
 		if err != nil {
-			fmt.Println("err scanning rows" ,err)
+			fmt.Println("err scanning rows", err)
 			return nil, err
 		}
 
@@ -464,7 +496,6 @@ func FriendsCheckerForFollow(Sender_id, Reciever_id int) (bool, error) {
 	return friends, err
 }
 
-
 func FriendsCheckerForMessages(Sender_id, Reciever_id int) (bool, error) {
 	query := `
 		SELECT EXISTS(
@@ -570,7 +601,6 @@ func GetPostsFromDatabase(groupeId int, r *http.Request) ([]utils.Post, error) {
 	`
 	rows, err := Db.Query(query, groupeId)
 	if err != nil {
-
 		return posts, err
 	}
 	defer rows.Close()
@@ -792,25 +822,34 @@ func MyGroupes(user_id int) []string {
 func SelectNotifications(user_id int) ([]utils.Notification, error) {
 	var notis []utils.Notification
 	quetyNotifications := `
-	SELECT DISTINCT
-		n.id,
-    	n.actor_id,
-    	n.user_id,
-    	n.target_id,
-    	n.message
-	FROM
-	    notifications n
-	    INNER JOIN group_members gm ON gm.group_id = n.target_id
-	WHERE
-	    (
-	        n.message = 'event'
-	        AND gm.user_id = ?
-	    )
-	    OR (
-	        n.message <> 'event'
-	        AND n.target_id = ?
-    );`
-	rows, err := Db.Query(quetyNotifications, user_id, user_id)
+		SELECT DISTINCT
+		    n.id,
+		    n.user_id,
+		    n.actor_id,
+		    n.target_id,
+		    n.message
+		FROM
+		    notifications n
+		    LEFT JOIN group_members gm 
+		        ON n.message = 'event'
+		        AND gm.user_id = ?
+		        AND gm.group_id = n.target_id
+		    LEFT JOIN event_responses er 
+		        ON n.message = 'event'
+		        AND n.actor_id = er.event_id
+		        AND er.user_id = ?
+		WHERE
+		    (
+		        n.message <> 'event' AND n.target_id = ?
+		    )
+		    OR (
+		        n.message = 'event'
+		        AND gm.user_id IS NOT NULL          -- user is in the group
+		        AND er.user_id IS NULL              -- user has NOT responded
+		    );
+
+    `
+	rows, err := Db.Query(quetyNotifications, user_id, user_id, user_id)
 	if err != nil {
 		return notis, err
 	}
@@ -1007,9 +1046,7 @@ func GetNotifications(userId int, limit int, offset int) ([]utils.Notification, 
 // 	`
 // }
 
-
 func GetCommentsByPostId(postId, limit, offset int) ([]utils.Comment, error) {
-	
 	query := `
 		SELECT c.id, c.post_id, c.user_id, c.comment, c.imagePath, c.date,
 		       u.first_name || ' ' || u.last_name as user_name, u.avatar
@@ -1020,7 +1057,7 @@ func GetCommentsByPostId(postId, limit, offset int) ([]utils.Comment, error) {
 		LIMIT ? OFFSET ?
 	`
 
-	rows, err := Db.Query(query, postId,limit,offset)
+	rows, err := Db.Query(query, postId, limit, offset)
 	if err != nil {
 		fmt.Println("Error querying comments:", err)
 		return nil, err
@@ -1053,8 +1090,6 @@ func GetCommentsByPostId(postId, limit, offset int) ([]utils.Comment, error) {
 
 	return comments, nil
 }
-
-
 
 func CanUserAccessPost(userId int, postId int) (bool, error) {
 	// Query to get the post's privacy and poster id
@@ -1128,7 +1163,6 @@ func PostExists(postId int) (bool, error) {
 	return exists, nil
 }
 
-
 // GetReactionsByPostId retrieves all reactions for a specific post
 
 func GetReactionsByPostId(postId int) ([]utils.Reaction, error) {
@@ -1153,7 +1187,6 @@ func GetReactionsByPostId(postId int) ([]utils.Reaction, error) {
 			&reaction.PostId,
 			&reaction.UserId,
 			&reaction.ReactionType,
-			
 		)
 		if err != nil {
 			fmt.Println("Error scanning reaction row11:", err)
@@ -1184,14 +1217,12 @@ func GetUserReactionForPost(userId, postId int) (*utils.Reaction, error) {
 		&reaction.UserId,
 		&reaction.ReactionType,
 	)
-
 	if err != nil {
 		return nil, err
 	}
 
 	return &reaction, nil
 }
-
 
 // GetUserById retrieves a user by their ID
 func GetUserById(userId int) (*utils.User, error) {
@@ -1220,6 +1251,7 @@ func GetUserById(userId int) (*utils.User, error) {
 	}
 	return &user, nil
 }
+
 func QueryMsgs(message utils.Message, host, offset string) ([]utils.Message, error) {
 	query := `
 		SELECT
@@ -1277,21 +1309,22 @@ func GetOneGroup(group_id int) (utils.Groupe, error) {
 	err := Db.QueryRow(query, group_id).Scan(&group.Title, &group.Description, &group.FirstName, &group.LasttName)
 	return group, err
 }
-// type User struct {
-// 	ID        int64
-// 	Nickname  string `json:"nickname"`
-// 	Age       int  `json:"age"`
-// 	Gender    string `json:"gender"`
-// 	FirstName string `json:"firstname"`
-// 	LastName  string `json:"lastname"`
-// 	Email     string `json:"email"`
-// 	Password  string `json:"password"`
-// 	SessionId string
-// 	Avatar    string `json:"avatar"`
-// 	AboutMe   string `json:"aboutme"`
-// 	Privacy   string `json:"privacy"`
-// }
-func GetThemAll(userid int) ([]utils.User, error){
+
+//	type User struct {
+//		ID        int64
+//		Nickname  string `json:"nickname"`
+//		Age       int  `json:"age"`
+//		Gender    string `json:"gender"`
+//		FirstName string `json:"firstname"`
+//		LastName  string `json:"lastname"`
+//		Email     string `json:"email"`
+//		Password  string `json:"password"`
+//		SessionId string
+//		Avatar    string `json:"avatar"`
+//		AboutMe   string `json:"aboutme"`
+//		Privacy   string `json:"privacy"`
+//	}
+func GetThemAll(userid int) ([]utils.User, error) {
 	query := `SELECT id,first_name, last_name, avatar FROM users WHERE id != ? `
 	rows, err := Db.Query(query, userid)
 	if err != nil {
@@ -1300,7 +1333,7 @@ func GetThemAll(userid int) ([]utils.User, error){
 	var users []utils.User
 	for rows.Next() {
 		var user utils.User
-		err := rows.Scan(&user.ID, &user.FirstName, &user.LastName,&user.Avatar)
+		err := rows.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Avatar)
 		if err != nil {
 			return nil, fmt.Errorf("scan error: %w", err)
 		}
@@ -1313,15 +1346,3 @@ func GetThemAll(userid int) ([]utils.User, error){
 
 	return users, nil
 }
-
-
-
-
-
-
-
-
-
-
-
- 

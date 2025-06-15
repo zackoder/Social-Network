@@ -31,6 +31,15 @@ func NotiResp(w http.ResponseWriter, r *http.Request, userId int) {
 	println("im the resp", noti.Message)
 	models.SelectOneNoti(&noti)
 	if noti.Message == "event" {
+		var eventresp utils.EventResponse
+		eventresp.UserID = userId
+		eventresp.GroupeId = noti.Target_id
+		eventresp.EventID = noti.Actor_id
+		err := models.InsserResponceInDatabase(eventresp)
+		if err != nil {
+			log.Println("error insserresp", err)
+			return
+		}
 		log.Println("this is an event")
 		utils.HandleEvent(noti)
 		return
@@ -80,5 +89,4 @@ func NotiResp(w http.ResponseWriter, r *http.Request, userId int) {
 		utils.WriteJSON(w, map[string]string{"error": "Bad Request"}, http.StatusBadRequest)
 		return
 	}
-
 }

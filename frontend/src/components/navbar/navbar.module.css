@@ -31,10 +31,10 @@
 
 .membersButton {
   background-color: #000000;  
-  color: #d62929;
+  color: #f8f8f8;
   font-size: 1.8rem;
   border: none;
-  border-radius: 15px;
+  border-radius: 50%;
   cursor: pointer;
   font-weight: 500;
   transition: background-color 0.3s ease, transform 0.2s ease;
@@ -42,7 +42,7 @@
 }
 
 .membersButton:hover {
-  background-color: #334acb;
+  background-color: #ffffff1a;
   transform: scale(1.03);
 }
 

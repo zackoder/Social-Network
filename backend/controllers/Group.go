@@ -22,7 +22,6 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request, user_id int) {
 
 	var Groupe utils.Groupe
 	err := json.NewDecoder(r.Body).Decode(&Groupe)
-
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Bad Request"}, http.StatusBadRequest)
 		return
@@ -45,7 +44,6 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request, user_id int) {
 
 	Groupe.Id, err = models.InsertGroupe(Groupe.Title, Groupe.Description, user_id)
 	err = models.InsserMemmberInGroupe(Groupe.Id, user_id, "creator")
-
 	if err != nil {
 
 		if strings.Contains(err.Error(), "groups.name") {
@@ -283,7 +281,6 @@ func Get_all_post(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreatEvent(w http.ResponseWriter, r *http.Request, userId int) {
-	log.Println(r.Method)
 	if r.Method != http.MethodPost {
 		log.Println("haaa fin ana ")
 		utils.WriteJSON(w, map[string]string{"error": "Method Not allowd"}, http.StatusMethodNotAllowed)
@@ -317,6 +314,8 @@ func CreatEvent(w http.ResponseWriter, r *http.Request, userId int) {
 		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
 		return
 	}
+
+	log.Println(notification)
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "The event cried out successfully"})

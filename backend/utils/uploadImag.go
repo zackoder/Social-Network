@@ -43,10 +43,11 @@ func UploadImage(r *http.Request) (string, error) {
 	}
 
 	// Optional: write a debug file
-	// os.WriteFile("test.txt", data[:10], 0o644)
+	// os.WriteFile("test.txt", data, 0o644)
 
 	// Validate file content
-	if !CheckExtension(string(data[:10])) {
+	if !CheckExtension(string(data)) {
+		RemoveIMG(out.Name())
 		return "", fmt.Errorf("invalid file type")
 	}
 	// Now, write the buffered content to disk
@@ -81,7 +82,7 @@ func UploadMsgImg(pyload []byte) (Message, error) {
 	}
 	// extention := strings.Split(message.Mime, "/")[1]
 
-	if !CheckExtension(string(filePart[:10])) {
+	if !CheckExtension(string(filePart)) {
 		return message, fmt.Errorf("invalid file type you can only send images")
 	}
 	os.MkdirAll("uploads", os.ModePerm)

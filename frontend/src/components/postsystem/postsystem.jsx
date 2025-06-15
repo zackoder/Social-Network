@@ -23,6 +23,7 @@ export default function PostSystem() {
         `${host}/api/posts?offset=${offset}&limit=${LIMIT}`,
         {
           cache: "no-store",
+          credentials: "include",
         }
       );
       if (!response.ok) {

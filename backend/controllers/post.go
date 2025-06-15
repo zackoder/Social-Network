@@ -34,7 +34,8 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 		fmt.Println("Upload Image error:", err)
 		return
 	}
-	if filepath == "" || (strings.TrimSpace(post.Title) == "" && strings.TrimSpace(post.Content) == "") {
+
+	if filepath == "" && (strings.TrimSpace(post.Title) == "" && strings.TrimSpace(post.Content) == "") {
 		utils.WriteJSON(w, map[string]string{"error": "title or content is empty"}, http.StatusBadRequest)
 		return
 	}
@@ -63,15 +64,11 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 
 	if filepath != "" {
 		post.Image = host + post.Image
-
-		if filepath != "" {
-			post.Image = host + post.Image
-		}
 	}
 	utils.WriteJSON(w, post, 200)
 }
 
-func Posts(w http.ResponseWriter, r *http.Request) {
+func Posts(w http.ResponseWriter, r *http.Request, user_id int) {
 	offsetStr := r.URL.Query().Get("offset")
 	limitStr := r.URL.Query().Get("limit")
 
@@ -86,7 +83,7 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	posts := models.QueryPosts(limit, offset, r)
+	posts := models.QueryPosts(limit, offset,user_id, r)
 	utils.WriteJSON(w, posts, 200)
 }
 
