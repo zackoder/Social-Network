@@ -109,3 +109,13 @@
   object-fit: cover;
   border: 2px solid #e2e8f0;
 }
+.error{
+      color: red;
+    margin: 20px;
+}
+.invitation button.invited {
+  background-color: gray;
+  color: white;
+  cursor: not-allowed;
+  transition: 0.3s;
+}
