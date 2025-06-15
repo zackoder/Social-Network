@@ -49,12 +49,13 @@ function displayChatbox() {
 }
 
 
-export default function InviteUsers() {
+export default function InviteUsers(group_id) {
   let [users, setusers] = useState([]);
   let [error,Seterror]=useState("");
    async function GetUsers() {
   let responce = await fetch(`${host}/GetFolowingsUsers`,{
     credentials:"include",
+    body:JSON.stringify(group_id)
   });
 
   const data = await responce.json();
