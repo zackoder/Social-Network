@@ -54,7 +54,6 @@ export default function GroupPage() {
   }
 
   return (
-
     <div className={styles.parant}>
       <div className={styles.left}>
         <div className={styles.soutitre0}>
