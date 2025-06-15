@@ -1,0 +1,42 @@
+
+.userscontainer{
+  position: relative;
+  /* left: 15%; */
+  right: 105%;
+  /* width: 200%;
+  max-width: 800px;
+  height: 80vh; */
+  margin-top: 20px;
+  background-color: #222;
+  padding: 20px 0;
+  border-radius: 8px;
+  display: none;
+  z-index: 999;
+  /* animation: invisibility 1s forwards; */
+}
+.show1 {
+  display: block;
+  animation: display 1s forwards;
+}
+
+.hide1 {
+  animation: slideOut 1s forwards;
+  display: none;
+}
+.soutitre0{
+  position: relative;
+  top: 1%;
+  left: 15%;
+  width: 80%;
+  text-align: center;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  padding: 10px;
+  border-radius: 4px;
+  transition: all 0.5s ease-in-out;
+  cursor: pointer;
+  font-size: 22px;
+  font-weight: 800;
+  text-transform: capitalize;
+  border: none;
+}

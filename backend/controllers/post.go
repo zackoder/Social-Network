@@ -34,7 +34,8 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 		fmt.Println("Upload Image error:", err)
 		return
 	}
-	if filepath == "" || (strings.TrimSpace(post.Title) == "" && strings.TrimSpace(post.Content) == "") {
+	fmt.Println("file:",filepath,"  title:",strings.TrimSpace(post.Title),"Content:",strings.TrimSpace(post.Content))
+	if filepath == "" && (strings.TrimSpace(post.Title) == "" && strings.TrimSpace(post.Content) == "") {
 		utils.WriteJSON(w, map[string]string{"error": "title or content is empty"}, http.StatusBadRequest)
 		return
 	}
