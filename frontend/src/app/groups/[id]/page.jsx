@@ -65,7 +65,7 @@ export default function GroupPage() {
     <div className={styles.parant}>
       <div className={styles.left}>
 
-        <InviteUsers></InviteUsers>
+        <InviteUsers group_id={id}></InviteUsers>
 
 
       </div>
