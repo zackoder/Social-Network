@@ -193,11 +193,15 @@ func SearchGroupsHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(groups)
 }
 func GetFollowingUsers(w http.ResponseWriter, r *http.Request, user_id int){
-	if r.Method != http.MethodGet {
+	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
-	
+		if models.IsMember(1,1 ) {
+		utils.WriteJSON(w, map[string]string{"error": "already a group member"}, 409)
+		return
+	}
+
 
 }
 
