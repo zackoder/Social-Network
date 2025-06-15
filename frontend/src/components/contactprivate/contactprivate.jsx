@@ -9,7 +9,7 @@ import "./contactprivate.modules.css";
 
 
 
-  const host = process.env.NEXT_PUBLIC_HOST;
+const host = process.env.NEXT_PUBLIC_HOST;
 
 
 
@@ -50,48 +50,56 @@ function displayChatbox() {
 
 
 export default function InviteUsers(group_id) {
-  let [users, setusers] = useState([]);
-  let [error,Seterror]=useState("");
-   async function GetUsers() {
-  let responce = await fetch(`${host}/GetFolowingsUsers`,{
-    credentials:"include",
-    body:JSON.stringify(group_id)
-  });
+  console.log(group_id.group_id);
 
-  const data = await responce.json();
-    if (!responce.ok){
+  let [users, setusers] = useState([]);
+  let [error, Seterror] = useState("");
+  async function GetUsers() {
+    let responce = await fetch(`${host}/GetFolowingsUsers?groupId=${group_id.group_id}`, {
+      credentials: "include",
+      method: "POST",
+      body: JSON.stringify(group_id)
+    });
+
+
+
+    const data = await responce.json();
+    console.log(data);
+    if (!responce.ok) {
       Seterror(data.message)
       return
-}
-  setusers(data)
+    }
+    setusers(data)
+  }
+  useEffect(() => {
+    GetUsers()
 
-
-
-}
+  }, [])
   return <>
     <button className="soutitre0" onClick={displayChatbox}>
       invit users
     </button>
 
- <div className="userscontainer">
-  {users.length > 0 ? (
-    users.map((user) => (
-      <div key={user.id} className="user-wrapper">
-        <div className="user">
-          <p>{user.firstname} {user.lastname}</p>
-        </div>
-        <div className="invitation">
-          <button>Invite user</button>
-        </div>
-      </div>
-    ))
-  ) : (
-    <div>
-      <p>No users yet</p>
+    <div className="userscontainer">
+      {users.length > 0 ? (
+        users.map((user) => (
+
+          <div key={user.ID} className="user-wrapper">
+            <div className="user">
+              <img src={`http://${user.avatar}`} alt={`${user.firstname} ${user.lastname}`} className="avatar" />
+              <p>{user.firstname} {user.lastname}</p>
+            </div>
+            <div className="invitation">
+              <button>Invite user</button>
+            </div>
+          </div>
+        ))
+      ) : (
+
+        <p>No users yet</p>
+      )}
     </div>
-  )}
-</div>
-<div className="error">{error}</div>
+    <div className="error">{error}</div>
 
   </>
 }

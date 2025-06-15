@@ -1306,3 +1306,39 @@ func GetThemAll(userid int) ([]utils.User, error) {
 
 	return users, nil
 }
+
+func Get_followings_users(user_id, group_id int, host string) ([]utils.User, error) {
+	Query := `
+	SELECT DISTINCT
+	    u.first_name,
+	    u.last_name,
+	    u.avatar,
+	    u.id
+	FROM
+	    users u
+	    INNER JOIN followers f 
+	        ON f.followed_id = ?
+	        AND f.follower_id = u.id
+	    LEFT JOIN group_members gm 
+	        ON gm.group_id = ?
+	        AND gm.user_id = u.id
+	WHERE
+	    u.id <> ?
+	    AND gm.user_id IS NULL;
+	`
+	rows, err := Db.Query(Query, user_id, group_id, user_id)
+	if err != nil {
+		return nil, err
+	}
+	var users []utils.User
+	for rows.Next() {
+		var user utils.User
+		err := rows.Scan(&user.FirstName, &user.LastName, &user.Avatar, &user.ID)
+		if err != nil {
+			return nil, fmt.Errorf("scan error: %w", err)
+		}
+		user.Avatar = host + user.Avatar
+		users = append(users, user)
+	}
+	return users, nil
+}
