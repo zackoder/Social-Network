@@ -21,6 +21,8 @@ export default function GroupPage() {
 
   async function getGroupData() {
     try {
+      console.log(id);
+      
       const resp = await fetch(`${host}/group?groupId=${id}`, {
         credentials: "include",
       });

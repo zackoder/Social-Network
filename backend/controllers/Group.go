@@ -121,6 +121,7 @@ func Join_Group(w http.ResponseWriter, r *http.Request, user_id int) {
 
 func Getgroupmsgs(w http.ResponseWriter, r *http.Request, user_id int) {
 	group_id, err := strconv.Atoi(r.URL.Query().Get("groupId"))
+
 	offset := r.URL.Query().Get("offset")
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "invalid data"}, http.StatusForbidden)
@@ -179,28 +180,32 @@ func GetGroupsCreatedByUser(w http.ResponseWriter, r *http.Request, user_id int)
 	utils.WriteJSON(w, Groups, 200)
 }
 
-func SearchGroupsHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
-		return
-	}
-	query := r.URL.Query().Get("query")
-	groups, err := models.SearchGroupsInDatabase(query)
-	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	json.NewEncoder(w).Encode(groups)
-}
+
 func GetFollowingUsers(w http.ResponseWriter, r *http.Request, user_id int){
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
-		if models.IsMember(1,1 ) {
-		utils.WriteJSON(w, map[string]string{"error": "already a group member"}, 409)
+	group_id, err := strconv.Atoi(r.URL.Query().Get("groupId"))
+	
+    if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "invalid group"}, http.StatusForbidden)
+		return
+	}		
+		
+	fmt.Println("group_id",group_id,"errrror",err)
+	fmt.Println(models.IsMember(group_id,user_id ))
+
+	if !models.IsMember(group_id,user_id ) {
+		utils.WriteJSON(w, map[string]string{"error": "You don't have access to this group."}, 409)
 		return
 	}
+	followingsUsers,err := models.Get_followings_users(user_id,group_id, r.Host)
+
+	fmt.Println(err)
+	fmt.Println(followingsUsers)
+	utils.WriteJSON(w, followingsUsers, 200)
+
 
 
 }
