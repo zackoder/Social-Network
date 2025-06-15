@@ -35,10 +35,11 @@
   /* animation: invisibility 1s forwards; */
 }
 
-.show {
+.showw {
   display: block;
   animation: display 1s forwards;
 }
+
 .hide {
   animation: slideOut 1s forwards;
   display: none;

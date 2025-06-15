@@ -303,7 +303,7 @@ func GetPuclicPosts(userID, limit, offset int) ([]utils.Post, error) {
 		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content,
 			&post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt)
 		if err != nil {
-			fmt.Println("err scanning rows" ,err)
+			fmt.Println("err scanning rows", err)
 			return nil, err
 		}
 
@@ -464,7 +464,6 @@ func FriendsCheckerForFollow(Sender_id, Reciever_id int) (bool, error) {
 	return friends, err
 }
 
-
 func FriendsCheckerForMessages(Sender_id, Reciever_id int) (bool, error) {
 	query := `
 		SELECT EXISTS(
@@ -570,7 +569,6 @@ func GetPostsFromDatabase(groupeId int, r *http.Request) ([]utils.Post, error) {
 	`
 	rows, err := Db.Query(query, groupeId)
 	if err != nil {
-
 		return posts, err
 	}
 	defer rows.Close()
@@ -679,6 +677,7 @@ func fetchGroupsInfo(groupIDs []int) []utils.Groupe {
 			fmt.Println("Error scanning group:", err)
 			return nil
 		}
+		groupe.Status = "member"
 		res = append(res, groupe)
 	}
 
@@ -1007,9 +1006,7 @@ func GetNotifications(userId int, limit int, offset int) ([]utils.Notification, 
 // 	`
 // }
 
-
 func GetCommentsByPostId(postId, limit, offset int) ([]utils.Comment, error) {
-	
 	query := `
 		SELECT c.id, c.post_id, c.user_id, c.comment, c.imagePath, c.date,
 		       u.first_name || ' ' || u.last_name as user_name, u.avatar
@@ -1020,7 +1017,7 @@ func GetCommentsByPostId(postId, limit, offset int) ([]utils.Comment, error) {
 		LIMIT ? OFFSET ?
 	`
 
-	rows, err := Db.Query(query, postId,limit,offset)
+	rows, err := Db.Query(query, postId, limit, offset)
 	if err != nil {
 		fmt.Println("Error querying comments:", err)
 		return nil, err
@@ -1053,8 +1050,6 @@ func GetCommentsByPostId(postId, limit, offset int) ([]utils.Comment, error) {
 
 	return comments, nil
 }
-
-
 
 func CanUserAccessPost(userId int, postId int) (bool, error) {
 	// Query to get the post's privacy and poster id
@@ -1128,7 +1123,6 @@ func PostExists(postId int) (bool, error) {
 	return exists, nil
 }
 
-
 // GetReactionsByPostId retrieves all reactions for a specific post
 
 func GetReactionsByPostId(postId int) ([]utils.Reaction, error) {
@@ -1153,7 +1147,6 @@ func GetReactionsByPostId(postId int) ([]utils.Reaction, error) {
 			&reaction.PostId,
 			&reaction.UserId,
 			&reaction.ReactionType,
-			
 		)
 		if err != nil {
 			fmt.Println("Error scanning reaction row11:", err)
@@ -1184,14 +1177,12 @@ func GetUserReactionForPost(userId, postId int) (*utils.Reaction, error) {
 		&reaction.UserId,
 		&reaction.ReactionType,
 	)
-
 	if err != nil {
 		return nil, err
 	}
 
 	return &reaction, nil
 }
-
 
 // GetUserById retrieves a user by their ID
 func GetUserById(userId int) (*utils.User, error) {
@@ -1220,6 +1211,7 @@ func GetUserById(userId int) (*utils.User, error) {
 	}
 	return &user, nil
 }
+
 func QueryMsgs(message utils.Message, host, offset string) ([]utils.Message, error) {
 	query := `
 		SELECT
@@ -1277,21 +1269,22 @@ func GetOneGroup(group_id int) (utils.Groupe, error) {
 	err := Db.QueryRow(query, group_id).Scan(&group.Title, &group.Description, &group.FirstName, &group.LasttName)
 	return group, err
 }
-// type User struct {
-// 	ID        int64
-// 	Nickname  string `json:"nickname"`
-// 	Age       int  `json:"age"`
-// 	Gender    string `json:"gender"`
-// 	FirstName string `json:"firstname"`
-// 	LastName  string `json:"lastname"`
-// 	Email     string `json:"email"`
-// 	Password  string `json:"password"`
-// 	SessionId string
-// 	Avatar    string `json:"avatar"`
-// 	AboutMe   string `json:"aboutme"`
-// 	Privacy   string `json:"privacy"`
-// }
-func GetThemAll(userid int) ([]utils.User, error){
+
+//	type User struct {
+//		ID        int64
+//		Nickname  string `json:"nickname"`
+//		Age       int  `json:"age"`
+//		Gender    string `json:"gender"`
+//		FirstName string `json:"firstname"`
+//		LastName  string `json:"lastname"`
+//		Email     string `json:"email"`
+//		Password  string `json:"password"`
+//		SessionId string
+//		Avatar    string `json:"avatar"`
+//		AboutMe   string `json:"aboutme"`
+//		Privacy   string `json:"privacy"`
+//	}
+func GetThemAll(userid int) ([]utils.User, error) {
 	query := `SELECT id,first_name, last_name, avatar FROM users WHERE id != ? `
 	rows, err := Db.Query(query, userid)
 	if err != nil {
@@ -1300,7 +1293,7 @@ func GetThemAll(userid int) ([]utils.User, error){
 	var users []utils.User
 	for rows.Next() {
 		var user utils.User
-		err := rows.Scan(&user.ID, &user.FirstName, &user.LastName,&user.Avatar)
+		err := rows.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Avatar)
 		if err != nil {
 			return nil, fmt.Errorf("scan error: %w", err)
 		}
@@ -1313,15 +1306,3 @@ func GetThemAll(userid int) ([]utils.User, error){
 
 	return users, nil
 }
-
-
-
-
-
-
-
-
-
-
-
- 

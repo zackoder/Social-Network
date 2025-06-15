@@ -22,7 +22,6 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request, user_id int) {
 
 	var Groupe utils.Groupe
 	err := json.NewDecoder(r.Body).Decode(&Groupe)
-
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Bad Request"}, http.StatusBadRequest)
 		return
@@ -45,7 +44,6 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request, user_id int) {
 
 	Groupe.Id, err = models.InsertGroupe(Groupe.Title, Groupe.Description, user_id)
 	err = models.InsserMemmberInGroupe(Groupe.Id, user_id, "creator")
-
 	if err != nil {
 
 		if strings.Contains(err.Error(), "groups.name") {
@@ -178,18 +176,6 @@ func GetGroupsCreatedByUser(w http.ResponseWriter, r *http.Request, user_id int)
 	}
 
 	Groups := models.GroupsCreatedByUser(user_id)
-	cookie, err := r.Cookie("token")
-	if err != nil {
-		utils.WriteJSON(w, map[string]string{"error": "You don't have access."}, http.StatusForbidden)
-		return
-	}
-	userId, err := models.Get_session(cookie.Value)
-	if err != nil {
-		utils.WriteJSON(w, map[string]string{"error": "Invalid session"}, http.StatusUnauthorized)
-		return
-	}
-	Groups = models.GroupsCreatedByUser(userId)
-
 	utils.WriteJSON(w, Groups, 200)
 }
 
@@ -206,8 +192,16 @@ func SearchGroupsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(groups)
 }
+func GetFollowingUsers(w http.ResponseWriter, r *http.Request, user_id int){
+	if r.Method != http.MethodGet {
+		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
+		return
+	}
+	
 
-func InviteUser(w http.ResponseWriter, r *http.Request /* , groupID uint */) {
+}
+
+func InviteUser(w http.ResponseWriter, r *http.Request, user_id int) {
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
@@ -422,6 +416,10 @@ func GetGroup(w http.ResponseWriter, r *http.Request, user_id int) {
 	group_id, err := strconv.Atoi(r.URL.Query().Get("groupId"))
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "invalid data"}, http.StatusNotFound)
+		return
+	}
+	if !models.IsMember(group_id, user_id) {
+		utils.WriteJSON(w, map[string]string{"error": "you need to be a group member to enter it"}, http.StatusForbidden)
 		return
 	}
 	group, err := models.GetOneGroup(group_id)

@@ -1,14 +1,22 @@
 -- database: ./social_network.db
-
-SELECT * FROM events;
+-- Use the ▷ button in the top right corner to run the entire file.
 SELECT
-    e.title,
-    e.description,
-    e.event_time,
-    coalesce(er.response, '') as response
+    *
 FROM
-    events e
-    LEFT JOIN event_responses er ON e.id = er.event_id
-    AND er.user_id = 1
+    users;
+
+SELECT DISTINCT
+    u.first_name,
+    u.avatar,
+    u.id
+FROM
+    users u
+    INNER JOIN followers f ON f.followed_id = 1
+    AND f.follower_id = u.id
+    -- LEFT JOIN groups g ON gm.user_id = u.id
+    LEFT JOIN group_members gm on gm.group_id = 1
+    AND gm.user_id IS NULL
 WHERE
-    e.group_id = 1;
+    u.id <> 1;
+
+SELECT * FROM followers WHERE followed_id = 17;
