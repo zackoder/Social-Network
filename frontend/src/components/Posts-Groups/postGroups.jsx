@@ -175,7 +175,7 @@ export default function Post_Groups({ post, id }) {
           <div className={style.imagePost}>
             {post.image ? (
               <img
-                className={style.image}
+                className={style.imageG}
                 src={`http://${post.image}`}
                 alt="post"
                 width={500}

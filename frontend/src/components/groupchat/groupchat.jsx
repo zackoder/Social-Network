@@ -10,8 +10,8 @@ export function displayChatbox() {
   // const formSubmit = document.querySelector(".submitForm");
 
   button?.addEventListener("click", () => {
-    if (container?.classList.contains("show")) {
-      container.classList.remove("show");
+    if (container?.classList.contains("showw")) {
+      container.classList.remove("showw");
       container.classList.add("hide");
       // formSubmit?.classList.add("hide");
 
@@ -28,8 +28,8 @@ export function displayChatbox() {
       );
     } else {
       container.classList.remove("hide");
-      container.classList.add("show");
-      // formSubmit?.classList.add("show");
+      container.classList.add("showw");
+      // formSubmit?.classList.add("showw");
       container.style.display = "block";
     }
   });

@@ -1,97 +1,96 @@
 "use client";
 import React, { useContext, useState, useEffect } from "react";
-// import styles from "./contactprivate.module.css"
-import { DataContext } from "@/contexts/dataContext";
-import { isAuthenticated } from "@/app/page";
+import "./contactprivate.modules.css";
 
-export default function ContactsPrivate() {
-  const [selectedContacts, setSelectedContacts] = useState([]);
-  const { setSelectedContactsIds } = useContext(DataContext);
-  const [contacts, setContacts] = useState([]);
-  const userId = localStorage.getItem("user-id")
+
+
+
+
+
+
+
   const host = process.env.NEXT_PUBLIC_HOST;
-  useEffect(() => {
-    const fetchFollowers = async () => {
-      try {
-        const response = await fetch(`${host}/api/getfollowers?id=${userId}`, {
-          credentials: "include",
-        });
-        const data = await response.json();
-        setContacts(data);
-        // selectedContacts(data);
-        if (data && data.error) {
-          // throw new Error(data.error);
-          isAuthenticated(response.status, "you should login first");
 
-          console.log(data.error);
-        }
-      } catch (error) {
-        // console.error("we can't fetch follower", error);
-        // isAuthenticated(response.status, "you should login first");
-      }
-    };
-    fetchFollowers();
-  }, []);
-  if (!contacts || contacts.length === 0) {
-    return;
-  }
-  const handleCheckboxChange = (name, id) => {
-    setSelectedContacts((prev) =>
-      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]
-    );
-    setSelectedContactsIds((prev) =>
-      prev.includes(id) ? prev.filter((n) => n !== id) : [...prev, id]
-    );
-  };
 
-  //  useEffect(() => {
-  //   setSelectedContactsIds(selectedContacts); // send updated selection to parent
-  // }, [selectedContacts]);
 
-  return (
-    <div style={{ position: "relative", width: "200px" }}>
-      <div
-        style={{
-          border: "1px solid #ccc",
-          padding: "5px",
-          borderRadius: "4px",
-          background: "#777",
-          border: "none",
-        }}
-      >
-        {selectedContacts.length > 0
-          ? selectedContacts.join(", ")
-          : "Select contacts"}
+
+
+
+
+function displayChatbox() {
+  const button = document.querySelector(".soutitre0");
+  const container = document.querySelector(".userscontainer");
+  // const formSubmit = document.querySelector(".submitForm");
+
+  button?.addEventListener("click", () => {
+    if (container?.classList.contains("showw")) {
+      container.classList.remove("showw");
+      container.classList.add("hide");
+      // formSubmit?.classList.add("hide");
+
+      // After animation ends, hide the element
+      button.addEventListener(
+        "click",
+        () => {
+          if (container?.classList.contains("hide")) {
+            container.style.display = "none";
+            // formSubmit.style.display = "none";
+          }
+        },
+        { once: true }
+      );
+    } else {
+      container.classList.remove("hide");
+      container.classList.add("showw");
+      // formSubmit?.classList.add("showw");
+      container.style.display = "block";
+    }
+  });
+}
+
+
+export default function InviteUsers() {
+  let [users, setusers] = useState([]);
+  let [error,Seterror]=useState("");
+   async function GetUsers() {
+  let responce = await fetch(`${host}/GetFolowingsUsers`,{
+    credentials:"include",
+  });
+
+  const data = await responce.json();
+    if (!responce.ok){
+      Seterror(data.message)
+      return
+}
+  setusers(data)
+
+
+
+}
+  return <>
+    <button className="soutitre0" onClick={displayChatbox}>
+      invit users
+    </button>
+
+ <div className="userscontainer">
+  {users.length > 0 ? (
+    users.map((user) => (
+      <div key={user.id} className="user-wrapper">
+        <div className="user">
+          <p>{user.firstname} {user.lastname}</p>
+        </div>
+        <div className="invitation">
+          <button>Invite user</button>
+        </div>
       </div>
-      <div
-        style={{
-          border: "1px solid #ccc",
-          padding: "8px",
-          position: "absolute",
-          background: "#111",
-          zIndex: 1,
-          borderRadius: "8px",
-          display: "flex",
-          gap: "10px",
-          overflowY: "scroll",
-        }}
-      >
-        {Array.isArray(contacts) &&
-          contacts.map((contact) => (
-            <label key={contact.id} style={{ display: "block" }}>
-              {console.log("contact", contact)}
-              <input
-                style={{ marginRight: "10px" }}
-                type="checkbox"
-                checked={selectedContacts.includes(contact.firstName)}
-                onChange={() =>
-                  handleCheckboxChange(contact.firstName, contact.id)
-                }
-              />
-              {contact.firstName}
-            </label>
-          ))}
-      </div>
+    ))
+  ) : (
+    <div>
+      <p>No users yet</p>
     </div>
-  );
+  )}
+</div>
+<div className="error">{error}</div>
+
+  </>
 }
