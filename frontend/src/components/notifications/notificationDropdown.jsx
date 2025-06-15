@@ -23,12 +23,12 @@ export default function NotificationDropdown({ isOpen, onClose }) {
         credentials: "include",
       });
       const data = await response.json();
-      if (data === null || Array.isArray(data.notification) ? data : [] )
-      if (notifications.length === 0) {
-        setNotifications([...data]);
-      } else {
-        setNotifications((prev) => [...prev, ...data]);
-      }     
+      if (data === null || Array.isArray(data.notification) ? data : [])
+        if (notifications.length === 0) {
+          setNotifications([...data]);
+        } else {
+          setNotifications((prev) => [...prev, ...data]);
+        }
 
       // setHasMore(data.hasMore);
       // setOffset((prev) => prev + data.notifications.length);
@@ -89,7 +89,7 @@ export default function NotificationDropdown({ isOpen, onClose }) {
           body: responseData,
           credentials: "include",
         });
-        console.log("response -------", response);
+        console.log("response -------", responseData);
 
         if (!response.ok) {
           console.log("Failed to send notification");
@@ -118,7 +118,7 @@ export default function NotificationDropdown({ isOpen, onClose }) {
                 <p>{notification.message}</p>
                 <button
                   onClick={() =>
-                    setResponseData({ id: notification.id, action: "going" })
+                    setResponseData({ id: notification.id, message: "going" })
                   }
                   className={styles.btnNotification}
                 >
@@ -128,7 +128,7 @@ export default function NotificationDropdown({ isOpen, onClose }) {
                   onClick={() =>
                     setResponseData({
                       id: notification.id,
-                      action: "not_going",
+                      message: "not_going",
                     })
                   }
                   className={styles.btnNotification}
@@ -141,7 +141,10 @@ export default function NotificationDropdown({ isOpen, onClose }) {
                 <p>{notification.message}</p>
                 <button
                   onClick={() =>
-                    setResponseData({ id: notification.id, action: "accepted" })
+                    setResponseData({
+                      id: notification.id,
+                      message: "accepted",
+                    })
                   }
                   className={styles.btnNotification}
                 >
@@ -149,7 +152,10 @@ export default function NotificationDropdown({ isOpen, onClose }) {
                 </button>
                 <button
                   onClick={() =>
-                    setResponseData({ id: notification.id, action: "rejected" })
+                    setResponseData({
+                      id: notification.id,
+                      message: "rejected",
+                    })
                   }
                   className={styles.btnNotification}
                 >
