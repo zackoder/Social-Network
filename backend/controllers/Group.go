@@ -182,7 +182,7 @@ func GetGroupsCreatedByUser(w http.ResponseWriter, r *http.Request, user_id int)
 
 
 func GetFollowingUsers(w http.ResponseWriter, r *http.Request, user_id int){
-	if r.Method != http.MethodPost {
+	if r.Method != http.MethodGet {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
@@ -218,9 +218,13 @@ func InviteUser(w http.ResponseWriter, r *http.Request, user_id int) {
 	// var invitaion utils.GroupInvitation
 	var noti utils.Notification
 	if err := json.NewDecoder(r.Body).Decode(&noti); err != nil {
+		fmt.Println(err)
 		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest"}, http.StatusBadRequest)
 		return
 	}
+	noti.Sender_id =user_id
+	noti.Message = "group invitation"
+
 	if !models.IsMember(noti.Actor_id, noti.Sender_id) {
 		utils.WriteJSON(w, map[string]string{"error": "you are not a member of the group"}, http.StatusBadRequest)
 		return
@@ -231,7 +235,6 @@ func InviteUser(w http.ResponseWriter, r *http.Request, user_id int) {
 		return
 	}
 	var err error
-	noti.Message = "group invitation"
 	noti.Id, err = models.InsertNotification(noti)
 	// err := models.SaveInvitation(invitaion.GroupID, invitaion.InvitedBy, invitaion.UserId)
 	if err != nil {

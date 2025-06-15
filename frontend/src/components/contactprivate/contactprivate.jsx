@@ -1,105 +1,101 @@
 "use client";
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "./contactprivate.modules.css";
-
-
-
-
-
-
-
 
 const host = process.env.NEXT_PUBLIC_HOST;
 
+export default function InviteUsers({ group_id }) {
+  const [users, setUsers] = useState([]);
+  const [error, setError] = useState("");
+  const [invited, setInvited] = useState([]);
 
-
-
-
-
-
-function displayChatbox() {
-  const button = document.querySelector(".soutitre0");
-  const container = document.querySelector(".userscontainer");
-  // const formSubmit = document.querySelector(".submitForm");
-
-  button?.addEventListener("click", () => {
-    if (container?.classList.contains("showw")) {
-      container.classList.remove("showw");
-      container.classList.add("hide");
-      // formSubmit?.classList.add("hide");
-
-      // After animation ends, hide the element
-      button.addEventListener(
-        "click",
-        () => {
-          if (container?.classList.contains("hide")) {
-            container.style.display = "none";
-            // formSubmit.style.display = "none";
-          }
-        },
-        { once: true }
-      );
-    } else {
-      container.classList.remove("hide");
-      container.classList.add("showw");
-      // formSubmit?.classList.add("showw");
-      container.style.display = "block";
-    }
-  });
-}
-
-
-export default function InviteUsers(group_id) {
-  console.log(group_id.group_id);
-
-  let [users, setusers] = useState([]);
-  let [error, Seterror] = useState("");
   async function GetUsers() {
-    let responce = await fetch(`${host}/GetFolowingsUsers?groupId=${group_id.group_id}`, {
-      credentials: "include",
-      method: "POST",
-      body: JSON.stringify(group_id)
-    });
+    try {
+      const responce = await fetch(`${host}/GetFolowingsUsers?groupId=${group_id}`, {
+        credentials: "include",
+        method: "GET",
+      });
 
+      const data = await responce.json();
+      if (!responce.ok) {
+        setError(data.error);
+        return;
+      }
 
-
-    const data = await responce.json();
-    console.log(data);
-    if (!responce.ok) {
-      Seterror(data.message)
-      return
+      setUsers(data);
+    } catch (err) {
+      setError(err.message);
     }
-    setusers(data)
   }
+
+  async function InviteUser(user_id) {
+    try {
+      const responce = await fetch(`${host}/groupInvitarion`, {
+        credentials: "include",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          actor_id: parseInt(group_id),
+          target: user_id,
+        }),
+      });
+
+      const data = await responce.json();
+      if (!responce.ok) {
+        setError(data.error);
+        return;
+      }
+
+      setInvited((prev) => [...prev, user_id]);
+    } catch (err) {
+      setError("Error during invitation");
+    }
+  }
+
   useEffect(() => {
-    GetUsers()
+    GetUsers();
+  }, []);
 
-  }, [])
-  return <>
-    <button className="soutitre0" onClick={displayChatbox}>
-      invit users
-    </button>
+  return (
+    <>
+      <button className="soutitre0">invit users</button>
 
-    <div className="userscontainer">
-      {users.length > 0 ? (
-        users.map((user) => (
+      <div className="userscontainer">
+        {users.length > 0 ? (
+          users.map((user) => {
+            const isInvited = invited.includes(user.ID);
+            return (
+              <div key={user.ID} className="user-wrapper">
+                <div className="user">
+                  <img
+                    src={`http://${user.avatar}`}
+                    alt={`${user.firstname} ${user.lastname}`}
+                    className="avatar"
+                  />
+                  <p>
+                    {user.firstname} {user.lastname}
+                  </p>
+                </div>
+                <div className="invitation">
+                  <button
+                    className={isInvited ? "invited" : ""}
+                    onClick={() => InviteUser(user.ID)}
+                    disabled={isInvited}
+                  >
+                    {isInvited ? "Invité ✅" : "Invite user"}
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          <p>No users yet</p>
+        )}
+      </div>
 
-          <div key={user.ID} className="user-wrapper">
-            <div className="user">
-              <img src={`http://${user.avatar}`} alt={`${user.firstname} ${user.lastname}`} className="avatar" />
-              <p>{user.firstname} {user.lastname}</p>
-            </div>
-            <div className="invitation">
-              <button>Invite user</button>
-            </div>
-          </div>
-        ))
-      ) : (
-
-        <p>No users yet</p>
-      )}
-    </div>
-    <div className="error">{error}</div>
-
-  </>
+      <div className="error">{error}</div>
+    </>
+  );
 }
