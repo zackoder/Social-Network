@@ -17,12 +17,15 @@ export default function InviteUsers({ group_id }) {
       });
 
       const data = await responce.json();
+      console.log(data);
+      
       if (!responce.ok) {
         setError(data.error);
         return;
       }
+      
 
-      setUsers(data);
+      setUsers(data ? data : []);
     } catch (err) {
       setError(err.message);
     }
@@ -91,7 +94,7 @@ export default function InviteUsers({ group_id }) {
             );
           })
         ) : (
-          <p>No users yet</p>
+          <p className="no-users">No users yet!</p>
         )}
       </div>
 

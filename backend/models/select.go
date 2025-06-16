@@ -1310,23 +1310,29 @@ func GetThemAll(userid int) ([]utils.User, error) {
 func Get_followings_users(user_id, group_id int, host string) ([]utils.User, error) {
 	Query := `
 	SELECT DISTINCT
-	    u.first_name,
-	    u.last_name,
-	    u.avatar,
-	    u.id
-	FROM
-	    users u
-	    INNER JOIN followers f 
-	        ON f.followed_id = ?
-	        AND f.follower_id = u.id
-	    LEFT JOIN group_members gm 
-	        ON gm.group_id = ?
-	        AND gm.user_id = u.id
-	WHERE
-	    u.id <> ?
-	    AND gm.user_id IS NULL;
+    u.first_name,
+    u.last_name,
+    u.avatar,
+    u.id
+FROM
+    users u
+    INNER JOIN followers f 
+        ON f.followed_id = ?
+        AND f.follower_id = u.id
+    LEFT JOIN group_members gm 
+        ON gm.group_id = ?
+        AND gm.user_id = u.id
+    LEFT JOIN notifications n
+        ON n.target_id = u.id
+        AND n.user_id = ?
+        AND n.actor_id = ?
+        AND n.message = 'group invitation'
+WHERE
+    u.id <> ?
+    AND gm.user_id IS NULL
+    AND n.target_id IS NULL;
 	`
-	rows, err := Db.Query(Query, user_id, group_id, user_id)
+	rows, err := Db.Query(Query, user_id, group_id, user_id,group_id,user_id)
 	if err != nil {
 		return nil, err
 	}
