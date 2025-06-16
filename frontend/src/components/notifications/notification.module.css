@@ -1,41 +1,54 @@
-.notificationWrapper{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 5px;
+.notificationWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
 }
 
-
 .links {
-    display: flex;
-    gap: 10px;
-    align-items: center;
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 .linkContainer {
-    position: relative;
+  position: relative;
 }
 
 .link {
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 5px;
-    border-radius: 50%;
-    transition: background-color 0.2s;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
 }
 
 .link:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .image {
-    margin-left: 0;
-    transition: transform 0.2s;
+  margin-left: 0;
+  transition: transform 0.2s;
+  position: relative;
+}
+.image .displaynotif {
+  position: absolute;
+  top: -200px;
+  right: 0;
+  display: block;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 100%;
+  border: 1px solid #f00;
+  color: #fff;
+  text-align: center;
 }
 
 /* Add a subtle animation when clicking the notification icon */
 .link:active .image {
-    transform: scale(0.9);
+  transform: scale(0.9);
 }

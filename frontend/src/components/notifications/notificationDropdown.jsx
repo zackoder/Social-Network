@@ -2,42 +2,49 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./notificationDropdown.module.css";
 import { socket } from "../websocket/websocket";
 import { isAuthenticated } from "@/app/page";
+const host = process.env.NEXT_PUBLIC_HOST;
 
-export default function NotificationDropdown({ isOpen, onClose }) {
+export const fetchNotifications = async () => {
+  // if (loading) return;
+  // setLoading(true);
+
+  try {
+    const response = await fetch(`${host}/getNotifications`, {
+      credentials: "include",
+    });
+    const data = await response.json();
+    // if (notifications.length === 0) {
+    //   //setNotifications([...data]);
+
+    // } else {
+    //   setNotifications((prev) => [...prev, ...data]);
+    // }
+    return Array.isArray(data) ? data : [];
+
+    // setHasMore(data.hasMore);
+    // setOffset((prev) => prev + data.notifications.length);
+  } catch (error) {
+    console.log("Error fetching notifications:", error);
+  }
+};
+
+export default function NotificationDropdown({
+  isOpen,
+  onClose,
+  notifications,
+}) {
+  useEffect(() => {
+    console.log("notifications", notifications);
+  }, []);
+  console.log("notifications", notifications);
+
   const dropdownRef = useRef(null);
-  const [notifications, setNotifications] = useState([]);
+  // const [notifications, setNotifications] = useState([]);
   const [responseData, setResponseData] = useState({ id: "", action: "" });
 
   // const [offset, setOffset] = useState(0);
   // const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false);
-
-  const host = process.env.NEXT_PUBLIC_HOST;
-
-  const fetchNotifications = async () => {
-    if (loading) return;
-    setLoading(true);
-
-    try {
-      const response = await fetch(`${host}/getNotifications`, {
-        credentials: "include",
-      });
-      const data = await response.json();
-      if (data === null || Array.isArray(data.notification) ? data : [])
-        if (notifications.length === 0) {
-          setNotifications([...data]);
-        } else {
-          setNotifications((prev) => [...prev, ...data]);
-        }
-
-      // setHasMore(data.hasMore);
-      // setOffset((prev) => prev + data.notifications.length);
-    } catch (error) {
-      console.log("Error fetching notifications:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const [loading, setLoading] = useState(false);
 
   // Load more notifications
   // const handleLoadMore = () => {
@@ -45,24 +52,32 @@ export default function NotificationDropdown({ isOpen, onClose }) {
   // };
 
   // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleSocketMessage = (e) => {
-      try {
-        const data = JSON.parse(e.data);
-        setNotifications((prev) => [data, ...prev]);
-      } catch (err) {
-        console.log("failed to notification: ", err);
-      }
-      socket.addEventListener("message", handleSocketMessage);
-      return () => socket.removeEventListener("message", handleSocketMessage);
-    };
-  }, [isOpen]);
+  // useEffect(() => {
+  //   const handleSocketMessage = (e) => {
+  //     try {
+  //       const data = JSON.parse(e.data);
+  //       setNotifications((prev) => [data, ...prev]);
+  //     } catch (err) {
+  //       console.log("failed to notification: ", err);
+  //     }
+  //     socket.addEventListener("message", handleSocketMessage);
+  //     if (data === null || Array.isArray(data.notification) ? data : []) {
+  //       if (notifications.length === 0) {
+  //         setNotifications([...data]);
+  //       } else {
+  //         setNotifications((prev) => [...prev, ...data]);
+  //       }
+  //     }
 
-  useEffect(() => {
-    if (isOpen) {
-      fetchNotifications();
-    }
-  }, [isOpen]);
+  //     return () => socket.removeEventListener("message", handleSocketMessage);
+  //   };
+  // }, []);
+
+  // useEffect(() => {
+  //   //if (isOpen) {
+  //   fetchNotifications();
+  //   //}
+  // }, []);
   if (!isOpen) return null;
 
   useEffect(() => {
@@ -81,12 +96,14 @@ export default function NotificationDropdown({ isOpen, onClose }) {
     const sendRequest = async () => {
       if (!responseData.id) return;
       try {
+        console.log(responseData);
+
         const response = await fetch(`${host}/notiResp`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: responseData,
+          body: JSON.stringify(responseData),
           credentials: "include",
         });
         console.log("response -------", responseData);
@@ -105,13 +122,14 @@ export default function NotificationDropdown({ isOpen, onClose }) {
 
   return (
     <div ref={dropdownRef} className={styles.dropdown}>
+      {/* <span className={styles.displaynotif}>{notifications.length}</span> */}
       <div className={styles.header}>
         <h3>Notifications</h3>
       </div>
       <div className={styles.notificationsList}>
         {notifications.length === 0 ? (
           <p>No notifications</p>
-        ) : (
+        ) : notifications ? (
           notifications.map((notification, index) =>
             notification.message === "event" ? (
               <div key={index} className={styles.notificationItem}>
@@ -164,6 +182,8 @@ export default function NotificationDropdown({ isOpen, onClose }) {
               </div>
             )
           )
+        ) : (
+          ""
         )}
       </div>
     </div>

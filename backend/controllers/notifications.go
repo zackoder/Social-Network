@@ -89,4 +89,5 @@ func NotiResp(w http.ResponseWriter, r *http.Request, userId int) {
 		utils.WriteJSON(w, map[string]string{"error": "Bad Request"}, http.StatusBadRequest)
 		return
 	}
+	utils.WriteJSON(w, map[string]string{"successful": "ok"}, 200)
 }

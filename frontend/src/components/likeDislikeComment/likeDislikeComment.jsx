@@ -25,7 +25,6 @@ export default function LikeDislikeComment({ postId }) {
   const [showComments, setShowComments] = useState(false);
   const fileInputRef = useRef(null);
 
-
   // *********************** comments logic ***********************//
   const fetchComments = async () => {
     if (loading || !hasMore) return;
@@ -108,7 +107,7 @@ export default function LikeDislikeComment({ postId }) {
       setShowComments(true);
       setComment("");
       setImage("");
-  
+
       // Reset file input
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -118,8 +117,7 @@ export default function LikeDislikeComment({ postId }) {
     }
   };
 
-// *****************reaction logic ****************** //
-
+  // *****************reaction logic ****************** //
 
   const getReactions = async (postId) => {
     try {
@@ -145,11 +143,11 @@ export default function LikeDislikeComment({ postId }) {
       console.error("Failed to fetch user reaction:", error);
     }
   };
-  
+
   useEffect(() => {
     getReactions(postId);
   }, []);
-  
+
   const handleReaction = async (reactionType) => {
     try {
       const response = await fetch(`${host}/addReaction`, {
@@ -173,8 +171,6 @@ export default function LikeDislikeComment({ postId }) {
       console.log(data);
 
       if ((await data.message) === "Reaction updated") {
-        // console.log("nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn", data.reaction.reactionType);
-
         if ((await data.type) === "like") {
           setLiked(true);
           setDisliked(false);
@@ -198,7 +194,6 @@ export default function LikeDislikeComment({ postId }) {
   };
 
   /* handling show comments */
-
 
   return (
     //className={styles.reactionContainer}
