@@ -41,7 +41,7 @@ export default function GroupChat({ groupData }) {
   const [messages, setmessages] = useState([]);
   const [newmessage, setmessage] = useState("");
   const [image, setImage] = useState(null);
-  const user_id = parseInt(localStorage.getItem("user-id"));
+  // const user_id = parseInt(localStorage.getItem("user-id"));
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];

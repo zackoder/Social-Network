@@ -15,6 +15,7 @@ func GetFollowers(w http.ResponseWriter, r *http.Request, userID int) {
 		return
 	}
 	userId, err := strconv.Atoi((r.URL.Query().Get("id")))
+	
 	fmt.Println(userID, userId)
 	if err != nil {
 		fmt.Println("we cant convert the id")
