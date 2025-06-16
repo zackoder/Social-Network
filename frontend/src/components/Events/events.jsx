@@ -15,6 +15,8 @@ export function Events({ id }) {
   const [eventTitle, setEventTitle] = useState("");
   const [eventDescription, setEventDescription] = useState("");
   const [eventDatetime, setEventDatetime] = useState("");
+  const [participationStatus, setParticipationStatus] = useState(null);
+
 
   const createEvent = async () => {
     if (!eventTitle || !eventDatetime || !eventDescription) return;
@@ -44,6 +46,7 @@ export function Events({ id }) {
         title: eventTitle,
         description: eventDescription,
         event_time: eventT.getTime() / 1000,
+        action :participationStatus
       }),
     });
     console.log(response.ok);
@@ -177,6 +180,26 @@ export function Events({ id }) {
               value={eventDatetime}
               onChange={(e) => setEventDatetime(e.target.value)}
             />
+            <br />
+            <br />
+            <div className={styles.action}>
+              <button
+                className={`${styles.goenButton} ${participationStatus === 'going' ? styles.selected : ''}`}
+                onClick={() => setParticipationStatus('going')}
+
+              >
+                Going
+              </button>
+              <button
+               className={`${styles.notGoenButton} ${participationStatus === 'not going' ? styles.selected : ''}`}
+               onClick={() => setParticipationStatus('not going')}
+                
+              >
+                Not Going
+              </button>
+
+            </div>
+
             <br />
             <br />
             <button className={styles.button} onClick={createEvent}>

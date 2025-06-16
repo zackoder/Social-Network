@@ -65,7 +65,7 @@ font-weight: 800;
 
 .buttonContainer {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   gap: 12px;
   margin-top: 12px;
 }
@@ -83,6 +83,8 @@ font-weight: 800;
 .goenButton {
   background-color: #4caf50;
   color: white;
+  padding-left: 35px;
+  padding-right: 35px;
 }
 
 .goenButton:hover {
@@ -213,3 +215,18 @@ font-weight: 800;
   background-color: #0056b3;
 }
 
+.action{
+  
+  display: flex;
+  justify-content: space-between; /* Un bouton à chaque extrémité */
+  align-items: center; /* Centrer verticalement (optionnel) */
+  margin-top: 10px;
+}
+.selected {
+  border: 2px solid #000;
+  opacity: 0.9;
+}
+.selected {
+  background-color: #222;
+  color: #fff;
+}

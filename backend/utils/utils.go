@@ -130,6 +130,7 @@ type Event struct {
 	EventTime   int    `json:"event_time"`
 	CreatedBy   int    `json:"created_by"`
 	Responce string `json:"responce"`
+	Action string `json:"action"`
 }
 
 type EventResponse struct {

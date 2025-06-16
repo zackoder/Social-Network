@@ -119,3 +119,7 @@
   cursor: not-allowed;
   transition: 0.3s;
 }
+.no-users{
+  display: flex;
+  justify-content: center;
+}

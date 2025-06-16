@@ -180,34 +180,29 @@ func GetGroupsCreatedByUser(w http.ResponseWriter, r *http.Request, user_id int)
 	utils.WriteJSON(w, Groups, 200)
 }
 
-
-func GetFollowingUsers(w http.ResponseWriter, r *http.Request, user_id int){
+func GetFollowingUsers(w http.ResponseWriter, r *http.Request, user_id int) {
 	if r.Method != http.MethodGet {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
 	}
 	group_id, err := strconv.Atoi(r.URL.Query().Get("groupId"))
-	
-    if err != nil {
+	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "invalid group"}, http.StatusForbidden)
 		return
-	}		
-		
-	fmt.Println("group_id",group_id,"errrror",err)
-	fmt.Println(models.IsMember(group_id,user_id ))
+	}
 
-	if !models.IsMember(group_id,user_id ) {
+	fmt.Println("group_id", group_id, "errrror", err)
+	fmt.Println(models.IsMember(group_id, user_id))
+
+	if !models.IsMember(group_id, user_id) {
 		utils.WriteJSON(w, map[string]string{"error": "You don't have access to this group."}, 409)
 		return
 	}
-	followingsUsers,err := models.Get_followings_users(user_id,group_id, r.Host)
+	followingsUsers, err := models.Get_followings_users(user_id, group_id, r.Host)
 
 	fmt.Println(err)
 	fmt.Println(followingsUsers)
 	utils.WriteJSON(w, followingsUsers, 200)
-
-
-
 }
 
 func InviteUser(w http.ResponseWriter, r *http.Request, user_id int) {
@@ -222,7 +217,7 @@ func InviteUser(w http.ResponseWriter, r *http.Request, user_id int) {
 		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest"}, http.StatusBadRequest)
 		return
 	}
-	noti.Sender_id =user_id
+	noti.Sender_id = user_id
 	noti.Message = "group invitation"
 
 	if !models.IsMember(noti.Actor_id, noti.Sender_id) {
@@ -305,7 +300,8 @@ func CreatEvent(w http.ResponseWriter, r *http.Request, userId int) {
 	}
 	notification.Target_id = event.GroupID
 	event.CreatedBy = userId
-	if len(event.Title) > 25 || len(event.Description) > 100 || len(strings.TrimSpace(event.Description)) < 2 || len(strings.TrimSpace(event.Title)) < 2 {
+	if len(event.Title) > 25 || len(event.Description) > 100 || len(strings.TrimSpace(event.Description)) < 2 ||
+		len(strings.TrimSpace(event.Title)) < 2 || (event.Action != "going" && event.Action != "not going") {
 		utils.WriteJSON(w, map[string]string{"error": "Status BadRequest2"}, http.StatusBadRequest)
 		return
 	}
@@ -316,6 +312,23 @@ func CreatEvent(w http.ResponseWriter, r *http.Request, userId int) {
 	}
 
 	notification.Actor_id, err = models.InsserEventInDatabase(event)
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
+		return
+	}
+
+	var responce utils.EventResponse
+	responce.UserID = userId
+	responce.GroupeId = event.GroupID
+	responce.Response = event.Action
+	responce.EventID = notification.Actor_id
+
+	err = models.InsserResponceInDatabase(responce)
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
+		return
+	}
+
 	notification.Message = "event"
 	notification.Sender_id = userId
 	notification.Id, err = models.InsertNotification(notification)
