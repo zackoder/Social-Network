@@ -83,7 +83,7 @@ func Posts(w http.ResponseWriter, r *http.Request, user_id int) {
 		return
 	}
 
-	posts := models.QueryPosts(limit, offset,user_id, r)
+	posts := models.QueryPosts(limit, offset, user_id, r)
 	utils.WriteJSON(w, posts, 200)
 }
 

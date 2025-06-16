@@ -65,12 +65,10 @@ func UploadMsgImg(pyload []byte) (Message, error) {
 	if len(parts) != 2 {
 		return message, fmt.Errorf("Send a valid data")
 	}
-	// if err := os.WriteFile("test.txt", pyload, 0o644); err != nil {
-	// 	fmt.Println("writing file error ", err)
-	// 	return message, fmt.Errorf("internal sercer error")
-	// } else {
-	// 	log.Println("file was created")
-	// }
+	if err := os.WriteFile("test.txt", parts[0], 0o644); err != nil {
+		fmt.Println("writing file error ", err)
+		return message, fmt.Errorf("internal sercer error")
+	}
 
 	metaPart := parts[0]
 	filePart := parts[1]

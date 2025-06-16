@@ -57,13 +57,13 @@ type Notification struct {
 	Sender_id int    `json:"sender"`
 	Actor_id  int    `json:"actor_id"`
 	Target_id int    `json:"target"`
-	Type      string `json:"-"`
+	Type      string `json:"type"`
 }
 
 type User struct {
 	ID        int64
 	Nickname  string `json:"nickname"`
-	Age       int  `json:"age"`
+	Age       int    `json:"age"`
 	Gender    string `json:"gender"`
 	FirstName string `json:"firstname"`
 	LastName  string `json:"lastname"`
@@ -86,15 +86,14 @@ type Message struct {
 	Reciever_id   int    `json:"receiver_id"`
 	Type          string `json:"type"`
 	Group_id      int    `json:"group_id"`
-	First_name  string `json:"first_name"`
-	Last_name   string `json:"last_name"`
+	First_name    string `json:"first_name"`
+	Last_name     string `json:"last_name"`
 	Content       string `json:"content"`
 	Mime          string `json:"mime"`
 	Filename      string `json:"filename"`
 	Avatar        string `json:"avatar"`
 	Creation_date int    `json:"creation_date"`
 }
-
 
 type Err struct {
 	Error string `json:"error"`
@@ -123,13 +122,13 @@ type Groupe_member struct {
 }
 
 type Event struct {
-	Id int  `json:"id"`
+	Id          int    `json:"id"`
 	GroupID     int    `json:"groupe_id"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	EventTime   int    `json:"event_time"`
 	CreatedBy   int    `json:"created_by"`
-	Responce string `json:"responce"`
+	Responce    string `json:"responce"`
 }
 
 type EventResponse struct {
