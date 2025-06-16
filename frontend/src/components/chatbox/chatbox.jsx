@@ -22,12 +22,29 @@ export default function ChatBox({ contact, onClickClose }) {
   const [image, setImage] = useState(null);
   const [showEmojis, setShowEmojis] = useState(false);
   const bottomRef = useRef(null);
-  const scrollContainerRef = useRef(null); // ✅ Scroll container ref
+  const scrollContainerRef = useRef(null);  
   const [offset, setOffset] = useState(0);
   const limit = 20;
-  const userId = parseInt(localStorage.getItem("user-id"));
+  const [userId, setUserId] = useState(null);
 
   const token = getCookie("token");
+
+
+useEffect(() => {
+  const fetchUserId = async () => {
+    const response = await fetch(`${host}/userData`, {
+      credentials: "include",
+    });
+    if (!response.ok) {
+      isAuthenticated(response.status, "Please login first");
+      return;
+    }
+    const data = await response.json();
+    setUserId(data.id);
+  };
+  fetchUserId();
+}, []);
+
 
   const emojis = [
     "😁",
@@ -91,7 +108,7 @@ export default function ChatBox({ contact, onClickClose }) {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "auto" });
   }, [messages]);
-
+ 
   useEffect(() => {
     const handleMessage = (event) => {
       try {
@@ -198,7 +215,7 @@ export default function ChatBox({ contact, onClickClose }) {
         };
         const messageBuffer = buildBinaryMessage(metadata, reader.result);
         if (socket.readyState === WebSocket.OPEN) socket.send(messageBuffer);
-        // Add optimistic update for better UX
+       
       };
       reader.readAsArrayBuffer(image);
       setImage(null);

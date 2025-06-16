@@ -9,7 +9,7 @@ export default function ContactsPrivate() {
   const { setSelectedContactsIds } = useContext(DataContext);
   const [contacts, setContacts] = useState([]);
   const host = process.env.NEXT_PUBLIC_HOST;
-  const [userId, setuserid] = useState(0);
+  // const [userId, setuserid] = useState(0);
 
   useEffect(() => {
     const fetchFollowers = async () => {
@@ -26,7 +26,7 @@ export default function ContactsPrivate() {
         const dataa = await responsee.json();
         const userId = dataa.id;
 
-        console.log("Fetched user ID:", userId);
+        // console.log("Fetched user ID:", userId);
 
         const response = await fetch(`${host}/api/getfollowers?id=${userId}`, {
           credentials: "include",
