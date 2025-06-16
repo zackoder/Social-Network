@@ -84,7 +84,7 @@ export default function InviteUsers({ group_id }) {
                     onClick={() => InviteUser(user.ID)}
                     disabled={isInvited}
                   >
-                    {isInvited ? "Invité ✅" : "Invite user"}
+                    {isInvited ? "Invited ✅" : "Invite user"}
                   </button>
                 </div>
               </div>
