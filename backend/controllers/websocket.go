@@ -28,15 +28,25 @@ func Websocket(w http.ResponseWriter, r *http.Request, user_id int) {
 		return
 	}
 
-	cookie, _ := r.Cookie("token")
-	client := utils.CreateClient(conn, Manager, user_id, cookie.Value)
-	log.Println("client tres to log", client)
-	Manager.AddClient(client)
-	defer func() {
-		log.Println("1", client)
+	cookie, err := r.Cookie("token")
+	if err != nil {
+		log.Println("Token cookie not found:", err)
 		conn.Close()
+		return
+	}
+
+	client := utils.CreateClient(conn, Manager, user_id, cookie.Value)
+	log.Printf("Client created for user %d", user_id)
+
+	Manager.AddClient(client)
+
+	// Remove the sleep - it's unnecessary and can cause issues
+	// time.Sleep(5 * time.Second)
+
+	defer func() {
 		Manager.RemoveClient(client)
-		log.Println("Client disconnected:", user_id)
+		conn.Close()
+		log.Printf("Client disconnected: %d", user_id)
 	}()
 
 	if groups := models.GetClientGroups(user_id); len(groups) > 0 {
@@ -44,7 +54,6 @@ func Websocket(w http.ResponseWriter, r *http.Request, user_id int) {
 	}
 
 	for {
-		log.Println("dslkdfjqlskjflsjf")
 		msgType, payload, err := conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
@@ -52,7 +61,6 @@ func Websocket(w http.ResponseWriter, r *http.Request, user_id int) {
 			}
 			break
 		}
-
 		log.Println("Message received type:", msgType)
 		handleMessage(msgType, payload, r.Host, client)
 	}

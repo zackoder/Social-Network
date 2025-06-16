@@ -1,21 +1,16 @@
 package utils
 
 import (
-	"fmt"
 	"log"
 	"sync"
 
 	"github.com/gorilla/websocket"
 )
 
-type GroupManager struct {
-	Groups GroupMembers
-	sync.RWMutex
-}
-
-type GroupMembers map[int][]int
-
-type OnlineUsers map[int][]*Client
+type (
+	GroupMembers map[int][]int
+	OnlineUsers  map[int][]*Client
+)
 
 type Manager struct {
 	UsersList OnlineUsers
@@ -47,7 +42,7 @@ func (m *Manager) GetClient(id int) []*Client {
 	return client
 }
 
-func (m *Manager) CheckGroupMubers(id int) bool {
+func (m *Manager) CheckGroupMembers(id int) bool {
 	m.RLock()
 	defer m.RUnlock()
 	_, exists := m.UsersList[id]
@@ -57,21 +52,15 @@ func (m *Manager) CheckGroupMubers(id int) bool {
 func (m *Manager) AddClient(client *Client) {
 	m.Lock()
 	defer m.Unlock()
-	// time.Sleep((2 * time.Second))
-	m.UsersList[client.Client_id] = append(m.UsersList[client.Client_id], client)
-}
+	log.Printf("Adding client %d", client.Client_id)
 
-func (m *Manager) AddGroup(group_id, user_id int) {
-	m.Lock()
-	defer m.Unlock()
-	client := m.GetClient(user_id)
-	if client != nil {
-		if group, ok := m.Groups[group_id]; !ok {
-			m.Groups[group_id] = append(group, user_id)
-		} else {
-			group = append(group, user_id)
-		}
+	// Initialize slice if it doesn't exist
+	if m.UsersList[client.Client_id] == nil {
+		m.UsersList[client.Client_id] = make([]*Client, 0)
 	}
+
+	m.UsersList[client.Client_id] = append(m.UsersList[client.Client_id], client)
+	log.Printf("Client %d added. Total connections: %d", client.Client_id, len(m.UsersList[client.Client_id]))
 }
 
 func CreateClient(conn *websocket.Conn, m *Manager, id int, token string) *Client {
@@ -87,8 +76,8 @@ func (m *Manager) StoreGroups(groups []int, user_id int) {
 	m.Lock()
 	defer m.Unlock()
 	for _, group_id := range groups {
-		if group, exists := m.Groups[group_id]; exists { // groups[int(group_id)][(members)]int ex : "groups[1][1,2,3,4,5] {1:[1,2,3,4,5],2: [1,2,3,4],3: [6]}"
-			if !m.CheckuserExistenc(user_id, group_id) {
+		if group, exists := m.Groups[group_id]; exists {
+			if !m.checkUserExistence(user_id, group_id) {
 				m.Groups[group_id] = append(group, user_id)
 			}
 		} else {
@@ -97,9 +86,8 @@ func (m *Manager) StoreGroups(groups []int, user_id int) {
 	}
 }
 
-func (m *Manager) CheckuserExistenc(user_id, group_id int) bool {
-	m.RLock()
-	defer m.RUnlock()
+func (m *Manager) checkUserExistence(user_id, group_id int) bool {
+	// This method should be called with lock already held
 	for _, client := range m.Groups[group_id] {
 		if client == user_id {
 			return true
@@ -109,36 +97,35 @@ func (m *Manager) CheckuserExistenc(user_id, group_id int) bool {
 }
 
 func (m *Manager) RemoveClient(client *Client) {
-	// time.Sleep(5 * time.Second)
-	log.Println("removing client")
 	m.Lock()
-	log.Println("removing client")
+	defer m.Unlock()
+
+	log.Printf("Removing client %d", client.Client_id)
 
 	clients := m.UsersList[client.Client_id]
-	log.Println("clent len", len(clients))
 	for i, c := range clients {
 		if c == client {
 			m.UsersList[client.Client_id] = append(clients[:i], clients[i+1:]...)
-			fmt.Println("midle", m.UsersList[client.Client_id])
 			break
 		}
 	}
 
-	fmt.Println("client tabs", len(m.UsersList[client.Client_id]))
+	log.Printf("Client %d removed. Remaining connections: %d", client.Client_id, len(m.UsersList[client.Client_id]))
+
 	// If no clients left, delete entry
 	if len(m.UsersList[client.Client_id]) == 0 {
 		delete(m.UsersList, client.Client_id)
-		m.RemoveClientFromGroups(client.Client_id)
+		m.removeClientFromGroups(client.Client_id)
 	}
-	m.Unlock()
-	log.Println("client removed")
 }
 
-func (m *Manager) RemoveClientFromGroups(id int) {
-	for _, group := range m.Groups {
+func (m *Manager) removeClientFromGroups(id int) {
+	// This method should be called with lock already held
+	for group_id, group := range m.Groups {
 		for index, client_id := range group {
 			if client_id == id {
-				group = append(group[:index], group[index+1:]...)
+				m.Groups[group_id] = append(group[:index], group[index+1:]...)
+				break
 			}
 		}
 	}

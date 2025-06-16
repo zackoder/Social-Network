@@ -44,7 +44,8 @@ func CheckExtension(fileContent string) bool {
 		"\x89PNG\r\n\x1A\n", // apng (same as png, distinguish by 'acTL' chunk)
 	}
 	for _, ImageType := range ImageTypes {
-		if len(fileContent) > len(ImageType)-1 && fileContent[:len(ImageType)-1] == ImageType {
+		// log.Println(fileContent[:len(ImageType)] == ImageType)
+		if len(fileContent) > len(ImageType)-1 && fileContent[:len(ImageType)] == ImageType {
 			return true
 		}
 	}
@@ -117,5 +118,4 @@ func CheckNickName(nickname string) bool {
 }
 
 func HandleEvent(noti Notification) {
-	
 }

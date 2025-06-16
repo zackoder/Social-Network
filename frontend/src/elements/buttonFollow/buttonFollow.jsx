@@ -88,7 +88,7 @@ export default function ButtonFollow({ profileId }) {
   if (currentUserId && currentUserId.toString() === profileId?.toString()) {
     return null;
   }
-  
+
   if (isLoading) {
     return (
       <button className={styles.button} disabled>
@@ -98,25 +98,33 @@ export default function ButtonFollow({ profileId }) {
   }
 
   return (
-    <button
-      className={`${styles.button} ${
-        followstatus == "follow" ? styles.following : ""
-      }`}
-      onClick={handleFollowToggle}
-    >
+    <>
       {followstatus == "follow sent" ? (
-        <>
+        <div
+          className={`${styles.button} ${followstatus == "follow" ? styles.following : ""
+            }`}
+        >
           <FaUserClock /> follow sent
-        </>
+        </div>
       ) : followstatus == "unfollow" ? (
-        <>
+        <button
+          className={`${styles.button} ${followstatus == "follow" ? styles.following : ""
+            }`}
+          onClick={handleFollowToggle}
+        >
           <FaUserCheck /> Following
-        </>
+        </button>
       ) : (
         <>
-          <FaUserPlus /> Follow
+          <button
+            className={`${styles.button} ${followstatus == "follow" ? styles.following : ""
+              }`}
+            onClick={handleFollowToggle}
+          >
+            <FaUserPlus /> Follow
+          </button>
         </>
       )}
-    </button>
+    </>
   );
 }

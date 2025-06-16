@@ -16,7 +16,7 @@ func QueryPosts(limit, offset, user_id int, r *http.Request) []utils.Post {
 	host := r.Host
 	var posts []utils.Post
 	queryPosts := `
-		SELECT DISTINCT
+		SELECT
 		    p.id,
 		    p.post_privacy,
 		    p.title,
@@ -25,28 +25,38 @@ func QueryPosts(limit, offset, user_id int, r *http.Request) []utils.Post {
 		    u.first_name,
 		    p.imagePath,
 		    p.createdAt,
-			u.avatar
+		    u.avatar
 		FROM
 		    posts p
 		    JOIN users u ON p.user_id = u.id
 		    LEFT JOIN friends ppv ON p.id = ppv.post_id
-			LEFT JOIN followers f on f.follower_id = ? AND f.followed_id = u.id
+		    LEFT JOIN followers f on f.follower_id = ?
+		    AND f.followed_id = u.id
 		WHERE
-
-
-		        p.post_privacy = 'public'
-		        OR (p.post_privacy = 'almostPrivate' AND followed_id is not null)
-		        OR (
+		    p.post_privacy = 'public'
+			AND u.privacy = 'public'
+		    OR (
+		        (
+		            p.post_privacy = 'almostPrivate'
+		            AND followed_id is not null
+		        )
+		    )
+		    OR (
+		        (
 		            p.post_privacy = 'private'
 		            AND ppv.friend_id = ?
 		        )
-
+		    )
+		    OR p.user_id = ?
+		    AND p.post_privacy <> ''
+		GROUP BY
+		    p.id
 		ORDER BY
-		    p.createdAt DESC 
-			  LIMIT ? OFFSET ?;
+		    p.id DESC
+			LIMIT ? OFFSET ?;
 	`
 
-	rows, err := Db.Query(queryPosts, user_id, user_id, limit, offset)
+	rows, err := Db.Query(queryPosts, user_id, user_id, user_id, limit, offset)
 	if err != nil {
 		fmt.Println("queryPost error", err)
 		return nil
@@ -822,7 +832,7 @@ func MyGroupes(user_id int) []string {
 func SelectNotifications(user_id int) ([]utils.Notification, error) {
 	var notis []utils.Notification
 	quetyNotifications := `
-		SELECT DISTINCT
+		SELECT
 		    n.id,
 		    n.user_id,
 		    n.actor_id,
@@ -846,8 +856,9 @@ func SelectNotifications(user_id int) ([]utils.Notification, error) {
 		        n.message = 'event'
 		        AND gm.user_id IS NOT NULL          -- user is in the group
 		        AND er.user_id IS NULL              -- user has NOT responded
-		    );
-
+		    )
+			group by n.id
+			;
     `
 	rows, err := Db.Query(quetyNotifications, user_id, user_id, user_id)
 	if err != nil {
@@ -859,12 +870,38 @@ func SelectNotifications(user_id int) ([]utils.Notification, error) {
 		if err := rows.Scan(&noti.Id, &noti.Sender_id, &noti.Actor_id, &noti.Target_id, &noti.Message); err != nil {
 			log.Println("scaning notifacations error:", err)
 		}
+		selectMetaData(&noti)
 		log.Println(noti)
 		notis = append(notis, noti)
 	}
 
 	defer rows.Close()
 	return notis, nil
+}
+
+func selectMetaData(noti *utils.Notification) {
+	switch noti.Message {
+	
+	case "follow request":
+		user, _ := GetUserById(noti.Actor_id)
+		noti.Type = fmt.Sprintf("%s sent you a follow request", user.FirstName)
+
+	case "join request":
+		user, _ := GetUserById(noti.Sender_id)
+		group, _ := GetOneGroup(noti.Actor_id)
+		noti.Type = fmt.Sprintf("%s sent you a request to join the group %s", user.FirstName, group.Title)
+
+	case "event":
+		user, _ := GetUserById(noti.Sender_id)
+		group, _ := GetOneGroup(noti.Target_id)
+
+		noti.Type = fmt.Sprintf("A new event was created by %s in the group %s", user.FirstName, group.Title)
+
+	case "group invitation":
+		user, _ := GetUserById(noti.Sender_id)
+		group, _ := GetOneGroup(noti.Actor_id)
+		noti.Type = fmt.Sprintf("%s invited you to join the group %s", user.FirstName, group.Title)
+	}
 }
 
 func SelectGroupMSGs(group_id, user_id int, offset, host string) ([]utils.Message, error) {

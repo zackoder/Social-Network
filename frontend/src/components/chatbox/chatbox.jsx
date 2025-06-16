@@ -99,8 +99,21 @@ export default function ChatBox({ contact, onClickClose }) {
           typeof event.data === "string"
             ? JSON.parse(event.data)
             : parseBinaryMessage(event.data);
+        // if (
+        //   (data.sender_id === contact.id && data.receiver_id === userId) ||
+        //   (data.sender_id === userId && data.receiver_id === contact.id)
+        // ) {
+        //   setMessages((prev) => [...prev, data]);
+        // }
+        if (data.type === "message") {
+          // Text message
+          setMessages((prev) => [...prev, data]);
+        } else if (data.type === "image") {
+          // Image message
+          setMessages((prev) => [...prev, data]);
+        }
       } catch (err) {
-        console.error("Failed to parse message:", event.data);
+        console.log("Failed to parse message:", event.data);
       }
     };
 
@@ -115,25 +128,25 @@ export default function ChatBox({ contact, onClickClose }) {
   const fetchMessages = async (offsetValue = 0) => {
     const container = scrollContainerRef.current;
     const previousScrollHeight = container?.scrollHeight || 0; // 👈 record scroll height
-  
+
     try {
       const response = await fetch(`${host}/GetMessages?receiver_id=${contact.id}&offset=${offsetValue}`, {
         credentials: "include",
         method: "GET"
       });
-  
+
       const data = await response.json();
       console.log(data);
-      
+
       if (!response.ok) {
         isAuthenticated(response.status, data.error);
         return;
       }
-  
+
       if (Array.isArray(data) && data.length > 0) {
         setMessages((prev) => [...data.reverse(), ...prev]);
         setOffset(offsetValue + limit);
-  
+
         // ⏳ Wait until new messages render
         setTimeout(() => {
           const newScrollHeight = container?.scrollHeight || 0;
@@ -158,11 +171,11 @@ export default function ChatBox({ contact, onClickClose }) {
       fetchMessages(offset);
     }
   };
-  
+
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
-  
+
     container.addEventListener("scroll", handleScroll);
     return () => container.removeEventListener("scroll", handleScroll);
   }, [offset]);
@@ -178,16 +191,13 @@ export default function ChatBox({ contact, onClickClose }) {
           sender_id: userId,
           receiver_id: contact.id,
           type: "image",
-          token: { token },
+          token: token,
           content: message,
           mime: image.type,
           filename: image.name,
         };
         const messageBuffer = buildBinaryMessage(metadata, reader.result);
         if (socket.readyState === WebSocket.OPEN) socket.send(messageBuffer);
-        else
-          console.log("------------------------------------ waaaaaaaaaa 11111");
-
         // Add optimistic update for better UX
       };
       reader.readAsArrayBuffer(image);
@@ -200,11 +210,11 @@ export default function ChatBox({ contact, onClickClose }) {
         receiver_id: contact.id,
         type: "message",
         content: message,
-        token: "online",
+        token: token,
       };
 
       // Optimistic update
-      setMessages((prev) => [...prev, newMsg]);
+      // setMessages((prev) => [...prev, newMsg]);
       socket.send(JSON.stringify(newMsg));
       setMessage("");
     }
@@ -230,13 +240,13 @@ export default function ChatBox({ contact, onClickClose }) {
           x
         </div>
       </div>
-  
+
       {/* ✅ Attach scroll ref and handler */}
       <div
         className={styles.readmessages}
         ref={scrollContainerRef}
-        // onScroll={handleScroll}
-       
+      // onScroll={handleScroll}
+
       >
         {messages.map((msg, index) => (
           <div
@@ -254,9 +264,14 @@ export default function ChatBox({ contact, onClickClose }) {
                 />
               </div>
             )}
-  
+
             <div className={styles.message}>
-              {msg.filename ? (
+              {msg.content !== "" && (
+                <div className={styles.textMessage}>
+                  <p>{msg.content}</p>
+                </div>
+              )}
+              {msg.filename !== "" && (
                 <div className={styles.imageContainer}>
                   <img
                     src={`http://${msg.filename}`}
@@ -265,20 +280,15 @@ export default function ChatBox({ contact, onClickClose }) {
                     height={250}
                     className={styles.imageMessage}
                   />
-                  <span className={styles.timeStamp}>
-                    {formatDate(msg.creation_date)}
-                  </span>
-                </div>
-              ) : (
-                <div className={styles.textMessage}>
-                  <p>{msg.content}</p>
-                  <span className={styles.timeStamp}>
-                    {formatDate(msg.creation_date)}
-                  </span>
+
                 </div>
               )}
+
+              <span className={styles.timeStamp}>
+                {formatDate(msg.creation_date)}
+              </span>
             </div>
-  
+
             {msg.sender_id === userId && (
               <div className={styles.profileImage}>
                 <img
@@ -294,7 +304,7 @@ export default function ChatBox({ contact, onClickClose }) {
         ))}
         <div ref={bottomRef} />
       </div>
-  
+
       <div className={styles.sendmessages}>
         <form onSubmit={handleSubmit}>
           {showEmojis && (
@@ -342,9 +352,9 @@ export default function ChatBox({ contact, onClickClose }) {
           </div>
         </form>
       </div>
-    </div>
+    </div >
   );
-  
+
 }
 
 function buildBinaryMessage(metadata, fileBuffer) {
