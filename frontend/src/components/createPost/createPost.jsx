@@ -22,14 +22,12 @@ export default function CreatePost({ onPostCreated }) {
         const userdata = await response.json();
 
         setUserData(userdata);
-        console.log("nnnnnnnnnnnnnnnnnnnnnnnnn", userdata);
       };
       fetchUserData();
     } catch (error) {
       console.log("we cant fetch user data for post", error);
     }
   }, []);
-  console.log("nnnnnnnnnnnnnnnnnnnnnnnnn", userData);
 
   let [privacy, setPrivacy] = useState("public");
   let [title, setTitle] = useState("");
