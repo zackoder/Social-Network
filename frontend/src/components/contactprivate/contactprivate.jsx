@@ -8,11 +8,26 @@ export default function ContactsPrivate() {
   const [selectedContacts, setSelectedContacts] = useState([]);
   const { setSelectedContactsIds } = useContext(DataContext);
   const [contacts, setContacts] = useState([]);
-  const userId = localStorage.getItem("user-id")
   const host = process.env.NEXT_PUBLIC_HOST;
+  const [userId, setuserid] = useState(0);
+
   useEffect(() => {
     const fetchFollowers = async () => {
       try {
+        const responsee = await fetch(`${host}/userData`, {
+          credentials: "include",
+        });
+
+        if (!responsee.ok) {
+          isAuthenticated(response.status, "you should login first");
+          return;
+        }
+
+        const dataa = await responsee.json();
+        const userId = dataa.id;
+
+        console.log("Fetched user ID:", userId);
+
         const response = await fetch(`${host}/api/getfollowers?id=${userId}`, {
           credentials: "include",
         });
