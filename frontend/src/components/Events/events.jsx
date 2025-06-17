@@ -119,33 +119,35 @@ export function Events({ id }) {
       <div className={styles.EventTitle}>
         <header className={styles.TextHedear}>Events</header>
       </div>
-      <div className={styles.EventsCards}>
-        {events.map((event) => (
-          <div className={styles.event} key={event.id}>
-            <div className={styles.Title}>{event.title}</div>
-            <div className={styles.description}>{event.description}</div>
-            <div className={styles.event_time}>
-              {new Date(event.event_time * 1000).toISOString()}
-            </div>
-            {event.responce === "" && !answeredEvents.includes(event.id) && (
-              <div className={styles.buttonContainer}>
-                <button
-                  className={styles.goenButton}
-                  onClick={() => handleResponse("going", event.id)}
-                >
-                  Going
-                </button>
-                <button
-                  className={styles.notGoenButton}
-                  onClick={() => handleResponse("not going", event.id)}
-                >
-                  Not Going
-                </button>
-              </div>
-            )}
+    <div className={styles.EventsCards}>
+  {events
+    .filter((event) => new Date(event.event_time * 1000) > new Date())
+    .map((event) => (
+      <div className={styles.event} key={event.id}>
+        <div className={styles.Title}>{event.title}</div>
+        <div className={styles.description}>{event.description}</div>
+        <div className={styles.event_time}>
+          {new Date(event.event_time * 1000).toLocaleString()}
+        </div>
+        {event.responce === "" && !answeredEvents.includes(event.id) && (
+          <div className={styles.buttonContainer}>
+            <button
+              className={styles.goenButton}
+              onClick={() => handleResponse("going", event.id)}
+            >
+              Going
+            </button>
+            <button
+              className={styles.notGoenButton}
+              onClick={() => handleResponse("not going", event.id)}
+            >
+              Not Going
+            </button>
           </div>
-        ))}
+        )}
       </div>
+    ))}
+</div>
 
       {showPopup && (
         <div className={styles.overlay}>
