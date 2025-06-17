@@ -15,7 +15,8 @@ func QueryPosts(limit, offset, user_id int) []utils.Post {
 	// fmt.Println("bbbbbbbbbbbbbbbbbb", limit, offset)
 	// host := r.Host
 	var posts []utils.Post
-	queryPosts := `
+	queryPosts := 
+	`
 		SELECT
 		    p.id,
 		    p.post_privacy,
