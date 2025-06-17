@@ -2,7 +2,7 @@
 
 import styles from "./chatbox.module.css";
 import Image from "next/image";
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { IoIosSend } from "react-icons/io";
 import { socket } from "../websocket/websocket";
@@ -11,7 +11,7 @@ import { isAuthenticated } from "@/app/page";
 const host = process.env.NEXT_PUBLIC_HOST;
 
 function getCookie(name) {
-  const value = `; {${document.cookie}}`;
+  const value = `; ${document.cookie}`;
   const parts = value.split(`${name}=`);
   if (parts.length === 2) return parts.pop().split(";").shift();
 }
@@ -22,29 +22,153 @@ export default function ChatBox({ contact, onClickClose }) {
   const [image, setImage] = useState(null);
   const [showEmojis, setShowEmojis] = useState(false);
   const bottomRef = useRef(null);
-  const scrollContainerRef = useRef(null);  
+  const scrollContainerRef = useRef(null);
   const [offset, setOffset] = useState(0);
   const limit = 20;
   const [userId, setUserId] = useState(null);
-
   const token = getCookie("token");
 
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const response = await fetch(`${host}/userData`, {
+        credentials: "include",
+      });
+      if (!response.ok) {
+        isAuthenticated(response.status, "Please login first");
+        return;
+      }
+      const data = await response.json();
+      setUserId(data.id);
+    };
+    fetchUserId();
+  }, []);
 
-useEffect(() => {
-  const fetchUserId = async () => {
-    const response = await fetch(`${host}/userData`, {
-      credentials: "include",
-    });
-    if (!response.ok) {
-      isAuthenticated(response.status, "Please login first");
-      return;
+  useEffect(() => {
+    if (!userId) return;
+
+    const handleMessage = (event) => {
+      try {
+        const data =
+          typeof event.data === "string"
+            ? JSON.parse(event.data)
+            : parseBinaryMessage(event.data);
+
+        if (
+          (data.sender_id === contact.id && data.receiver_id === userId) ||
+          (data.sender_id === userId && data.receiver_id === contact.id)
+        ) {
+          setMessages((prev) => [...prev, data]);
+        }
+      } catch (err) {
+        console.log("Failed to parse message:", event.data);
+      }
+    };
+
+    socket.addEventListener("message", handleMessage);
+    return () => socket.removeEventListener("message", handleMessage);
+  }, [contact.id, userId]);
+
+  const fetchMessages = async (offsetValue = 0) => {
+    const container = scrollContainerRef.current;
+    const previousScrollHeight = container?.scrollHeight || 0;
+
+    try {
+      const response = await fetch(
+        `${host}/GetMessages?receiver_id=${contact.id}&offset=${offsetValue}`,
+        {
+          credentials: "include",
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        isAuthenticated(response.status, data.error);
+        return;
+      }
+
+      if (Array.isArray(data) && data.length > 0) {
+        setMessages((prev) => [...data.reverse(), ...prev]);
+        setOffset(offsetValue + limit);
+
+        setTimeout(() => {
+          const newScrollHeight = container?.scrollHeight || 0;
+          if (container) {
+            container.scrollTop = newScrollHeight - previousScrollHeight;
+          }
+        }, 0);
+      }
+    } catch (err) {
+      console.log("Error fetching messages", err);
     }
-    const data = await response.json();
-    setUserId(data.id);
   };
-  fetchUserId();
-}, []);
 
+  useEffect(() => {
+    setMessages([]);
+    setOffset(0);
+    fetchMessages(0);
+  }, [contact.id]);
+
+  const handleScroll = (e) => {
+    if (e.target.scrollTop === 0) {
+      fetchMessages(offset);
+    }
+  };
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [offset]);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "auto" });
+  }, [messages]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!message.trim() && image === null) return;
+
+    if (image) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const metadata = {
+          sender_id: userId,
+          receiver_id: contact.id,
+          type: "image",
+          token,
+          content: message,
+          mime: image.type,
+          filename: image.name,
+        };
+        const messageBuffer = buildBinaryMessage(metadata, reader.result);
+        if (socket.readyState === WebSocket.OPEN) socket.send(messageBuffer);
+      };
+      reader.readAsArrayBuffer(image);
+      setMessage("");
+      setImage(null);
+    } else {
+      const newMsg = {
+        sender_id: userId,
+        receiver_id: contact.id,
+        type: "message",
+        content: message,
+        token,
+      };
+      socket.send(JSON.stringify(newMsg));
+      setMessage("");
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      e.target.value = "";
+    }
+  };
 
   const emojis = [
     "😁",
@@ -90,151 +214,7 @@ useEffect(() => {
     "👍",
     "👏",
   ];
-
   const handleEmojiClick = (emoji) => setMessage((prev) => prev + emoji);
-
-  const handleChange = (e) => setMessage(e.target.value);
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(file);
-      console.log("file image ", file);
-
-      e.target.value = "";
-    }
-  };
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "auto" });
-  }, [messages]);
- 
-  useEffect(() => {
-    const handleMessage = (event) => {
-      try {
-        const data =
-          typeof event.data === "string"
-            ? JSON.parse(event.data)
-            : parseBinaryMessage(event.data);
-        // if (
-        //   (data.sender_id === contact.id && data.receiver_id === userId) ||
-        //   (data.sender_id === userId && data.receiver_id === contact.id)
-        // ) {
-        //   setMessages((prev) => [...prev, data]);
-        // }
-        if (data.type === "message") {
-          // Text message
-          setMessages((prev) => [...prev, data]);
-        } else if (data.type === "image") {
-          // Image message
-          setMessages((prev) => [...prev, data]);
-        }
-      } catch (err) {
-        console.log("Failed to parse message:", event.data);
-      }
-    };
-
-    socket.addEventListener("message", handleMessage);
-
-    return () => {
-      // 🔥 Clean up the old listener to avoid duplicates
-      socket.removeEventListener("message", handleMessage);
-    };
-  }, [contact.id]);
-
-  const fetchMessages = async (offsetValue = 0) => {
-    const container = scrollContainerRef.current;
-    const previousScrollHeight = container?.scrollHeight || 0; // 👈 record scroll height
-
-    try {
-      const response = await fetch(`${host}/GetMessages?receiver_id=${contact.id}&offset=${offsetValue}`, {
-        credentials: "include",
-        method: "GET"
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        isAuthenticated(response.status, data.error);
-        return;
-      }
-
-      if (Array.isArray(data) && data.length > 0) {
-        setMessages((prev) => [...data.reverse(), ...prev]);
-        setOffset(offsetValue + limit);
-
-        // ⏳ Wait until new messages render
-        setTimeout(() => {
-          const newScrollHeight = container?.scrollHeight || 0;
-          if (container) {
-            container.scrollTop = newScrollHeight - previousScrollHeight; // 👈 restore position
-          }
-        }, 0); // short delay to allow rendering
-      }
-    } catch (err) {
-      console.log("Error fetching messages", err);
-    }
-  };
-
-  useEffect(() => {
-    setMessages([]);
-    setOffset(0);
-    fetchMessages(0);
-  }, [contact.id]);
-
-  const handleScroll = (e) => {
-    if (e.target.scrollTop === 0) {
-      fetchMessages(offset);
-    }
-  };
-
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    container.addEventListener("scroll", handleScroll);
-    return () => container.removeEventListener("scroll", handleScroll);
-  }, [offset]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!message.trim() && image === null) return;
-    if (image) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const metadata = {
-          sender_id: userId,
-          receiver_id: contact.id,
-          type: "image",
-          token: token,
-          content: message,
-          mime: image.type,
-          filename: image.name,
-        };
-        const messageBuffer = buildBinaryMessage(metadata, reader.result);
-        if (socket.readyState === WebSocket.OPEN) socket.send(messageBuffer);
-       
-      };
-      reader.readAsArrayBuffer(image);
-      setImage(null);
-      setMessage("");
-      setImage(null);
-    } else {
-      const newMsg = {
-        sender_id: userId,
-        receiver_id: contact.id,
-        type: "message",
-        content: message,
-        token: token,
-      };
-
-      // Optimistic update
-      // setMessages((prev) => [...prev, newMsg]);
-      socket.send(JSON.stringify(newMsg));
-      setMessage("");
-    }
-  };
 
   return (
     <div className={styles.chatBox}>
@@ -257,13 +237,7 @@ useEffect(() => {
         </div>
       </div>
 
-      {/* ✅ Attach scroll ref and handler */}
-      <div
-        className={styles.readmessages}
-        ref={scrollContainerRef}
-      // onScroll={handleScroll}
-
-      >
+      <div className={styles.readmessages} ref={scrollContainerRef}>
         {messages.map((msg, index) => (
           <div
             key={index}
@@ -280,14 +254,13 @@ useEffect(() => {
                 />
               </div>
             )}
-
             <div className={styles.message}>
-              {msg.content !== "" && (
+              {msg.content && (
                 <div className={styles.textMessage}>
                   <p>{msg.content}</p>
                 </div>
               )}
-              {msg.filename !== "" && (
+              {msg.filename && (
                 <div className={styles.imageContainer}>
                   <img
                     src={`http://${msg.filename}`}
@@ -296,15 +269,12 @@ useEffect(() => {
                     height={250}
                     className={styles.imageMessage}
                   />
-
                 </div>
               )}
-
               <span className={styles.timeStamp}>
                 {formatDate(msg.creation_date)}
               </span>
             </div>
-
             {msg.sender_id === userId && (
               <div className={styles.profileImage}>
                 <img
@@ -350,7 +320,7 @@ useEffect(() => {
               name="message"
               placeholder="Type your message..."
               value={message}
-              onChange={handleChange}
+              onChange={(e) => setMessage(e.target.value)}
             />
             <input
               type="file"
@@ -368,9 +338,8 @@ useEffect(() => {
           </div>
         </form>
       </div>
-    </div >
+    </div>
   );
-
 }
 
 function buildBinaryMessage(metadata, fileBuffer) {
@@ -385,25 +354,19 @@ function buildBinaryMessage(metadata, fileBuffer) {
 
 const oneday = 60 * 60 * 24;
 const onehour = 60 * 60;
-const oneminut = 60;
+const oneminute = 60;
 
 export function formatDate(time) {
   if (!time) time = Date.now() / 1000 - 1;
-  let timeText;
-  const date = Date.now() / 1000;
-  const elapsed = date - time;
-  let days = Math.floor(elapsed / oneday);
-  let hours = Math.floor((elapsed % oneday) / onehour);
-  let minutes = Math.floor((elapsed % onehour) / oneminut);
-  let seconds = Math.floor(elapsed % oneminut);
-  if (days > 0) {
-    timeText = `${days}d`;
-  } else if (hours > 0) {
-    timeText = `${hours}h`;
-  } else if (minutes > 0) {
-    timeText = `${minutes}min`;
-  } else {
-    timeText = `${seconds}s`;
-  }
-  return timeText;
+  const now = Date.now() / 1000;
+  const elapsed = now - time;
+  const days = Math.floor(elapsed / oneday);
+  const hours = Math.floor((elapsed % oneday) / onehour);
+  const minutes = Math.floor((elapsed % onehour) / oneminute);
+  const seconds = Math.floor(elapsed % oneminute);
+
+  if (days > 0) return `${days}d`;
+  if (hours > 0) return `${hours}h`;
+  if (minutes > 0) return `${minutes}min`;
+  return `${seconds}s`;
 }
