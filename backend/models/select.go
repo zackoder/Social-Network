@@ -11,9 +11,9 @@ import (
 	"social-network/utils"
 )
 
-func QueryPosts(limit, offset, user_id int, r *http.Request) []utils.Post {
+func QueryPosts(limit, offset, user_id int) []utils.Post {
 	// fmt.Println("bbbbbbbbbbbbbbbbbb", limit, offset)
-	host := r.Host
+	// host := r.Host
 	var posts []utils.Post
 	queryPosts := `
 		SELECT
@@ -68,12 +68,12 @@ func QueryPosts(limit, offset, user_id int, r *http.Request) []utils.Post {
 		if err != nil {
 			fmt.Println("scaning error:", err)
 		}
-		if post.Image != "" {
-			post.Image = host + post.Image
-		}
-		if post.Avatar != "" {
-			post.Avatar = host + post.Avatar
-		}
+		// if post.Image != "" {
+		// 	post.Image = host + post.Image
+		// }
+		// if post.Avatar != "" {
+		// 	post.Avatar = host + post.Avatar
+		// }
 		posts = append(posts, post)
 	}
 	return posts
@@ -322,7 +322,7 @@ func GetProfileStatus(profileowner, userId int) (string, error) {
 func GetPuclicPosts(userID, limit, offset int) ([]utils.Post, error) {
 	var publicPosts []utils.Post
 	query := `
-	SELECT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt
+	SELECT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt, u.avatar
 		FROM posts p
 		JOIN users u ON p.user_id = u.id
 		WHERE p.user_id = ?
@@ -343,12 +343,11 @@ func GetPuclicPosts(userID, limit, offset int) ([]utils.Post, error) {
 		var post utils.Post
 		// var createdAt int64
 		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content,
-			&post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt)
+			&post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt, &post.Avatar)
 		if err != nil {
 			fmt.Println("err scanning rows", err)
 			return nil, err
 		}
-
 		publicPosts = append(publicPosts, post)
 	}
 

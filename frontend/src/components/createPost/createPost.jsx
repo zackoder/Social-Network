@@ -149,33 +149,33 @@ export default function CreatePost({ onPostCreated }) {
             style={{
               width: "90%",
               padding: "5px",
-              borderRadius: "4px",
-              resize: "none",
-              outline: "none",
-              border: "none",
-              marginLeft: "5%",
-              backgroundColor: "#333",
-            }}
-          />
-        </div>
-        <div className="uploadImage">
-          <input
-            onChange={(e) => {
-              setImage(e.target.files[0]);
-            }}
-            id="uploadImage"
-            className="hiddenInput"
-            ref={fileInputRef}
-            type="file"
-          />
-          <label htmlFor="uploadImage" className="uploadLabel">
-            <FaCloudUploadAlt className="iconUpload" />
-          </label>
-        </div>
-        <div>
-          <input className="submit" type="submit" value="Publish" />
-        </div>
-      </form>
-    </div>
-  );
-}
+                borderRadius: "4px",
+                resize: "none",
+                outline: "none",
+                border: "none",
+                marginLeft: "5%",
+                backgroundColor: "#333",
+              }}
+            />
+          </div>
+          <div className="uploadImage">
+            <input
+              onChange={(e) => {
+                setImage(e.target.files[0]);
+              }}
+              id="uploadImage"
+              className="hiddenInput"
+              ref={fileInputRef}
+              type="file"
+            />
+            <label htmlFor="uploadImage" className="uploadLabel">
+              <FaCloudUploadAlt className="iconUpload" />
+            </label>
+          </div>
+          <div>
+            <input className="submit" type="submit" value="Publish" />
+          </div>
+        </form>
+      </div>
+    );
+  }

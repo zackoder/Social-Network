@@ -91,6 +91,8 @@ export default function ProfilePage() {
         { credentials: "include" }
       );
       const profileData = await profileResponse.json();
+      console.log("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww",profileData);
+      
 
       if (!profileResponse.ok) {
         console.log(`Profile response error: ${profileResponse.status}`);
@@ -182,6 +184,7 @@ export default function ProfilePage() {
     setShowModal(true);
   };
 
+  
   const showFollowing = () => {
     setModalContent({
       title: "Following",
@@ -189,26 +192,26 @@ export default function ProfilePage() {
     });
     setShowModal(true);
   };
-
+  
   if (isLoading) {
     return <div className={styles.container}>Loading...</div>;
   }
-
+  
   if (!profile) {
     return <div className={styles.container}>Profile not found</div>;
   }
-
+  
   return (
     <div className={styles.container}>
       <header className={styles.header}>
         <div className={styles.info}>
           <div className={styles.boxImage}>
-            <Image
+            <img
               className={styles.image}
-              src={"/profile/profile.png"}
+              src={`http://${profile.avatar}`}
               alt={`${profile.firstName} ${profile.lastName}`}
-              fill={true}
-            />
+              // fill={true}
+              />
           </div>
           <div className={styles.name}>
             <h3>
@@ -357,9 +360,9 @@ export default function ProfilePage() {
               <ul className={styles.usersList}>
                 {modalContent.data.map((user) => (
                   <li key={user.id} className={styles.userItem}>
-                    <Image
-                      className={styles.userAvatar}
-                      src={user.avatar || "/profile/profile.png"}
+                    <img
+                      className={styles.userAvatar}                      
+                      src={`http://${user.avatar}`}
                       alt={`${user.firstName} ${user.lastName}`}
                       width={40}
                       height={40}

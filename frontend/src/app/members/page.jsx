@@ -7,8 +7,10 @@ import Link from "next/link";
 
 export default function Members() {
   const host = process.env.NEXT_PUBLIC_HOST;
+  const [filteredUsers , setfiltred] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const fetchAllUsers = async () => {
     try {
@@ -19,6 +21,7 @@ export default function Members() {
       const data = await response.json();
 
       setAllUsers(Array.isArray(data) ? data : []);
+      setfiltred(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
@@ -29,6 +32,15 @@ export default function Members() {
   useEffect(() => {
     fetchAllUsers();
   }, []);
+useEffect(() => {
+  setfiltred(
+    allUsers.filter((val) => {
+      const fullName = `${val.firstname} ${val.lastname}`.toLowerCase();
+      return fullName.includes(searchTerm.toLowerCase().trim());
+    })
+  );
+}, [searchTerm, allUsers]);
+
 
   if (loading) {
     return <h2>Loading members...</h2>;
@@ -38,11 +50,22 @@ export default function Members() {
     return <h2>No members found.</h2>;
   }
 
-  return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>All Members</h1>
-      <ul className={styles.userList}>
-        {allUsers.map((user) => (
+ return (
+  <div className={styles.container}>
+    <h1 className={styles.title}>All Members</h1>
+
+    {/* Single search input at the top */}
+    <input
+      type="text"
+      placeholder="Search members..."
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      className={styles.searchInput}
+    />
+
+    <ul className={styles.userList}>
+      {filteredUsers.length > 0 ? (
+        filteredUsers.map((user) => (
           <li key={user.ID} className={styles.userItem}>
             <Link href={`/profile?id=${user.ID}&profile=${user.firstname}`}>
               <div className={styles.userInfo}>
@@ -60,8 +83,12 @@ export default function Members() {
             </Link>
             <ButtonFollow profileId={user.ID} />
           </li>
-        ))}
-      </ul>
-    </div>
-  );
+        ))
+      ) : (
+        <div>No users In Such a Name</div>
+      )}
+    </ul>
+  </div>
+);
+
 }
