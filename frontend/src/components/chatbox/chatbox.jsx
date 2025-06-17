@@ -153,7 +153,6 @@ useEffect(() => {
       });
 
       const data = await response.json();
-      console.log(data);
 
       if (!response.ok) {
         isAuthenticated(response.status, data.error);

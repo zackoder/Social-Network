@@ -17,8 +17,6 @@ export const fetchNotifications = async () => {
 };
 
 export default function NotificationDropdown({ isOpen }) {
-  console.log("hello");
-
   // const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [notisnumber, setnotisnumber] = useState("");
@@ -27,21 +25,17 @@ export default function NotificationDropdown({ isOpen }) {
     const handleSocketMessage = (e) => {
       try {
         const data = JSON.parse(e.data);
-        console.log("comming data", data);
 
+        if (data && !data.message) return;
         // setNotifications((prev) => [data, ...prev]);
-        console.log("notifications 1", notifications);
 
         if (notifications.length === 0) {
           setNotifications([data]);
         } else {
           setNotifications([data, ...notifications]);
-          console.log("notifications", [data, ...notifications]);
         }
 
         setnotisnumber(notisnumber + 1);
-
-        console.log("notisnumber", notisnumber);
       } catch (err) {
         console.log("failed to notification: ", err);
       }
