@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { isAuthenticated } from "@/app/page";
 import styles from "./contacts.module.css";
@@ -9,9 +9,13 @@ import { socket } from "../websocket/websocket";
 export default function Contacts({ onContactClick, activeContactId }) {
   const [contacts, setContacts] = useState([]);
   const host = process.env.NEXT_PUBLIC_HOST;
+  const contactref = useRef([]);
+  const currentContactRef = useRef(activeContactId);
+  useEffect(() => {
+    currentContactRef.current = activeContactId;
+  }, [activeContactId]);
 
   useEffect(() => {
-    // This runs when the component is mounted
     const fetchContacts = async () => {
       try {
         const response = await fetch(`${host}/api/getuserfriends`, {
@@ -19,6 +23,7 @@ export default function Contacts({ onContactClick, activeContactId }) {
         });
         const data = await response.json();
         setContacts(Array.isArray(data) ? data : []);
+        contactref.current = Array.isArray(data) ? data : [];
         if (data && data.error) {
           // throw new Error(data.error);
           console.log(data.error);
@@ -32,12 +37,27 @@ export default function Contacts({ onContactClick, activeContactId }) {
     };
     fetchContacts();
   }, []);
+
+  function handlemessageNotification(e) {
+    const data = JSON.parse(e.data);
+    console.log("contacts", data);
+    contactref.current.forEach((contact) => {
+      if (
+        currentContactRef.current === data.sender_id &&
+        data.sender_id === contact.id
+      ) {
+        console.log("hello", data);
+      } else if (contact.id === data.sender_id) {
+        console.log("create a notification");
+      }
+    });
+  }
   useEffect(() => {
-    
+    socket.addEventListener("message", handlemessageNotification);
+    return () => {
+      socket.removeEventListener("message", handlemessageNotification);
+    };
   }, []);
-  // if (!contacts || contacts.length == 0) {
-  //   return;
-  // }
 
   return (
     <div className={styles.container}>
