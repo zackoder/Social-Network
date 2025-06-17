@@ -6,8 +6,7 @@ import LikeDislikeComment from "../likeDislikeComment/likeDislikeComment";
 import styles from "./post.module.css";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-
- 
+const host = process.env.NEXT_PUBLIC_HOST;
 
 export default  function Post({ post = null, posts: propsPosts = null }) {
   const [posts, setPosts] = useState([]);
@@ -34,8 +33,10 @@ export default  function Post({ post = null, posts: propsPosts = null }) {
   
         // setError(err.message);
         // setLoading(false);
-    
-  }, [post, propsPosts]);
+        
+      }, [posts, propsPosts]);
+      
+console.log("ggggggggggggggggggggggggggggg", posts);
 
   // if (loading) return <div className={styles.container}>Loading posts...</div>;
   // if (error) return <div className={styles.container}>Error: {error}</div>;
@@ -51,10 +52,10 @@ export default  function Post({ post = null, posts: propsPosts = null }) {
               <div className={styles.containerHeader}>
                 <div className={styles.imageContainer}>
                   <img
-                    src={`http://${post.avatar}`}
+                    src={`${host}${post.avatar}`}
                     width={50}
                     height={50}
-                    style={{ borderRadius: "100%" }}
+                    style={{ borderRadius: "50%" }}
                   />
                 </div>
                 <h2>{post.first_name}</h2>
@@ -71,10 +72,11 @@ export default  function Post({ post = null, posts: propsPosts = null }) {
             {post.image && (
               <img
                 className={styles.image}
-                src={`http://${post.image}`}
+                src={`${host}${post.image}`}
                 alt="post"
                 width={500}
                 height={300}
+             
               />
             )}
           </div>

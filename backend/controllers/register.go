@@ -96,17 +96,27 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := json.Unmarshal([]byte(userData), &registrstionFormRequest); err != nil {
-	utils.WriteJSON(w, map[string]string{"error": "Internal Server Error1"}, http.StatusMethodNotAllowed)
-	fmt.Println(err)
-	return
+		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error1"}, http.StatusMethodNotAllowed)
+		fmt.Println(err)
+		return
+	}
+	filePath, err := utils.UploadImage(r)
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusMethodNotAllowed)
+		return
 	}
 
-	// 	regesterreq.Avatar = filePath
-	// if registrstionFormRequest.Nickname == "" {
-	// 	registrstionFormRequest.Nickname = nil
-	// }
+	fmt.Println("requiiiiiiissssttttt", userData)
+	fmt.Println("ppppppppppppppppppppppppppppppppppppppppppppppppppppppp", registrstionFormRequest)
+	registrstionFormRequest.Avatar = filePath
+	if registrstionFormRequest.Avatar == "" {
+		registrstionFormRequest.Avatar = "/defaultIMG/defaulte.jpg"
+	}
 
 
+	if registrstionFormRequest.Nickname == ""{
+		registrstionFormRequest.Nickname = ""
+	}
 
 	// if err := json.NewDecoder(r.Body).Decode(&userData); err != nil {
 	// 	fmt.Println(err)
@@ -146,7 +156,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !utils.IsValidEmail(&registrstionFormRequest.Email) {
-		utils.WriteJSON(w,map[string]string{"message":  "Invalid emai"}, http.StatusBadRequest)
+		utils.WriteJSON(w, map[string]string{"message": "Invalid emai"}, http.StatusBadRequest)
 
 		return
 	}
@@ -159,7 +169,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	ok, err := models.IsUserRegistered(&registrstionFormRequest)
 	if err != nil {
 		fmt.Println(err)
-		utils.WriteJSON(w,map[string]string{"message":  "internaInternal Server Error"}, http.StatusInternalServerError)
+		utils.WriteJSON(w, map[string]string{"message": "internaInternal Server Error"}, http.StatusInternalServerError)
 
 		return
 	}
@@ -172,7 +182,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	err = utils.HashPassword(&registrstionFormRequest.Password)
 	if err != nil {
-		utils.WriteJSON(w,map[string]string{"message":  "Incorect password"}, http.StatusBadRequest)
+		utils.WriteJSON(w, map[string]string{"message": "Incorect password"}, http.StatusBadRequest)
 
 		return
 	}
@@ -188,7 +198,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	// Create a session and set a cookie
 	registrstionFormRequest.SessionId, err = utils.GenerateSessionID()
 	if err != nil {
-		utils.WriteJSON(w,map[string]string{"message":  "internaInternal Server Error"}, http.StatusInternalServerError)
+		utils.WriteJSON(w, map[string]string{"message": "internaInternal Server Error"}, http.StatusInternalServerError)
 		return
 	}
 

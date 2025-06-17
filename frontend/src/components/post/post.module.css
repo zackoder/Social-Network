@@ -46,7 +46,8 @@
     margin: 15px 20px;
     line-height: 1.5em;
     font-size: 17px;
-    /* align-items: start; */
+    align-items: center;
+    word-wrap: break-word;   
 }
 .imagePost{
     /* width: 95%; */
