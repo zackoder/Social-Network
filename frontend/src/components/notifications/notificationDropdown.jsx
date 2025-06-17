@@ -5,93 +5,64 @@ import { isAuthenticated } from "@/app/page";
 const host = process.env.NEXT_PUBLIC_HOST;
 
 export const fetchNotifications = async () => {
-  // if (loading) return;
-  // setLoading(true);
-
   try {
     const response = await fetch(`${host}/getNotifications`, {
       credentials: "include",
     });
     const data = await response.json();
-    // if (notifications.length === 0) {
-    //   //setNotifications([...data]);
-
-    // } else {
-    //   setNotifications((prev) => [...prev, ...data]);
-    // }
     return Array.isArray(data) ? data : [];
-
-    // setHasMore(data.hasMore);
-    // setOffset((prev) => prev + data.notifications.length);
   } catch (error) {
     console.log("Error fetching notifications:", error);
   }
 };
 
-export default function NotificationDropdown({
-  isOpen,
-  onClose,
-  notifications,
-}) {
-  useEffect(() => {
-    console.log("notifications", notifications);
-  }, []);
-  console.log("notifications", notifications);
+export default function NotificationDropdown({ isOpen }) {
+  console.log("hello");
 
+  // const [isOpen, setIsOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [notisnumber, setnotisnumber] = useState("");
+
+  useEffect(() => {
+    const handleSocketMessage = (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        console.log("comming data", data);
+
+        // setNotifications((prev) => [data, ...prev]);
+        console.log("notifications 1", notifications);
+
+        if (notifications.length === 0) {
+          setNotifications([data]);
+        } else {
+          setNotifications([data, ...notifications]);
+          console.log("notifications", [data, ...notifications]);
+        }
+
+        setnotisnumber(notisnumber + 1);
+
+        console.log("notisnumber", notisnumber);
+      } catch (err) {
+        console.log("failed to notification: ", err);
+      }
+
+      return () => socket.removeEventListener("message", handleSocketMessage);
+    };
+    socket.addEventListener("message", handleSocketMessage);
+  }, [notisnumber]);
+
+  useEffect(() => {
+    (async function () {
+      const data = await fetchNotifications();
+      setNotifications(Array.isArray(data) ? data : []);
+      setnotisnumber(data.length);
+      console.log("notifications", data);
+    })();
+  }, []);
   const dropdownRef = useRef(null);
-  // const [notifications, setNotifications] = useState([]);
+
   const [responseData, setResponseData] = useState({ id: "", action: "" });
 
-  // const [offset, setOffset] = useState(0);
-  // const [hasMore, setHasMore] = useState(true);
-  // const [loading, setLoading] = useState(false);
-
-  // Load more notifications
-  // const handleLoadMore = () => {
-  //   fetchNotifications();
-  // };
-
-  // Close dropdown when clicking outside
-  // useEffect(() => {
-  //   const handleSocketMessage = (e) => {
-  //     try {
-  //       const data = JSON.parse(e.data);
-  //       setNotifications((prev) => [data, ...prev]);
-  //     } catch (err) {
-  //       console.log("failed to notification: ", err);
-  //     }
-  //     socket.addEventListener("message", handleSocketMessage);
-  //     if (data === null || Array.isArray(data.notification) ? data : []) {
-  //       if (notifications.length === 0) {
-  //         setNotifications([...data]);
-  //       } else {
-  //         setNotifications((prev) => [...prev, ...data]);
-  //       }
-  //     }
-
-  //     return () => socket.removeEventListener("message", handleSocketMessage);
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   //if (isOpen) {
-  //   fetchNotifications();
-  //   //}
-  // }, []);
-  if (!isOpen) return null;
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        onClose(); // call parent to close dropdown
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [onClose]);
-
-  //send Request
   useEffect(() => {
     const sendRequest = async () => {
       if (!responseData.id) return;
@@ -113,6 +84,15 @@ export default function NotificationDropdown({
           isAuthenticated(response.status);
           return;
         }
+        setnotisnumber(notisnumber - 1);
+        setNotifications(() => {
+          if (!notifications && notifications.length <= 1) {
+            return [];
+          }
+          return notifications.filter((not) => {
+            return not.id != responseData.id;
+          });
+        });
       } catch (err) {
         console.log("failed to send request the notification");
       }
@@ -121,71 +101,77 @@ export default function NotificationDropdown({
   }, [responseData.id]);
 
   return (
-    <div ref={dropdownRef} className={styles.dropdown}>
-      {/* <span className={styles.displaynotif}>{notifications.length}</span> */}
-      <div className={styles.header}>
-        <h3>Notifications</h3>
-      </div>
-      <div className={styles.notificationsList}>
-        {notifications.length === 0 ? (
-          <p>No notifications</p>
-        ) : notifications ? (
-          notifications.map((notification, index) =>
-            notification.message === "event" ? (
-              <div key={index} className={styles.notificationItem}>
-                <p>{notification.type}</p>
-                <button
-                  onClick={() =>
-                    setResponseData({ id: notification.id, message: "going" })
-                  }
-                  className={styles.btnNotification}
-                >
-                  Going
-                </button>
-                <button
-                  onClick={() =>
-                    setResponseData({
-                      id: notification.id,
-                      message: "not_going",
-                    })
-                  }
-                  className={styles.btnNotification}
-                >
-                  Not Going
-                </button>
-              </div>
+    <>
+      <span className={styles.displaynotif}>{notisnumber}</span>
+      {isOpen && (
+        <div ref={dropdownRef} className={styles.dropdown}>
+          <div className={styles.header}>
+            <h3>Notifications</h3>
+          </div>
+          <div className={styles.notificationsList}>
+            {notifications.length === 0 ? (
+              <p>No notifications</p>
             ) : (
-              <div key={index} className={styles.notificationItem}>
-                <p>{notification.type}</p>
-                <button
-                  onClick={() =>
-                    setResponseData({
-                      id: notification.id,
-                      message: "accepted",
-                    })
-                  }
-                  className={styles.btnNotification}
-                >
-                  Accept
-                </button>
-                <button
-                  onClick={() =>
-                    setResponseData({
-                      id: notification.id,
-                      message: "rejected",
-                    })
-                  }
-                  className={styles.btnNotification}
-                >
-                  Reject
-                </button>
-              </div>
-            )
-          )
-        ) : (
-          ""
-        )}
-      </div>
-    </div>
+              notifications &&
+              notifications.map((notification, index) =>
+                notification.message === "event" ? (
+                  <div key={index} className={styles.notificationItem}>
+                    <p>{notification.type}</p>
+                    <button
+                      onClick={() =>
+                        setResponseData({
+                          id: notification.id,
+                          message: "going",
+                        })
+                      }
+                      className={styles.btnNotification}
+                    >
+                      Going
+                    </button>
+                    <button
+                      onClick={() =>
+                        setResponseData({
+                          id: notification.id,
+                          message: "not_going",
+                        })
+                      }
+                      className={styles.btnNotification}
+                    >
+                      Not Going
+                    </button>
+                  </div>
+                ) : (
+                  <div key={index} className={styles.notificationItem}>
+                    <p>{notification.type}</p>
+                    <button
+                      onClick={() =>
+                        setResponseData({
+                          id: notification.id,
+                          message: "accepted",
+                        })
+                      }
+                      className={styles.btnNotification}
+                    >
+                      Accept
+                    </button>
+                    <button
+                      onClick={() =>
+                        setResponseData({
+                          id: notification.id,
+                          message: "rejected",
+                        })
+                      }
+                      className={styles.btnNotification}
+                    >
+                      Reject
+                    </button>
+                  </div>
+                )
+              )
+            )}
+          </div>
+        </div>
+      )}
+    </>
   );
 }

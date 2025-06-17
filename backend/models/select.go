@@ -870,7 +870,7 @@ func SelectNotifications(user_id int) ([]utils.Notification, error) {
 		if err := rows.Scan(&noti.Id, &noti.Sender_id, &noti.Actor_id, &noti.Target_id, &noti.Message); err != nil {
 			log.Println("scaning notifacations error:", err)
 		}
-		selectMetaData(&noti)
+		SelectMetaData(&noti)
 		log.Println(noti)
 		notis = append(notis, noti)
 	}
@@ -879,9 +879,9 @@ func SelectNotifications(user_id int) ([]utils.Notification, error) {
 	return notis, nil
 }
 
-func selectMetaData(noti *utils.Notification) {
+func SelectMetaData(noti *utils.Notification) {
 	switch noti.Message {
-	
+
 	case "follow request":
 		user, _ := GetUserById(noti.Actor_id)
 		noti.Type = fmt.Sprintf("%s sent you a follow request", user.FirstName)

@@ -40,9 +40,6 @@ func Websocket(w http.ResponseWriter, r *http.Request, user_id int) {
 
 	Manager.AddClient(client)
 
-	// Remove the sleep - it's unnecessary and can cause issues
-	// time.Sleep(5 * time.Second)
-
 	defer func() {
 		Manager.RemoveClient(client)
 		conn.Close()
