@@ -208,13 +208,14 @@ export function Events({ id }) {
           </div>
         </div>
       )}
-
-      <button
+        <button
         className={styles.addEventButton}
         onClick={() => setShowPopup(true)}
       >
         +Add Event
       </button>
+
+    
     </div>
   );
 }

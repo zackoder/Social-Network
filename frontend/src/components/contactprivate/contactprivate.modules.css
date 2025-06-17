@@ -19,6 +19,13 @@
   text-transform: capitalize;
   border: none;
 }
+@media(max-width: 605px){
+  .soutitre0 {
+    font-size: 15px;
+    left: 8%;
+  }
+
+}
 
 .userscontainer {
   display: flex;
