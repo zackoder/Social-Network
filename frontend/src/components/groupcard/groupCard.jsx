@@ -58,8 +58,7 @@ export default function GroupCard({ groups }) {
                   pathname: `/groups/${groupe.Id}`,
                   query: {
                     Id: groupe.Id,
-                    title: groupe.title,
-                    description: groupe.description,
+           
                   },
                 }}
               >

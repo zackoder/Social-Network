@@ -81,15 +81,17 @@ func UploadMsgImg(pyload []byte) (Message, error) {
 	// extention := strings.Split(message.Mime, "/")[1]
 
 	if !CheckExtension(string(filePart)) {
-		return message, fmt.Errorf("invalid file type you can only send images")
-	}
-	os.MkdirAll("uploads", os.ModePerm)
+		if !CheckExtension(string(filePart)) {
+			return message, fmt.Errorf("invalid file type you can only send images")
+		}
+		os.MkdirAll("uploads", os.ModePerm)
 
-	message.Filename = fmt.Sprintf("uploads/%d_%s", time.Now().Unix(), message.Filename)
+		message.Filename = fmt.Sprintf("uploads/%d_%s", time.Now().Unix(), message.Filename)
 
-	if err := os.WriteFile(message.Filename, filePart, 0o644); err != nil {
-		fmt.Println("writing file error ", err)
-		return message, fmt.Errorf("internal sercer error")
+		if err := os.WriteFile(message.Filename, filePart, 0o644); err != nil {
+			fmt.Println("writing file error ", err)
+			return message, fmt.Errorf("internal sercer error")
+		}
 	}
 	message.Filename = "/" + message.Filename
 	return message, nil

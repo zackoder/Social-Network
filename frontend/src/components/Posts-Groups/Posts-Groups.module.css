@@ -1,5 +1,5 @@
 .divclass{
-    height: 360px;
+    height: 401px;
     width: 100%;
     padding: 5px;
     overflow: auto;
@@ -25,6 +25,10 @@
   align-items: center;
   margin-bottom: 15px;
   
+}
+.imageG{
+  width: 180px;
+  height: 130px;
 }
 
 .containerHeader {
@@ -145,6 +149,13 @@
   font-weight: 500;
   box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
 }
+@media (max-width: 689px){
+  .addEventButtone {
+  padding: 10px 30px;
+  }
+
+}
+
 .divbutton{
   position: relative;
   display: flex;

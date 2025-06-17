@@ -15,6 +15,26 @@
   text-transform: capitalize;
   border: none;
 }
+@media(max-width: 605px){
+  .titleGroup {
+    font-size: 15px;
+    left: 8%;
+  }
+ 
+
+}
+@media(max-width: 443px){
+  .titleGroup {
+    position: relative;
+    font-size: 10px;
+    left: 8%;
+  }
+  .soutitre { 
+    left:8%;
+    
+  }
+
+}
 .soutitre:hover {
   background-color: var(--color-primary-hover);
 }
@@ -35,10 +55,11 @@
   /* animation: invisibility 1s forwards; */
 }
 
-.show {
+.showw {
   display: block;
   animation: display 1s forwards;
 }
+
 .hide {
   animation: slideOut 1s forwards;
   display: none;

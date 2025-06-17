@@ -3,14 +3,7 @@
   display: flex;
 }
 /***************************************************************div central*********************************************************************************/
-.divcentral {
-  position: static;
 
-  height: 100%;
-  width: 60%;
-  left: 20%;
-  right: 20%;
-}
 
 .postsContainer {
   /* position: relative;
@@ -200,10 +193,7 @@
   left: 0%;
   right: 80%;
 }
-.soutitre0 {
-  position: relative;
-  left: 4%;
-}
+
 /******************************************raight div********************************************************************************************************/
 .right {
   /* background-color: rgb(0, 47, 255); */
@@ -253,7 +243,8 @@
   font-weight: 700;
   color: #f3f9ff;
   letter-spacing: 0.5px;
-  text-transform: uppercase; /* Met en majuscules pour un effet dynamique */
+  text-transform: uppercase; 
+  margin-top: -40px;
 }
 
 /* Description */
@@ -362,7 +353,7 @@
     flex-direction: column;
 
     width: 100%;
-    height: 50%;
+    height: 55%;
     top: 0%;
     border: #06d6a0 solid;
     border-radius: 30px;
@@ -387,7 +378,7 @@
     background-color: rgb(1, 10, 12);
     position: relative;
     width: 100%;
-    height: 45%;
+    height: 31%;
     bottom:0%;
     border: #06d6a0 solid;
     border-radius: 30px;
@@ -437,9 +428,8 @@
 
 /******************************************left div ************************************************************************************************************/
 
-.soutitre0{
-  position: relative;
-  left: 4%;
+.SendInvitation{
+
 }
 /******************************************raight div********************************************************************************************************/
 .right{
@@ -449,9 +439,5 @@
     left: 80%;
     right: 0%;
 }
-.soutitre{
-  position: relative;
-  top: 1%;
-  left: 5%;
 
-}
+
