@@ -104,6 +104,7 @@ func Join_Group(w http.ResponseWriter, r *http.Request, user_id int) {
 		}
 		return
 	}
+	models.SelectMetaData(&noti)
 	Broadcast(noti.Target_id, noti)
 	// if !models.IsMember(requist.Groupe_id, requist.User_id) {
 	// 	err = models.InsserMemmberInGroupe(requist.Groupe_id, requist.User_id, "member")
@@ -235,6 +236,7 @@ func InviteUser(w http.ResponseWriter, r *http.Request /* , groupID uint */) {
 		return
 	}
 
+	models.SelectMetaData(&noti)
 	Broadcast(noti.Target_id, noti)
 	utils.WriteJSON(w, map[string]string{"message": "Invitation sent"}, http.StatusCreated)
 }
