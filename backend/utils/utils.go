@@ -128,7 +128,8 @@ type Event struct {
 	Description string `json:"description"`
 	EventTime   int    `json:"event_time"`
 	CreatedBy   int    `json:"created_by"`
-	Responce    string `json:"responce"`
+	Responce string `json:"responce"`
+	Action string `json:"action"`
 }
 
 type EventResponse struct {

@@ -15,8 +15,8 @@ func QueryPosts(limit, offset, user_id int) []utils.Post {
 	// fmt.Println("bbbbbbbbbbbbbbbbbb", limit, offset)
 	// host := r.Host
 	var posts []utils.Post
-	queryPosts := 
-	`
+	queryPosts :=
+		`
 		SELECT
 		    p.id,
 		    p.post_privacy,
@@ -346,6 +346,7 @@ func GetPuclicPosts(userID, limit, offset int) ([]utils.Post, error) {
 		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content,
 			&post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt, &post.Avatar)
 		if err != nil {
+			fmt.Println("err scanning rows", err)
 			fmt.Println("err scanning rows", err)
 			return nil, err
 		}
@@ -719,6 +720,7 @@ func fetchGroupsInfo(groupIDs []int) []utils.Groupe {
 			fmt.Println("Error scanning group:", err)
 			return nil
 		}
+		groupe.Status = "member"
 		res = append(res, groupe)
 	}
 
@@ -1288,7 +1290,6 @@ func GetUserById(userId int) (*utils.User, error) {
 	}
 	return &user, nil
 }
-
 func QueryMsgs(message utils.Message, host, offset string) ([]utils.Message, error) {
 	query := `
 		SELECT
@@ -1361,6 +1362,21 @@ func GetOneGroup(group_id int) (utils.Groupe, error) {
 //		AboutMe   string `json:"aboutme"`
 //		Privacy   string `json:"privacy"`
 //	}
+
+//	type User struct {
+//		ID        int64
+//		Nickname  string `json:"nickname"`
+//		Age       int  `json:"age"`
+//		Gender    string `json:"gender"`
+//		FirstName string `json:"firstname"`
+//		LastName  string `json:"lastname"`
+//		Email     string `json:"email"`
+//		Password  string `json:"password"`
+//		SessionId string
+//		Avatar    string `json:"avatar"`
+//		AboutMe   string `json:"aboutme"`
+//		Privacy   string `json:"privacy"`
+//	}
 func GetThemAll(userid int) ([]utils.User, error) {
 	query := `SELECT id,first_name, last_name, avatar FROM users WHERE id != ? `
 	rows, err := Db.Query(query, userid)
@@ -1381,5 +1397,47 @@ func GetThemAll(userid int) ([]utils.User, error) {
 		return nil, fmt.Errorf("rows error: %w", err)
 	}
 
+	return users, nil
+}
+
+func Get_followings_users(user_id, group_id int, host string) ([]utils.User, error) {
+	Query := `
+	SELECT DISTINCT
+    u.first_name,
+    u.last_name,
+    u.avatar,
+    u.id
+FROM
+    users u
+    INNER JOIN followers f 
+        ON f.followed_id = ?
+        AND f.follower_id = u.id
+    LEFT JOIN group_members gm 
+        ON gm.group_id = ?
+        AND gm.user_id = u.id
+    LEFT JOIN notifications n
+        ON n.target_id = u.id
+        AND n.user_id = ?
+        AND n.actor_id = ?
+        AND n.message = 'group invitation'
+WHERE
+    u.id <> ?
+    AND gm.user_id IS NULL
+    AND n.target_id IS NULL;
+	`
+	rows, err := Db.Query(Query, user_id, group_id, user_id, group_id, user_id)
+	if err != nil {
+		return nil, err
+	}
+	var users []utils.User
+	for rows.Next() {
+		var user utils.User
+		err := rows.Scan(&user.FirstName, &user.LastName, &user.Avatar, &user.ID)
+		if err != nil {
+			return nil, fmt.Errorf("scan error: %w", err)
+		}
+		user.Avatar = host + user.Avatar
+		users = append(users, user)
+	}
 	return users, nil
 }

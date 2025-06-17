@@ -43,7 +43,8 @@ func main() {
 	mux.Handle("/group", midleware.AuthMiddleware(controllers.GetGroup))
 	mux.Handle("/GetMyGroups", midleware.AuthMiddleware(controllers.GetGroupsCreatedByUser))
 
-	mux.Handle("/groupInvitarion", http.HandlerFunc(controllers.InviteUser))
+	mux.Handle("/groupInvitarion", midleware.AuthMiddleware(controllers.InviteUser))
+	mux.Handle("/GetFolowingsUsers", midleware.AuthMiddleware(controllers.GetFollowingUsers))
 
 	mux.HandleFunc("/GetPostsFromGroupe", controllers.Get_all_post)
 	mux.Handle("/api/getevents", midleware.AuthMiddleware(controllers.GetEvents))
@@ -83,7 +84,7 @@ func main() {
 	// the func GetFollowers and GetFollowers look the same but they are not
 
 	mux.HandleFunc("GET /api/getuserfriends", midleware.AuthMiddleware(controllers.GetUsersFrends))
-	// this is for friends suggestion 
+	// this is for friends suggestion
 	mux.HandleFunc("GET /api/getallusers", midleware.AuthMiddleware(controllers.GetAllUsers))
 	fmt.Println("Server is running on port http://localhost:8080")
 
