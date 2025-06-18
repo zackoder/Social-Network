@@ -117,5 +117,3 @@ func CheckNickName(nickname string) bool {
 	return re.MatchString(nickname)
 }
 
-func HandleEvent(noti Notification) {
-}

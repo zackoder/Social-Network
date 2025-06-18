@@ -40,8 +40,7 @@ func NotiResp(w http.ResponseWriter, r *http.Request, userId int) {
 			log.Println("error insserresp", err)
 			return
 		}
-		log.Println("this is an event")
-		utils.HandleEvent(noti)
+
 		return
 	} else if resp == "rejected" || resp == "accepted" {
 		if resp == "rejected" {
@@ -55,7 +54,6 @@ func NotiResp(w http.ResponseWriter, r *http.Request, userId int) {
 			}
 			return
 		}
-		log.Println(noti)
 		if noti.Message == "group invitation" {
 			err := models.InsserMemmberInGroupe(noti.Actor_id, noti.Target_id, "member")
 			if err != nil {
