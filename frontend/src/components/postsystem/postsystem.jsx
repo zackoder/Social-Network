@@ -27,7 +27,8 @@ export default function PostSystem() {
         }
       );
       if (!response.ok) {
-        // throw new Error("Failed to fetch posts");
+        isAuthenticated(response.status, "Go to Login");
+        return;
       }
       const data = await response.json();
 
@@ -59,8 +60,8 @@ export default function PostSystem() {
 
   useEffect(() => {
     fetchAllPosts();
-    return ()=> setPosts([])
-  },[]);
+    return () => setPosts([])
+  }, []);
 
   const debouncedFetchPosts = useCallback(debounce(fetchAllPosts, 300), [
     offset,

@@ -52,7 +52,7 @@ func (m *Manager) CheckGroupMembers(id int) bool {
 func (m *Manager) AddClient(client *Client) {
 	m.Lock()
 	defer m.Unlock()
-	log.Printf("Adding client %d", client.Client_id)
+
 
 	// Initialize slice if it doesn't exist
 	if m.UsersList[client.Client_id] == nil {
@@ -60,7 +60,6 @@ func (m *Manager) AddClient(client *Client) {
 	}
 
 	m.UsersList[client.Client_id] = append(m.UsersList[client.Client_id], client)
-	log.Printf("Client %d added. Total connections: %d", client.Client_id, len(m.UsersList[client.Client_id]))
 }
 
 func CreateClient(conn *websocket.Conn, m *Manager, id int, token string) *Client {

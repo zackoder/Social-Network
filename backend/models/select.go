@@ -15,8 +15,7 @@ func QueryPosts(limit, offset, user_id int) []utils.Post {
 	// fmt.Println("bbbbbbbbbbbbbbbbbb", limit, offset)
 	// host := r.Host
 	var posts []utils.Post
-	queryPosts :=
-		`
+	queryPosts := `
 		SELECT
 		    p.id,
 		    p.post_privacy,
@@ -1290,6 +1289,7 @@ func GetUserById(userId int) (*utils.User, error) {
 	}
 	return &user, nil
 }
+
 func QueryMsgs(message utils.Message, host, offset string) ([]utils.Message, error) {
 	query := `
 		SELECT
@@ -1403,27 +1403,27 @@ func GetThemAll(userid int) ([]utils.User, error) {
 func Get_followings_users(user_id, group_id int, host string) ([]utils.User, error) {
 	Query := `
 	SELECT DISTINCT
-    u.first_name,
-    u.last_name,
-    u.avatar,
-    u.id
-FROM
-    users u
-    INNER JOIN followers f 
-        ON f.followed_id = ?
-        AND f.follower_id = u.id
-    LEFT JOIN group_members gm 
-        ON gm.group_id = ?
-        AND gm.user_id = u.id
-    LEFT JOIN notifications n
-        ON n.target_id = u.id
-        AND n.user_id = ?
-        AND n.actor_id = ?
-        AND n.message = 'group invitation'
-WHERE
-    u.id <> ?
-    AND gm.user_id IS NULL
-    AND n.target_id IS NULL;
+	    u.first_name,
+	    u.last_name,
+	    u.avatar,
+	    u.id
+	FROM
+	    users u
+	    INNER JOIN followers f 
+	        ON f.followed_id = ?
+	        AND f.follower_id = u.id
+	    LEFT JOIN group_members gm
+	        ON gm.group_id = ?
+	        AND gm.user_id = u.id
+	    LEFT JOIN notifications n
+	        ON n.target_id = u.id
+	        AND n.user_id = ?
+	        AND n.actor_id = ?
+	        AND n.message = 'group invitation'
+	WHERE
+	    u.id <> ?
+	    AND gm.user_id IS NULL
+	    AND n.target_id IS NULL;
 	`
 	rows, err := Db.Query(Query, user_id, group_id, user_id, group_id, user_id)
 	if err != nil {

@@ -36,7 +36,6 @@ func Websocket(w http.ResponseWriter, r *http.Request, user_id int) {
 	}
 
 	client := utils.CreateClient(conn, Manager, user_id, cookie.Value)
-	log.Printf("Client created for user %d", user_id)
 
 	Manager.AddClient(client)
 
@@ -58,7 +57,6 @@ func Websocket(w http.ResponseWriter, r *http.Request, user_id int) {
 			}
 			break
 		}
-		log.Println("Message received type:", msgType)
 		handleMessage(msgType, payload, r.Host, client)
 	}
 }
@@ -170,12 +168,24 @@ func BroadcastGroupMessage(msg utils.Message, host string) error {
 }
 
 func Broadcast(receiverID int, msg any) {
+	log.Println("users list:", receiverID)
+	_, existss := Manager.UsersList[receiverID]
+	fmt.Println(existss)
 	if connections, exists := Manager.UsersList[receiverID]; exists {
-		log.Println("(((((((((())))))))))", exists)
 		for _, conn := range connections {
 			if err := conn.Connection.WriteJSON(msg); err != nil {
 				log.Println("WriteJSON failed for user", receiverID, ":", err)
 			}
+		}
+	}
+}
+
+func BroadcastEvent(noti utils.Notification) {
+	log.Println("clients", Manager.Groups[noti.Target_id])
+	for _, clien := range Manager.Groups[noti.Target_id] {
+		log.Println("group member:", clien)
+		if clien != noti.Sender_id {
+			Broadcast(clien, noti)
 		}
 	}
 }

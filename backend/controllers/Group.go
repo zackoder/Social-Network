@@ -333,7 +333,8 @@ func CreatEvent(w http.ResponseWriter, r *http.Request, userId int) {
 		return
 	}
 
-	log.Println(notification)
+	models.SelectMetaData(&notification)
+	BroadcastEvent(notification)
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "The event cried out successfully"})
