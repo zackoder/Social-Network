@@ -3,6 +3,7 @@
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { LuSend } from "react-icons/lu";
 import "./likeDislikeComment.modules.css";
+import styles from "@/app/page.module.css";
 import { BiLike, BiDislike } from "react-icons/bi";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { isAuthenticated } from "@/app/page";
@@ -303,7 +304,7 @@ export default function LikeDislikeComment({ postId }) {
                 </div>
               ))}
               {hasMore && (
-                <button onClick={debouncedFetchComments} disabled={loading}>
+                <button onClick={debouncedFetchComments} className={styles.btnLoadMore} disabled={loading}>
                   {loading ? "Loading..." : "Load More"}
                 </button>
               )}

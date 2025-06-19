@@ -4,6 +4,7 @@ import CreatePost from "../createPost/createPost";
 import { debounce } from "@/utils/debounce";
 import Post from "../post/post";
 import { isAuthenticated } from "@/app/page";
+import styles from "@/app/page.module.css"
 
 export default function PostSystem() {
   const host = process.env.NEXT_PUBLIC_HOST;
@@ -74,7 +75,7 @@ export default function PostSystem() {
       <CreatePost onPostCreated={addNewPost} />
       <Post id={posts.uuid} posts={posts} />
       {hasMore ? (
-        <button onClick={debouncedFetchPosts} disabled={loading}>
+        <button onClick={debouncedFetchPosts} className={styles.btnLoadMore} disabled={loading}>
           {loading ? "Loading..." : "Load More"}
         </button>
       ) : (

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -14,31 +15,36 @@ func GetFollowers(w http.ResponseWriter, r *http.Request, userID int) {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowed"}, http.StatusMethodNotAllowed)
 		return
 	}
-	userId, err := strconv.Atoi((r.URL.Query().Get("id")))
-	
-	fmt.Println(userID, userId)
-	if err != nil {
-		fmt.Println("we cant convert the id")
-		utils.WriteJSON(w, map[string]string{"error": "data not available "}, http.StatusBadRequest)
-		return
+	var userId int
+	var err error
+
+	if (r.URL.Query().Get("id")) != "" {
+		userId, err = strconv.Atoi((r.URL.Query().Get("id")))
+		if err != nil {
+			fmt.Println("we cant convert the id", err)
+			utils.WriteJSON(w, map[string]string{"error": "data not available "}, http.StatusBadRequest)
+			return
+		}
 	}
-	if userId == userID {
-		MyFollowers, err := models.GetFollowers(userID)
+
+	if userId != 0 {
+		MyFollowers, err := models.GetFollowers(userId)
 		fmt.Println(MyFollowers)
 		if err != nil {
 			utils.WriteJSON(w, map[string]string{"error": "We Can't Fetsh Followers List For Posts"}, http.StatusInternalServerError)
 			return
 		}
 		utils.WriteJSON(w, MyFollowers, http.StatusAccepted)
-
-	} else {
-		UserFollowers, err := models.GetFollowers(userId)
-		if err != nil {
-			utils.WriteJSON(w, map[string]string{"error": "We Can't Fetsh Followers List For Profile"}, http.StatusInternalServerError)
-			return
-		}
-		utils.WriteJSON(w, UserFollowers, http.StatusAccepted)
+		return
 	}
+
+	log.Println("user id", userID)
+	UserFollowers, err := models.GetFollowers(userID)
+	if err != nil {
+		utils.WriteJSON(w, map[string]string{"error": "We Can't Fetsh Followers List For Profile"}, http.StatusInternalServerError)
+		return
+	}
+	utils.WriteJSON(w, UserFollowers, http.StatusAccepted)
 }
 
 func GetfollowingsForProfile(w http.ResponseWriter, r *http.Request) {

@@ -141,7 +141,6 @@ export default function ProfilePage() {
 
       if (following.ok) {
         const followingData = await following.json();
-        console.log("jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj",followingData);
         setFollowing(Array.isArray(followingData) ? followingData : []);
       }
     

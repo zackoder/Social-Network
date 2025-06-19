@@ -18,3 +18,18 @@
   flex-direction: column;
   
 }
+
+button.btnLoadMore{
+  padding: 8px 20px;
+  border: 1px solid var(--color-primary);
+  color: #fff;
+  background-color: var(--color-primary);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all .5s ease-in-out;
+}
+
+button.btnLoadMore:hover{
+  background-color: var(--color-primary-hover);
+
+}

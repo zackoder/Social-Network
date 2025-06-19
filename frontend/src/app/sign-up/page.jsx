@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import "./Signup.css";
 import { useRouter } from "next/navigation";
@@ -24,15 +24,31 @@ export default function Signup() {
 
   const host = process.env.NEXT_PUBLIC_HOST;
 
+  useEffect(() => {
+    (async function () {
+      const resp = await fetch(`${host}/userData`, {
+        credentials: "include"
+      })
+      if (resp.ok) router.push("/");
+    })()
+  }, [])
+
   // Email regex for basic validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+  // const errors = {
+  //   firstName: "First name must be under 10 characters.",
+  //   lastName: "Last name must be under 10 characters.",
+  //   nickname: "Nickname must be under 10 characters.",
+
+  // }
+
   const validate = () => {
-    if (formData.firstName.length > 10)
+    if (formData.firstName.length > 20)
       return "First name must be under 10 characters.";
-    if (formData.lastName.length > 10)
+    if (formData.lastName.length > 20)
       return "Last name must be under 10 characters.";
-    if (formData.nickname && formData.nickname.length > 10)
+    if (formData.nickname && formData.nickname.length > 20)
       return "Nickname must be under 10 characters.";
     if (!emailRegex.test(formData.email))
       return "Please enter a valid email address.";
@@ -72,7 +88,7 @@ export default function Signup() {
       const submitData = new FormData();
       const dataToSend = {
         ...formData,
-        age: formData.age ? +new Date(formData.age) : "",
+        age: new Date().getFullYear() - new Date(formData.age).getFullYear(),
       };
       submitData.append("userData", JSON.stringify(dataToSend));
       if (avatar) {
@@ -91,7 +107,7 @@ export default function Signup() {
         setError(data.error || "Failed to register. Please try again.");
         return;
       }
-
+      console.log(new Date().getFullYear() - new Date(formData.age).getFullYear())
       // Reset form and redirect
       setFormData({
         email: "",
@@ -105,7 +121,7 @@ export default function Signup() {
         gender: "male",
       });
       setAvatar(null);
-      router.push("/");
+      // window.location.reload()
       // router.push("/");
     } catch (err) {
       setError("Failed to register. Please try again.");
@@ -113,7 +129,6 @@ export default function Signup() {
       setIsLoading(false);
     }
   };
-
 
   return (
     <div className="signup-container">
