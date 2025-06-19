@@ -29,7 +29,7 @@ export default function InviteUsers({ group_id }) {
                 return;
             }
 
-            setUsers(data ? data : []);
+            setUsers(Array.isArray(data) ? data : []);
         } catch (err) {
             setError(err.message);
         }

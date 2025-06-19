@@ -33,6 +33,7 @@ export default function CreatePost({ onPostCreated }) {
   let [title, setTitle] = useState("");
   let [content, setContent] = useState("");
   let [image, setImage] = useState("");
+  const [error, setError] = useState("")
   const { selectedContactsIds, setSelectedContactsIds } =
     useContext(DataContext);
   let friends = selectedContactsIds;
@@ -66,8 +67,13 @@ export default function CreatePost({ onPostCreated }) {
       if (!response.ok) {
         isAuthenticated(response.status, newPost.error);
         console.log(newPost.error);
+        setTimeout(() => {
+          setError("")
+        }, 2000);
+        setError(newPost.error)
         return;
       } else {
+        if (error) setError("")
         // Reset form
         setPrivacy("public");
         setTitle("");
@@ -124,6 +130,7 @@ export default function CreatePost({ onPostCreated }) {
             </div>
           </div>
         </div>
+        {error && <div className="PostError"> <p>Error: {error}</p></div>}
         <div className="title">
           <input
             onChange={(e) => {
@@ -149,33 +156,33 @@ export default function CreatePost({ onPostCreated }) {
             style={{
               width: "90%",
               padding: "5px",
-                borderRadius: "4px",
-                resize: "none",
-                outline: "none",
-                border: "none",
-                marginLeft: "5%",
-                backgroundColor: "#333",
-              }}
-            />
-          </div>
-          <div className="uploadImage">
-            <input
-              onChange={(e) => {
-                setImage(e.target.files[0]);
-              }}
-              id="uploadImage"
-              className="hiddenInput"
-              ref={fileInputRef}
-              type="file"
-            />
-            <label htmlFor="uploadImage" className="uploadLabel">
-              <FaCloudUploadAlt className="iconUpload" />
-            </label>
-          </div>
-          <div>
-            <input className="submit" type="submit" value="Publish" />
-          </div>
-        </form>
-      </div>
-    );
-  }
+              borderRadius: "4px",
+              resize: "none",
+              outline: "none",
+              border: "none",
+              marginLeft: "5%",
+              backgroundColor: "#333",
+            }}
+          />
+        </div>
+        <div className="uploadImage">
+          <input
+            onChange={(e) => {
+              setImage(e.target.files[0]);
+            }}
+            id="uploadImage"
+            className="hiddenInput"
+            ref={fileInputRef}
+            type="file"
+          />
+          <label htmlFor="uploadImage" className="uploadLabel">
+            <FaCloudUploadAlt className="iconUpload" />
+          </label>
+        </div>
+        <div>
+          <input className="submit" type="submit" value="Publish" />
+        </div>
+      </form>
+    </div>
+  );
+}

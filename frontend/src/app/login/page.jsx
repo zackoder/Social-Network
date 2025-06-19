@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import "./Login.css";
@@ -10,13 +10,23 @@ export default function Login() {
     email: "",
     password: "",
   });
-  
+
+  useEffect(() => {
+    (async function () {
+      const resp = await fetch(`${host}/userData`, {
+        credentials: "include"
+      })
+      if (resp.ok) router.push("/");
+    })()
+  }, [])
+
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  
+
   const host = process.env.NEXT_PUBLIC_HOST;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  
+
   const validate = () => {
     if (!emailRegex.test(formData.email)) {
       return "Please enter a valid email address.";
@@ -26,7 +36,7 @@ export default function Login() {
     }
     return "";
   };
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -34,7 +44,7 @@ export default function Login() {
       [name]: value,
     }));
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -44,7 +54,7 @@ export default function Login() {
       return;
     }
     setIsLoading(true);
-    
+
     try {
       const response = await fetch(`${host}/login`, {
         method: "POST",
@@ -54,15 +64,16 @@ export default function Login() {
         body: JSON.stringify(formData),
         credentials: "include",
       });
-      
+
       const data = await response.json();
       console.log(formData);
       console.log(data);
-      
 
-      if (response.ok && data.success === "ok") {
+
+      if (response.ok) {
         // Redirect to home page on successful login
-        router.push("/");
+        window.location.reload()
+        // router.push("/");
       } else {
         setError(data.error || "Invalid email or password");
       }
@@ -110,16 +121,6 @@ export default function Login() {
               placeholder="Enter your password"
               disabled={isLoading}
             />
-          </div>
-
-          <div className="login-options">
-            <div className="remember-me">
-              <input type="checkbox" id="remember" />
-              <label htmlFor="remember">Remember me</label>
-            </div>
-            <Link href="/forgot-password" className="forgot-password">
-              Forgot Password?
-            </Link>
           </div>
 
           <button type="submit" className="login-button" disabled={isLoading}>

@@ -16,7 +16,9 @@ export default function ContactsPrivate() {
           credentials: "include",
         });
         const data = await response.json();
-        setContacts(data)
+        setContacts(Array.isArray(data) ? data : [])
+        console.log(data);
+
         // selectedContacts(data);
         if (data && data.error) {
           // throw new Error(data.error);
@@ -30,9 +32,7 @@ export default function ContactsPrivate() {
     };
     fetchFollowers();
   }, []);
-  if (!contacts || contacts.length === 0) {
-    return;
-  }
+
   const handleCheckboxChange = (name, id) => {
     setSelectedContacts((prev) =>
       prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]
@@ -41,10 +41,10 @@ export default function ContactsPrivate() {
       prev.includes(id) ? prev.filter((n) => n !== id) : [...prev, id]
     )
   };
-
-  //  useEffect(() => {
-  //   setSelectedContactsIds(selectedContacts); // send updated selection to parent
-  // }, [selectedContacts]);
+  
+  if (contacts.length === 0) {
+    return <p>You have no followers</p>
+  }
 
   return (
     <div style={{ position: "relative", width: "200px" }}>

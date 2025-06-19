@@ -157,7 +157,7 @@
   border: 1px solid #222;
   color: #222;
   border-radius: 4px;
-  width: 75%;
+  width: 82%;
   margin: 10px 5%;
 }
 .buttons {
@@ -169,7 +169,7 @@
 }
 
 .buttons .submit {
-  padding: 8px;
+  padding: 5px;
   background-color: var(--color-primary);
   color: #fff;
   outline: none;
@@ -177,7 +177,7 @@
   border-radius: 4px;
   font-size: 16px;
   text-transform: capitalize;
-  width: 75%;
+  width: 70%;
   /* margin: 0 5%; */
   cursor: pointer;
   transition: all 0.5s ease-in-out;
@@ -199,7 +199,7 @@
 }
 
 .buttons .iconUpload {
-  font-size: 50px;
+  font-size: 30px;
   transition: color 0.2s ease-in-out;
 }
 .buttons .iconUpload:hover {

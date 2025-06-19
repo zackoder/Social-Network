@@ -18,7 +18,7 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 	}
 	var post utils.Post
 	post.Poster_id = userId
-	 
+
 	postData := r.FormValue("postData")
 
 	err := json.Unmarshal([]byte(postData), &post)
@@ -34,8 +34,9 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 		fmt.Println("Upload Image error:", err)
 		return
 	}
-	if filepath == "" && (strings.TrimSpace(post.Title) == "" && strings.TrimSpace(post.Content) == "") {
-		utils.WriteJSON(w, map[string]string{"error": "title or content is empty"}, http.StatusBadRequest)
+
+	if filepath == "" && strings.TrimSpace(post.Title) == "" && strings.TrimSpace(post.Content) == "" {
+		utils.WriteJSON(w, map[string]string{"error": "post cannot be empty"}, http.StatusBadRequest)
 		return
 	}
 
