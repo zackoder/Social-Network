@@ -8,10 +8,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
 func UploadImage(r *http.Request) (string, error) {
+	log.Println("image 1111111111111111111111111")
 	file, handler, err := r.FormFile("avatar")
 	if err != nil {
 		if file == nil {
@@ -58,42 +60,50 @@ func UploadImage(r *http.Request) (string, error) {
 	return filePath[1:], nil
 }
 
-func UploadMsgImg(pyload []byte) (Message, error) {
+// if err := os.WriteFile("test.txt", parts[0], 0o644); err != nil {
+// 	fmt.Println("writing file error ", err)
+// 	return message, fmt.Errorf("internal sercer error")
+// }
+
+func UploadMsgImg(payload []byte) (Message, error) {
+	if err := os.MkdirAll("uploads", os.ModePerm); err != nil {
+		log.Println("creating uploads folder", err)
+	}
+
 	delimiter := []byte("::")
-	parts := bytes.SplitN(pyload, delimiter, 2)
+	parts := bytes.SplitN(payload, delimiter, 2)
+
 	var message Message
 	if len(parts) != 2 {
-		return message, fmt.Errorf("Send a valid data")
-	}
-	if err := os.WriteFile("test.txt", parts[0], 0o644); err != nil {
-		fmt.Println("writing file error ", err)
-		return message, fmt.Errorf("internal sercer error")
+		return message, fmt.Errorf("send valid data")
 	}
 
 	metaPart := parts[0]
 	filePart := parts[1]
-	log.Println("metta data:", string(metaPart))
+
 	err := json.Unmarshal(metaPart, &message)
 	if err != nil {
-		fmt.Println("invalid meta data", err)
-		return message, fmt.Errorf("Check your data")
+		fmt.Println("invalid metadata:", err)
+		return message, fmt.Errorf("check your data")
 	}
-	// extention := strings.Split(message.Mime, "/")[1]
 
-	if !CheckExtension(string(filePart)) {
-		if !CheckExtension(string(filePart)) {
-			return message, fmt.Errorf("invalid file type you can only send images")
-		}
-		os.MkdirAll("uploads", os.ModePerm)
-
-		message.Filename = fmt.Sprintf("uploads/%d_%s", time.Now().Unix(), message.Filename)
-
-		if err := os.WriteFile(message.Filename, filePart, 0o644); err != nil {
-			fmt.Println("writing file error ", err)
-			return message, fmt.Errorf("internal sercer error")
-		}
+	// Validate file content type
+	contentType := http.DetectContentType(filePart)
+	if !strings.HasPrefix(contentType, "image/") {
+		return message, fmt.Errorf("invalid file type, only images allowed")
 	}
-	message.Filename = "/" + message.Filename
+
+	// Ensure filename
+
+	// Save file
+	message.Filename = fmt.Sprintf("uploads/%d_%s", time.Now().Unix(), message.Filename)
+	if err := os.WriteFile(message.Filename, filePart, 0o644); err != nil {
+		fmt.Println("writing file error", err)
+		return message, fmt.Errorf("internal server error")
+	}
+	if message.Filename != "" {
+		message.Filename = "/" + message.Filename
+	}
 	return message, nil
 }
 

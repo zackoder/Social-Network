@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { isAuthenticated } from "@/app/page";
 
 export default function ButtonProfile() {
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
@@ -22,6 +22,8 @@ export default function ButtonProfile() {
           }
         );
         const data = await response.json();
+        console.log(data);
+        
 
         if (!response.ok) {
           // If response is 401 Unauthorized, redirect to login
@@ -87,8 +89,8 @@ export default function ButtonProfile() {
       style={{ cursor: isLoading ? "wait" : "pointer" }}
       aria-label="My Profile"
     >
-      <Image
-        src="/images/profile.png"
+      <img
+        src={`http://${userData.avatar}`}
         className="imgProfile"
         width={38}
         height={38}

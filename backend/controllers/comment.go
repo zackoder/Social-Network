@@ -29,7 +29,6 @@ func GetUserAvatarAndUserName(userId int) *utils.User {
 
 // AddComment handles adding a new comment to a post
 func AddComment(w http.ResponseWriter, r *http.Request, userID int) {
-	fmt.Println("data is hereeeeeeeeeeeeeeee")
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method not allowed"}, http.StatusMethodNotAllowed)
 		return
@@ -43,37 +42,23 @@ func AddComment(w http.ResponseWriter, r *http.Request, userID int) {
 	postData := r.FormValue("commentData")
 	fmt.Println("this id postdata ", postData)
 
-	// Get the file path for the uploaded image
 	filepath, err := utils.UploadImage(r)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": err.Error()}, http.StatusInternalServerError)
 		fmt.Println("Upload Image error:", err)
 		return
 	}
-	// // Get user session to identify the commenter
-	// cookie, err := r.Cookie("token")
-	// if err != nil {
-	// 	utils.WriteJSON(w, map[string]string{"error": "Authentication required"}, http.StatusUnauthorized)
-	// 	return
-	// }
-
-	// userId, err := models.Get_session(cookie.Value)
-	// if err != nil {
-	// 	utils.WriteJSON(w, map[string]string{"error": "Invalid session"}, http.StatusUnauthorized)
-	// 	return
-	// }
-
-	// Parse the comment data
+	 
 	var comment utils.Comment
 	if err := json.Unmarshal([]byte(postData), &comment); err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Invalid request data"}, http.StatusBadRequest)
 		return
 	}
-	if filepath != "" {
-		comment.ImagePath = filepath
-	}
+	 
+	comment.ImagePath = filepath
+ 
 
-	if strings.TrimSpace(comment.Content) == "" {
+	if strings.TrimSpace(comment.Content) == "" && filepath == ""{
 		utils.WriteJSON(w, map[string]string{"error": "Empty Message"}, http.StatusBadRequest)
 		return
 	}
@@ -105,9 +90,6 @@ func AddComment(w http.ResponseWriter, r *http.Request, userID int) {
 		return
 	}
 
-	if filepath != "" {
-		comment.ImagePath = r.Host + filepath
-	}
 	// Set the generated ID and return the comment
 	comment.Id = commentID
 
@@ -123,12 +105,8 @@ func AddComment(w http.ResponseWriter, r *http.Request, userID int) {
 	comment.UserAvatar = user.Avatar
 	comment.UserName = fmt.Sprintf("%s %s", userdata.FirstName, userdata.LastName)
 
-	if comment.UserAvatar == "" {
-		comment.UserAvatar = "https://example.com/default-avatar.png" // Default avatar URL
-	}
-	if comment.UserName == "" {
-		comment.UserName = "Anonymous" // Default name if not found
-	}
+
+
 
 	utils.WriteJSON(w, comment, http.StatusOK)
 }

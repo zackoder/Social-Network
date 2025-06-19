@@ -77,6 +77,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"social-network/models"
 	"social-network/utils"
@@ -113,8 +114,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		registrstionFormRequest.Avatar = "/defaultIMG/defaulte.jpg"
 	}
 
-
-	if registrstionFormRequest.Nickname == ""{
+	if registrstionFormRequest.Nickname == "" {
 		registrstionFormRequest.Nickname = ""
 	}
 
@@ -132,36 +132,36 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	if !utils.CheckName(registrstionFormRequest.LastName) {
-		utils.WriteJSON(w, map[string]string{"message": "invalid last name"}, http.StatusBadRequest)
+		utils.WriteJSON(w, map[string]string{"error": "invalid last name"}, http.StatusBadRequest)
 
 		return
 	}
 
 	if !utils.CheckName(registrstionFormRequest.FirstName) {
-		utils.WriteJSON(w, map[string]string{"message": "invalid first name"}, http.StatusBadRequest)
+		utils.WriteJSON(w, map[string]string{"error": "invalid first name"}, http.StatusBadRequest)
 
 		return
 	}
 
 	// if !utils.CheckAge(registrstionFormRequest.Age) {
-	// 	utils.WriteJSON(w, map[string]string{"message": "Invalid age"}, http.StatusBadRequest)
+	// 	utils.WriteJSON(w, map[string]string{"error": "Invalid age"}, http.StatusBadRequest)
 
 	// 	return
 	// }
 
 	if !utils.CheckGender(registrstionFormRequest.Gender) {
-		utils.WriteJSON(w, map[string]string{"message": "Invalid gender"}, http.StatusBadRequest)
+		utils.WriteJSON(w, map[string]string{"error": "Invalid gender"}, http.StatusBadRequest)
 
 		return
 	}
 
 	if !utils.IsValidEmail(&registrstionFormRequest.Email) {
-		utils.WriteJSON(w, map[string]string{"message": "Invalid emai"}, http.StatusBadRequest)
+		utils.WriteJSON(w, map[string]string{"error": "Invalid emai"}, http.StatusBadRequest)
 
 		return
 	}
 	if len(registrstionFormRequest.Password) < 8 || len(registrstionFormRequest.Password) > 64 {
-		utils.WriteJSON(w, map[string]string{"message": "Invalid password"}, http.StatusBadRequest)
+		utils.WriteJSON(w, map[string]string{"error": "Invalid password"}, http.StatusBadRequest)
 
 		return
 	}
@@ -169,20 +169,20 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	ok, err := models.IsUserRegistered(&registrstionFormRequest)
 	if err != nil {
 		fmt.Println(err)
-		utils.WriteJSON(w, map[string]string{"message": "internaInternal Server Error"}, http.StatusInternalServerError)
+		utils.WriteJSON(w, map[string]string{"error": "internaInternal Server Error"}, http.StatusInternalServerError)
 
 		return
 	}
 
 	if ok {
-		utils.WriteJSON(w, map[string]string{"message": "User already exists"}, http.StatusConflict)
+		utils.WriteJSON(w, map[string]string{"error": "User already exists"}, http.StatusConflict)
 
 		return
 	}
 
 	err = utils.HashPassword(&registrstionFormRequest.Password)
 	if err != nil {
-		utils.WriteJSON(w, map[string]string{"message": "Incorect password"}, http.StatusBadRequest)
+		utils.WriteJSON(w, map[string]string{"error": "Incorect password"}, http.StatusBadRequest)
 
 		return
 	}
@@ -190,21 +190,22 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	// registrstionFormRequest.NickName = html.EscapeString(registrstionFormRequest.NickName)
 	err = models.RegisterUser(&registrstionFormRequest)
 	if err != nil {
-		utils.WriteJSON(w, map[string]string{"message": "internaInternal Server Error"}, http.StatusInternalServerError)
-
+		if strings.Contains(err.Error(), "nickname") {
+			utils.WriteJSON(w, map[string]string{"error": "nickname already used"}, http.StatusBadRequest)
+		}
 		return
 	}
 
 	// Create a session and set a cookie
 	registrstionFormRequest.SessionId, err = utils.GenerateSessionID()
 	if err != nil {
-		utils.WriteJSON(w, map[string]string{"message": "internaInternal Server Error"}, http.StatusInternalServerError)
+		utils.WriteJSON(w, map[string]string{"error": "please try again"}, http.StatusInternalServerError)
 		return
 	}
 
 	err = models.InsertSession(&registrstionFormRequest)
 	if err != nil {
-		utils.WriteJSON(w, map[string]string{"message": "internaInternal Server Error"}, http.StatusInternalServerError)
+		utils.WriteJSON(w, map[string]string{"error": ""}, http.StatusInternalServerError)
 		fmt.Println(err)
 		return
 	}

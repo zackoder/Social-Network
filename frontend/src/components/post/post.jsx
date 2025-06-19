@@ -16,31 +16,16 @@ export default  function Post({ post = null, posts: propsPosts = null }) {
       setPosts(propsPosts);
       return;
     }
-
-    // If a single post is passed
+ 
     if (post) {
       setPosts([post]);
       return;
     }
-
-    // If no props, fetch all posts
-    // setLoading(true);
-        // GetData()
-     
-        // setPosts(Array.isArray(data) ? data : []);
-        // setLoading(false);
-      
-  
-        // setError(err.message);
-        // setLoading(false);
+ 
         
       }, [posts, propsPosts]);
       
-console.log("ggggggggggggggggggggggggggggg", posts);
-
-  // if (loading) return <div className={styles.container}>Loading posts...</div>;
-  // if (error) return <div className={styles.container}>Error: {error}</div>;
-
+ 
   return (
     <div className={styles.container}>
       {posts.map((post, index) => (

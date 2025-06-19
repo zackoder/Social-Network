@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"net/http"
 	"strconv"
 	"strings"
 
@@ -211,7 +210,7 @@ func IsFollower(profileOwnerID int, viewerID int) (bool, error) {
 }
 
 func GetFollowers(userID int) ([]utils.Regester, error) {
-	query := `SELECT  f.follower_id, u.first_name FROM followers f 
+	query := `SELECT  f.follower_id, u.first_name,u.avatar FROM followers f 
 	JOIN users u 
 	ON f.follower_id = u.id 
 	WHERE f.followed_id  = ? `
@@ -223,7 +222,7 @@ func GetFollowers(userID int) ([]utils.Regester, error) {
 
 	for rows.Next() {
 		var followerinfo utils.Regester
-		if err := rows.Scan(&followerinfo.ID, &followerinfo.FirstName); err != nil {
+		if err := rows.Scan(&followerinfo.ID, &followerinfo.FirstName, &followerinfo.Avatar); err != nil {
 			fmt.Println(followerinfo.ID)
 			fmt.Println(followerinfo.FirstName)
 			return nil, err
@@ -234,7 +233,7 @@ func GetFollowers(userID int) ([]utils.Regester, error) {
 }
 
 func GetFollowings(userID int) ([]utils.Regester, error) {
-	query := `SELECT  f.followed_id, u.first_name FROM followers f 
+	query := `SELECT  f.followed_id, u.first_name, u.avatar FROM followers f 
 	JOIN users u 
 	ON f.followed_id = u.id 
 	WHERE f.follower_id  = ? `
@@ -246,7 +245,7 @@ func GetFollowings(userID int) ([]utils.Regester, error) {
 
 	for rows.Next() {
 		var followerinfo utils.Regester
-		if err := rows.Scan(&followerinfo.ID, &followerinfo.FirstName); err != nil {
+		if err := rows.Scan(&followerinfo.ID, &followerinfo.FirstName, &followerinfo.Avatar); err != nil {
 			fmt.Println(followerinfo.ID)
 			fmt.Println(followerinfo.FirstName)
 			return nil, err
@@ -592,8 +591,7 @@ WHERE
 	return Events, nil
 }
 
-func GetPostsFromDatabase(groupeId int, r *http.Request) ([]utils.Post, error) {
-	host := r.Host
+func GetPostsFromDatabase(groupeId int) ([]utils.Post, error) {
 	var posts []utils.Post
 
 	query := `
@@ -620,9 +618,7 @@ func GetPostsFromDatabase(groupeId int, r *http.Request) ([]utils.Post, error) {
 		if err != nil {
 			fmt.Println("scaning error:", err)
 		}
-		if post.Image != "" {
-			post.Image = host + post.Image
-		}
+
 		posts = append(posts, post)
 	}
 	return posts, nil

@@ -18,7 +18,7 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 	}
 	var post utils.Post
 	post.Poster_id = userId
-	host := r.Host
+	 
 	postData := r.FormValue("postData")
 
 	err := json.Unmarshal([]byte(postData), &post)
@@ -44,7 +44,7 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 	user, _ := models.GetUserById(userId)
 	// log.Println(user)
 	post.Poster_name = user.FirstName
-	post.Avatar = host + user.Avatar
+	post.Avatar = user.Avatar
 
 	post.Image = filepath
 
@@ -61,9 +61,9 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 		post.Friendes = []int{}
 	}
 
-	if filepath != "" {
-		post.Image = host + post.Image
-	}
+	// if filepath != "" {
+	// 	post.Image = host + post.Image
+	// }
 	utils.WriteJSON(w, post, 200)
 }
 

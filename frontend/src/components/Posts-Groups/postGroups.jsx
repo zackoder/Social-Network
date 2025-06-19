@@ -156,10 +156,10 @@ export default function Post_Groups({ post, id }) {
               <div className={style.containerHeader} >
                 <div className={style.imageContainer}>
                   <img
-                    src={`http://${post.avatar}`}
+                    src={`${host}${post.avatar}`}
                     width={50}
                     height={50}
-                    style={{ borderRadius: "100%" }}
+                    style={{ borderRadius: "50%" }}
 
                   />
                 </div>
@@ -176,7 +176,7 @@ export default function Post_Groups({ post, id }) {
             {post.image ? (
               <img
                 className={style.imageG}
-                src={`http://${post.image}`}
+                src={`${host}${post.image}`}
                 alt="post"
                 width={500}
                 height={300}

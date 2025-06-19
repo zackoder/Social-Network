@@ -40,7 +40,7 @@ export default function PostSystem() {
         setHasMore(false); // No more posts available
         return;
       }
-      setPosts((prev) => [...data, ...prev]);
+      setPosts((prev) => [...prev,...data]);
       setOffset((prev) => prev + LIMIT);
     } catch (err) {
       console.error("Fetch error:", err);

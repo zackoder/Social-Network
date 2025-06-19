@@ -2,8 +2,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import "./Signup.css";
+import { useRouter } from "next/navigation";
 
 export default function Signup() {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -62,8 +65,9 @@ export default function Signup() {
       setError(validationError);
       return;
     }
+
     setIsLoading(true);
-    let data;
+
     try {
       const submitData = new FormData();
       const dataToSend = {
@@ -74,16 +78,21 @@ export default function Signup() {
       if (avatar) {
         submitData.append("avatar", avatar);
       }
+
       const response = await fetch(`${host}/register`, {
         method: "POST",
+        credentials: "include",
         body: submitData,
       });
-      data = await response.json();
+
+      const data = await response.json();
+
       if (!response.ok) {
         setError(data.error || "Failed to register. Please try again.");
-        setIsLoading(false);
         return;
       }
+
+      // Reset form and redirect
       setFormData({
         email: "",
         password: "",
@@ -93,15 +102,18 @@ export default function Signup() {
         age: "",
         nickname: "",
         aboutMe: "",
-        gender: "male", // Reset gender to default value
+        gender: "male",
       });
       setAvatar(null);
-    } catch {
-      setError(data?.error || "Failed to register. Please try again.");
+      router.push("/");
+      // router.push("/");
+    } catch (err) {
+      setError("Failed to register. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
+
 
   return (
     <div className="signup-container">
