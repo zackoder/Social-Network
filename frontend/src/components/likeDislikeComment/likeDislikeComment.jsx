@@ -21,7 +21,7 @@ export default function LikeDislikeComment({ postId }) {
   const [disLikeNumber, setDisLikeNbr] = useState(0);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState(null);
   const [showComments, setShowComments] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -42,7 +42,7 @@ export default function LikeDislikeComment({ postId }) {
       }
 
       const data = await res.json();
-
+        
       if (!data || data.length === 0) {
         setHasMore(false);
         return;
@@ -83,6 +83,7 @@ export default function LikeDislikeComment({ postId }) {
       postId: postId,
     };
     formData.append("commentData", JSON.stringify(commentData));
+      // if ()
     if (image) {
       formData.append("avatar", image);
     }
@@ -101,12 +102,12 @@ export default function LikeDislikeComment({ postId }) {
       if (comments.length === 0) {
         await fetchComments();
       } else {
-        setComments((prev) => [comment, ...prev]);
+        setComments((prev) => [comment,...prev]);
       }
       // setComments((prevComments) => [comment, ...prevComments]);
       setShowComments(true);
       setComment("");
-      setImage("");
+      setImage(null);
 
       // Reset file input
       if (fileInputRef.current) {
@@ -193,7 +194,14 @@ export default function LikeDislikeComment({ postId }) {
     await getReactions(postId);
   };
 
-  /* handling show comments */
+  /* handling image comments */
+  const handleImageChange = (e) => {
+
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+    }
+  };
 
   return (
     //className={styles.reactionContainer}
@@ -230,7 +238,7 @@ export default function LikeDislikeComment({ postId }) {
 
       <form className="formComment" onSubmit={handleCommentSubmit}>
         <input
-          aria-required
+          // aria-required
           placeholder="Write a comment..."
           value={comment}
           onChange={(e) => setComment(e.target.value)}
@@ -246,13 +254,12 @@ export default function LikeDislikeComment({ postId }) {
 
         <input
           type="file"
-          id="uploadImage"
+          id={`uploadImage${postId}`}
           className="uploadImage"
-          onChange={(e) => {
-            setImage(e.target.files[0]);
-          }}
+          onChange={handleImageChange}
+          ref={fileInputRef}
         />
-        <label htmlFor="uploadImage">
+        <label htmlFor={`uploadImage${postId}`}>
           <FaCloudUploadAlt className="uploadIcon" />
         </label>
 
@@ -276,7 +283,7 @@ export default function LikeDislikeComment({ postId }) {
           ) : (
             <>
               {comments.map((c, i) => (
-                <div className="comment" key={c._id || i}>
+                <div className="comment" key={i}>
                   <div className="comment-header">
                     <div className="comment-image">
                       <img src={`${host}${c.userAvatar}`} alt="profile" />
@@ -287,7 +294,11 @@ export default function LikeDislikeComment({ postId }) {
                     </span>
                   </div>
                   <div className="comment-content">
-                    <p>{c.content}</p>
+                    <p>{c.content}</p> {c.imagePath && 
+                      <img src={`${host}${c.imagePath}`} 
+                    alt="image" /> 
+                  }
+
                   </div>
                 </div>
               ))}

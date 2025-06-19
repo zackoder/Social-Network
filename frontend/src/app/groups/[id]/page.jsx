@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Events } from "@/components/Events/events";
 import GroupChat from "@/components/groupchat/groupchat";
-import InviteUsers from "@/components/contactprivate/contactprivate";
+import InviteUsers from "@/components/inviteFollower/inviteFollowers";
 export default function GroupPage() {
 
   const [groupData, setGroupData] = useState(null);
@@ -22,7 +22,7 @@ export default function GroupPage() {
   async function getGroupData() {
     try {
       console.log(id);
-      
+
       const resp = await fetch(`${host}/group?groupId=${id}`, {
         credentials: "include",
       });

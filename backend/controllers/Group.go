@@ -387,7 +387,7 @@ func GetPostsGroupe(w http.ResponseWriter, r *http.Request, userId int) {
 		utils.WriteJSON(w, map[string]string{"error": "Access denied: you must be a member of the group to Fetchs Posts."}, 403)
 		return
 	}
-	Posts, err := models.GetPostsFromDatabase(Groupe_id.Groupe_id, r)
+	Posts, err := models.GetPostsFromDatabase(Groupe_id.Groupe_id)
 	fmt.Println(err)
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error."}, http.StatusInternalServerError)

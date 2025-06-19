@@ -111,28 +111,6 @@ export default function NotificationDropdown({ isOpen }) {
                 notification.message === "event" ? (
                   <div key={index} className={styles.notificationItem}>
                     <p>{notification.type}</p>
-                    <button
-                      onClick={() =>
-                        setResponseData({
-                          id: notification.id,
-                          message: "going",
-                        })
-                      }
-                      className={styles.btnNotification}
-                    >
-                      Going
-                    </button>
-                    <button
-                      onClick={() =>
-                        setResponseData({
-                          id: notification.id,
-                          message: "not_going",
-                        })
-                      }
-                      className={styles.btnNotification}
-                    >
-                      Not Going
-                    </button>
                   </div>
                 ) : (
                   <div key={index} className={styles.notificationItem}>

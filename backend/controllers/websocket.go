@@ -138,7 +138,7 @@ func BroadcastPrivateMessage(msg utils.Message, host string) {
 	}
 
 	if msg.Filename != "" {
-		msg.Filename = host + msg.Filename // host + msg.Filename
+		msg.Filename = host + msg.Filename
 	}
 
 	Broadcast(msg.Reciever_id, msg)
@@ -157,7 +157,7 @@ func BroadcastGroupMessage(msg utils.Message, host string) error {
 	}
 
 	if msg.Filename != "" {
-		msg.Filename = host + msg.Filename
+		msg.Filename = host + "/uploads" + msg.Filename
 	}
 
 	for _, receiverID := range Manager.Groups[msg.Group_id] {

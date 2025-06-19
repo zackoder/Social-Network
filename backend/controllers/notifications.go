@@ -30,19 +30,7 @@ func NotiResp(w http.ResponseWriter, r *http.Request, userId int) {
 	resp := noti.Message
 	println("im the resp", noti.Message)
 	models.SelectOneNoti(&noti)
-	if noti.Message == "event" {
-		var eventresp utils.EventResponse
-		eventresp.UserID = userId
-		eventresp.GroupeId = noti.Target_id
-		eventresp.EventID = noti.Actor_id
-		err := models.InsserResponceInDatabase(eventresp)
-		if err != nil {
-			log.Println("error insserresp", err)
-			return
-		}
-
-		return
-	} else if resp == "rejected" || resp == "accepted" {
+	if resp == "rejected" || resp == "accepted" {
 		if resp == "rejected" {
 			err = models.DeleteNoti(noti.Id)
 			if err != nil {

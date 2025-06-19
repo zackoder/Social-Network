@@ -141,8 +141,10 @@ export default function ProfilePage() {
 
       if (following.ok) {
         const followingData = await following.json();
+        console.log("jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj",followingData);
         setFollowing(Array.isArray(followingData) ? followingData : []);
       }
+    
       // console.log("followers.ok", following);
     } catch (error) {
       // console.error("Error in profile data fetch:", error);
@@ -150,10 +152,12 @@ export default function ProfilePage() {
     } finally {
       setIsLoading(false);
     }
+    
     // if (isPrivate === "private" || isPrivate === "public") {
     //   await handlePrivacyToggle();
     // }
   };
+  
 
   const handlePrivacyToggle = async () => {
     try {
@@ -362,7 +366,7 @@ export default function ProfilePage() {
                   <li key={user.id} className={styles.userItem}>
                     <img
                       className={styles.userAvatar}                      
-                      src={`http://${user.avatar}`}
+                      src={`${host}${user.avatar}`}
                       alt={`${user.firstName} ${user.lastName}`}
                       width={40}
                       height={40}
