@@ -102,11 +102,15 @@
     width: 100%;
   }
 }
-
-.user-info {
+@media(max-width :859px){
+.invitation {
+  margin-left: 0px;
+}
+.user-wrapper .user {
   display: flex;
+  gap: 2px;
   align-items: center;
-  gap: 12px;
+}
 }
 
 .avatar {

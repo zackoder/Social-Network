@@ -149,6 +149,11 @@
   font-weight: 500;
   box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
 }
+
+.addEventButtone:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
 @media (max-width: 689px){
   .addEventButtone {
   padding: 10px 30px;
