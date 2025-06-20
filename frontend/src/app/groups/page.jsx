@@ -31,7 +31,7 @@ export default function Home() {
 
       setGroups(Array.isArray(data) ? data : []);
 
-      if (!data.length) setError("No available Groups");
+      if (!data) setError("No available Groups");
     } catch (err) {
       setGroups([]);
       setError(err.message || "Unknown error");
@@ -67,7 +67,7 @@ export default function Home() {
       if (!res.ok) {
         throw new Error(data.error || "Unknown error");
       }
-
+      data.status="member"
       setGroups((prev) => [...prev, data]);
       setIsPopupOpen(false);
       setTitle("");
