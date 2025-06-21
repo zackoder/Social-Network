@@ -30,7 +30,7 @@ export default function ProfilePage() {
   const host = process.env.NEXT_PUBLIC_HOST;
   const [error, setError] = useState("");
 
-  console.log("get id of the user ", profileId);
+  // console.log("get id of the user ", profileId);
 
   useEffect(() => {
     if (profileId) {
@@ -91,9 +91,7 @@ export default function ProfilePage() {
         { credentials: "include" }
       );
       const profileData = await profileResponse.json();
-      console.log("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww",profileData);
-      
-
+      // console.log("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww",profileData);
       if (!profileResponse.ok) {
         console.log(`Profile response error: ${profileResponse.status}`);
         isAuthenticated(profileResponse.status, profileData.error);
@@ -101,22 +99,6 @@ export default function ProfilePage() {
 
       setProfile(profileData.registration_data);
       setIsPrivate(profileData.profile_status);
-
-      // const postsResponse = await fetch(
-      //   `${host}/api/getProfilePosts?id=${profileId}`,
-      //   {
-      //     credentials: "include",
-      //   }
-      // );
-      // const posts = await postsResponse.json();
-
-      //  console.log("this is for posts", posts);
-
-      // Ensure posts is always an array
-      // setPosts(Array.isArray(posts) ? posts : []);
-      // console.error("Failed to fetch posts");
-      // setPosts([]); // Set empty array on error
-
       // Fetch followers
       const followers = await fetch(
         `${host}/api/getfollowers?id=${profileId}`,
@@ -151,10 +133,7 @@ export default function ProfilePage() {
     } finally {
       setIsLoading(false);
     }
-    
-    // if (isPrivate === "private" || isPrivate === "public") {
-    //   await handlePrivacyToggle();
-    // }
+ 
   };
   
 
@@ -169,8 +148,6 @@ export default function ProfilePage() {
         body: JSON.stringify({ isPrivate: isPrivate }),
       });
       const data = await response.json();
-      // console.log(";;;;;;;;;;;;;;;;;;;;;;;;;;", data.profile_status);
-
       if (response.ok) {
         setIsPrivate(data.profile_status);
       }

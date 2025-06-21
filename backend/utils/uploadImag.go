@@ -13,7 +13,6 @@ import (
 )
 
 func UploadImage(r *http.Request) (string, error) {
-	log.Println("image 1111111111111111111111111")
 	file, handler, err := r.FormFile("avatar")
 	if err != nil {
 		if file == nil {

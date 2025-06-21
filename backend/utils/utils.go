@@ -7,16 +7,31 @@ type Regester struct {
 	FirstName       string `json:"firstName"`
 	LastName        string `json:"lastName"`
 	NickName        any    `json:"nickName"`
-	Age             string `json:"age"`
+	Age             int    `json:"age"`
 	Gender          string `json:"gender"`
 	Email           string `json:"email"`
 	Password        string `json:"password"`
-	ConfermPassword string `json:"confermPassword"`
-	About_Me        string `json:"AboutMe"`
+	ConfermPassword string `json:"confirmPassword"`
+	About_Me        string `json:"aboutMe"`
 	Avatar          string `json:"avatar"`
 	Pravecy         string `json:"privecy"`
 	ProfileOner     bool   `json:"profileOner"`
 	SessionId       string
+}
+
+type User struct {
+	ID        int64
+	Nickname  string `json:"nickname"`
+	Age       int    `json:"age"`
+	Gender    string `json:"gender"`
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	SessionId string
+	Avatar    string `json:"avatar"`
+	AboutMe   string `json:"aboutme"`
+	Privacy   string `json:"privacy"`
 }
 
 type Login struct {
@@ -60,20 +75,6 @@ type Notification struct {
 	Type      string `json:"type"`
 }
 
-type User struct {
-	ID        int64
-	Nickname  string `json:"nickname"`
-	Age       int    `json:"age"`
-	Gender    string `json:"gender"`
-	FirstName string `json:"firstname"`
-	LastName  string `json:"lastname"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
-	SessionId string
-	Avatar    string `json:"avatar"`
-	AboutMe   string `json:"aboutme"`
-	Privacy   string `json:"privacy"`
-}
 type Session struct {
 	Id        int    `json:"id"`
 	UserId    int    `json:"user_id"`
@@ -128,8 +129,8 @@ type Event struct {
 	Description string `json:"description"`
 	EventTime   int    `json:"event_time"`
 	CreatedBy   int    `json:"created_by"`
-	Responce string `json:"responce"`
-	Action string `json:"action"`
+	Responce    string `json:"responce"`
+	Action      string `json:"action"`
 }
 
 type EventResponse struct {

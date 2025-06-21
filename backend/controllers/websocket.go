@@ -155,11 +155,7 @@ func BroadcastGroupMessage(msg utils.Message, host string) error {
 		log.Println("Failed to save group message:", err)
 		return err
 	}
-
-	if msg.Filename != "" {
-		msg.Filename = host + "/uploads" + msg.Filename
-	}
-
+	
 	for _, receiverID := range Manager.Groups[msg.Group_id] {
 		Broadcast(receiverID, msg)
 	}

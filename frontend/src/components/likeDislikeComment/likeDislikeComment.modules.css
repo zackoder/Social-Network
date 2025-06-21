@@ -1,69 +1,71 @@
 .reactionContainer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 50%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 50%;
 }
 
 .buttons {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    /*position: relative;*/
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  /*position: relative;*/
 }
 
 .buttons button {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .buttons button span {
-    position: relative;
-    top: -2px;
-    /* left: 0; */
+  position: relative;
+  top: -2px;
+  /* left: 0; */
 }
 
 .formComment {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
 }
 
-.formComment .uploadImage, .formComment .submit {
-    display: none;
+.formComment .uploadImage,
+.formComment .submit {
+  display: none;
 }
 
 .formComment .uploadIcon,
 .formComment .submitIcon {
-    font-size: 30px;
-    cursor: pointer;
-    color: var(--color-primary);
-    transition: color 0.5s ease-in-out;
+  font-size: 30px;
+  cursor: pointer;
+  color: var(--color-primary);
+  transition: color 0.5s ease-in-out;
 }
-.formComment .submitIcon{
-    font-size: 25px;
+
+.formComment .submitIcon {
+  font-size: 25px;
 }
 
 .formComment .uploadIcon:hover,
 .formComment .submitIcon:hover {
-    color: var(--color-primary-hover);
+  color: var(--color-primary-hover);
 }
 
-.show{
-    background-color: transparent;
-    /* border: 1px solid var(--color-primary); */
-    border: 1px solid #fff;
-    outline: none;
-    cursor: pointer;
-    padding: 10px 20px;
-    border-radius: 8px;
-    margin-top: 15px;
-    transition: all .2s ease-in-out;
+.show {
+  background-color: transparent;
+  /* border: 1px solid var(--color-primary); */
+  border: 1px solid #fff;
+  outline: none;
+  cursor: pointer;
+  padding: 10px 20px;
+  border-radius: 8px;
+  margin-top: 15px;
+  transition: all .2s ease-in-out;
 }
 
-.show:hover{
-    background-color: #222;
+.show:hover {
+  background-color: #222;
 }
 
 /* .reactionContainer{
@@ -113,7 +115,7 @@
 
 /* css by ayoub , to be changed later  by sii walid  */
 .comments-container {
- animation: fadeIn 0.3s ease-in-out;
+  animation: fadeIn 0.3s ease-in-out;
   margin-top: 20px;
   padding: 10px;
   background-color: #2a2a2a;
@@ -121,6 +123,7 @@
   max-height: 400px;
   overflow-y: auto;
 }
+
 .comment-image {
   width: 50px;
   height: 50px;
@@ -131,6 +134,7 @@
   border: 2px solid #444;
   box-shadow: 0 0 4px rgba(0, 170, 255, 0.4);
 }
+
 .comment {
   background-color: #1e1e1e;
   border: 1px solid #3a3a3a;
@@ -162,13 +166,39 @@
   font-size: 12px;
   color: #888;
 }
-
+ 
 .comment-content {
-  font-size: 15px;
-  color: #f1f1f1;
-  line-height: 1.5;
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
 }
+
+.image-container {
+  margin-top: 10px;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.image-container img {
+  max-width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

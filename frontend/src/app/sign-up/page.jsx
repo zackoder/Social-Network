@@ -21,7 +21,7 @@ export default function Signup() {
   const [avatar, setAvatar] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-
+ 
   const host = process.env.NEXT_PUBLIC_HOST;
 
   useEffect(() => {
@@ -33,16 +33,9 @@ export default function Signup() {
     })()
   }, [])
 
-  // Email regex for basic validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  // const errors = {
-  //   firstName: "First name must be under 10 characters.",
-  //   lastName: "Last name must be under 10 characters.",
-  //   nickname: "Nickname must be under 10 characters.",
-
-  // }
-
+  
   const validate = () => {
     if (formData.firstName.length > 20)
       return "First name must be under 10 characters.";
@@ -57,8 +50,8 @@ export default function Signup() {
     if (formData.password !== formData.confirmPassword)
       return "Passwords do not match.";
     if (!formData.age) return "Please enter your date of birth.";
-    if (new Date(formData.age) > new Date())
-      return "Date of birth cannot be in the future.";
+    if (new Date(formData.age).getFullYear() > new Date().getFullYear() - 15)
+      return "you need to be older than 15 to register";
     if (formData.aboutMe.length > 130)
       return "About Me must be under 130 characters.";
     if (!formData.gender) return "Please select a gender.";
@@ -122,7 +115,7 @@ export default function Signup() {
       });
       setAvatar(null);
       // window.location.reload()
-      // router.push("/");
+      router.push("/login");
     } catch (err) {
       setError("Failed to register. Please try again.");
     } finally {
