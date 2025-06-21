@@ -24,7 +24,6 @@ export default function Post_Groups({ post, id }) {
 
   const fileInputRef = useRef(null);
   const handleSubmit = async (e) => {
-    console.log(image);
 
     e.preventDefault();
 
@@ -45,7 +44,6 @@ export default function Post_Groups({ post, id }) {
     if (image) {
       formData.append("avatar", image);
     }
-    console.log([...formData.entries()]); // pour voir ce qu'il contient
 
 
     if (fileInputRef.current) {
@@ -62,7 +60,6 @@ export default function Post_Groups({ post, id }) {
       if (response.ok) {
 
 
-        console.log("Post created successfully");
         setText("");
         setTitle("")
         setImage(null);
@@ -70,17 +67,11 @@ export default function Post_Groups({ post, id }) {
         handlingdata()
       }
     } catch (err) {
-      alert("Failed to create post", err.message);;
+      alert("Failed to create post", err.message);
     }
   };
 
 
-  const handleImageChange = (e) => {
-    const file = e.target.files?.[0];
-    if (file && file.type.startsWith("image/")) {
-      setImage(file);
-    }
-  };
   function handlingdata() {
     GetData().then((data) => {
       setPosts(data);
@@ -220,7 +211,7 @@ export default function Post_Groups({ post, id }) {
             onChange={(e) => setImage(e.target.files[0])}
             ref={fileInputRef}
           />
-          <button type="submit" className={style.button} >Publier</button>
+          <button type="submit" className={style.button} >Submit</button>
         </form>
 
       </Modal>
