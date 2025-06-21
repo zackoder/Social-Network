@@ -193,6 +193,9 @@ func InsertGroupe(title, description string, creator_id int) (int, error) {
 func InsserMemmberInGroupe(Groupe_id, User_id int, role string) error {
 	Quirie := "INSERT INTO group_members (group_id,user_id,role) VALUES (?,?,?)"
 	_, err := Db.Exec(Quirie, Groupe_id, User_id, role)
+	if err != nil {
+		
+	}
 	return err
 }
 

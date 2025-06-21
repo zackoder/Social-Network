@@ -16,7 +16,7 @@ VALUES (
         '27',
         'male',
         'amir.hassan@example.com',
-        'uploads/amir.png',
+        '/defaultIMG/defaulte.jpg',
         'hashed_pw6',
         'Nature and hiking enthusiast.'
     ),
@@ -27,7 +27,7 @@ VALUES (
         '25',
         'female',
         'nadia.salim@example.com',
-        '',
+        '/defaultIMG/defaulte.jpg',
         'hashed_pw7',
         'Painter, dreamer, wanderer.'
     ),
@@ -38,7 +38,7 @@ VALUES (
         '32',
         'male',
         'james.doe@example.com',
-        '',
+        '/defaultIMG/defaulte.jpg',
         'hashed_pw8',
         'Just a guy learning Go.'
     ),
@@ -49,7 +49,7 @@ VALUES (
         '21',
         'female',
         'layla@example.com',
-        'uploads/layla.png',
+        '/defaultIMG/defaulte.jpg',
         'hashed_pw9',
         'Coffee + coding = happiness.'
     ),
@@ -60,7 +60,7 @@ VALUES (
         '29',
         'male',
         'leo.chan@example.com',
-        '',
+        '/defaultIMG/defaulte.jpg',
         'hashed_pw10',
         'Big fan of Go and open source.'
     ),
@@ -71,7 +71,7 @@ VALUES (
         '26',
         'female',
         'maya.zane@example.com',
-        'uploads/maya.png',
+        '/defaultIMG/defaulte.jpg',
         'hashed_pw11',
         'Introvert with loud ideas.'
     ),
@@ -82,7 +82,7 @@ VALUES (
         '34',
         'male',
         'ali.karim@example.com',
-        '',
+        '/defaultIMG/defaulte.jpg',
         'hashed_pw12',
         'Tech tinkerer and blog writer.'
     ),
@@ -93,7 +93,7 @@ VALUES (
         '30',
         'female',
         'yas.bell@example.com',
-        'uploads/yas.png',
+        '/defaultIMG/defaulte.jpg',
         'hashed_pw13',
         'Meow means hello in cat.'
     ),
@@ -104,7 +104,7 @@ VALUES (
         '23',
         'male',
         'samir.t@example.com',
-        '',
+        '/defaultIMG/defaulte.jpg',
         'hashed_pw14',
         'Privacy is freedom.'
     ),
@@ -115,7 +115,7 @@ VALUES (
         '28',
         'female',
         'hana.elmi@example.com',
-        'uploads/hana.png',
+        '/defaultIMG/defaulte.jpg',
         'hashed_pw15',
         'Sunshine and poetry.'
     );

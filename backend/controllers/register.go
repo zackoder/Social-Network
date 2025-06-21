@@ -50,6 +50,11 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	if regesterreq.NickName == "" {
 		regesterreq.NickName = nil
 	}
+	if regesterreq.Age < 15 {
+		utils.WriteJSON(w, map[string]string{"error": "you need to be older than 15 to register"}, http.StatusBadRequest)
+		return
+		// you need to be older than 15 to register
+	}
 
 	if utils.ValidatNames(regesterreq.FirstName, regesterreq.LastName, regesterreq.NickName) && utils.ValidEmail(regesterreq.Email) && regesterreq.Password == regesterreq.ConfermPassword {
 		hashedPss := utils.Hashpass(regesterreq.Password)
