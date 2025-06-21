@@ -16,16 +16,16 @@ export function displayChatbox() {
       // formSubmit?.classList.add("hide");
 
       // After animation ends, hide the element
-      button.addEventListener(
-        "click",
-        () => {
-          if (container?.classList.contains("hide")) {
-            container.style.display = "none";
-            // formSubmit.style.display = "none";
-          }
-        },
-        { once: true }
-      );
+      // button.addEventListener(
+      //   "click",
+      //   () => {
+      //     if (container?.classList.contains("hide")) {
+      //       container.style.display = "none";
+      //       // formSubmit.style.display = "none";
+      //     }
+      //   },
+
+      // );
     } else {
       container.classList.remove("hide");
       container.classList.add("showw");
@@ -145,7 +145,7 @@ export default function GroupChat({ groupData }) {
                             alt="Image"
                             width={250} // Set appropriate dimensions
                             height={250}
-                            // className={styles.imageGroupChat}
+                          // className={styles.imageGroupChat}
                           />
                         ) : (
                           ""
