@@ -28,7 +28,7 @@ export default function ChatBox({ contact, onClickClose }) {
   const [userId, setUserId] = useState(null);
   const token = getCookie("token");
   const [error, seterror] = useState("")
-  let offsetval = 0
+
   useEffect(() => {
     const fetchUserId = async () => {
       const response = await fetch(`${host}/userData`, {
@@ -75,11 +75,11 @@ export default function ChatBox({ contact, onClickClose }) {
     return () => socket.removeEventListener("message", handleMessage);
   }, [contact.id, userId]);
 
-  const loadingRef = useRef(false);
+  // const loadingRef = useRef(false);
   const offsetRef = useRef(0);
   const fetchMessages = async (offsetValue = 0) => {
-    if (loadingRef.current) return;
-    loadingRef.current = true;
+    // if (loadingRef.current) return;
+    // loadingRef.current = true;
 
     const container = scrollContainerRef.current;
     const previousScrollHeight = container?.scrollHeight || 0;
@@ -103,10 +103,7 @@ export default function ChatBox({ contact, onClickClose }) {
         setMessages((prev) => [...data.reverse(), ...prev]);
         // setOffset(offsetValue + limit);
         offsetRef.current = offsetValue + limit;
-        console.log("offset value change", offset);
-        console.log("value offsetValue + limit ", offsetValue + limit);
-
-
+        
         setTimeout(() => {
           const newScrollHeight = container?.scrollHeight || 0;
           if (container) {
@@ -117,7 +114,7 @@ export default function ChatBox({ contact, onClickClose }) {
     } catch (err) {
       console.log("Error fetching messages", err);
     } finally {
-      loadingRef.current = false;
+      // loadingRef.current = false;
     }
   };
 
@@ -129,8 +126,8 @@ export default function ChatBox({ contact, onClickClose }) {
   }, [contact.id]);
 
   const handleScroll = (e) => {
-    if (e.target.scrollTop === 0 && !loadingRef.current) {
-      console.log("Fetching with offset:", offsetRef.current);
+    if (e.target.scrollTop === 0 ) { //&& !loadingRef.current
+      // console.log("Fetching with offset:", offsetRef.current);
       fetchMessages(offsetRef.current);
     }
   };
