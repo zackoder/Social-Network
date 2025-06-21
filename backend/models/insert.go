@@ -9,16 +9,17 @@ import (
 	"social-network/utils"
 )
 
-//	func InsertUser(user utils.User) (int, error ){
-//		insertuserquery := "INSERT INTO users (first_name, last_name, nickname, email, age, gender, password, avatar, AboutMe)  VALUES(?,?,?,?,?,?,?,?,?)"
-//		 result,err := Db.Exec(insertuserquery, user.FirstName, user.LastName, user.Nickname, user.Email, user.Age, user.Gender, user.Password, user.Avatar, user.AboutMe);
-//		 if err != nil{
-//			 fmt.Println(err)
-//			 return 0, err
-//			}
-//			user.ID,_ = result.LastInsertId()
-//		return  int(user.ID),nil
-//	}
+func InsertUser(user utils.Regester) (int, error) {
+	insertuserquery := "INSERT INTO users (first_name, last_name, nickname, email, age, gender, password, avatar, AboutMe)  VALUES(?,?,?,?,?,?,?,?,?)"
+	result, err := Db.Exec(insertuserquery, user.FirstName, user.LastName, user.NickName, user.Email, user.Age, user.Gender, user.Password, user.Avatar, user.About_Me)
+	if err != nil {
+		fmt.Println(err)
+		return 0, err
+	}
+	lestid, _ := result.LastInsertId()
+	return int(lestid), nil
+}
+
 func RegisterUser(user *utils.User) error {
 	insertuserquery := "INSERT INTO users (first_name, last_name, nickname, email, age, gender, password, avatar, AboutMe)  VALUES(?,?,?,?,?,?,?,?,?)"
 	result, err := Db.Exec(insertuserquery, user.FirstName, user.LastName, user.Nickname, user.Email, user.Age, user.Gender, user.Password, user.Avatar, user.AboutMe)
@@ -300,4 +301,3 @@ func InsertReaction(reaction *utils.Reaction) (int, error) {
 	}
 	return int(lastId), nil
 }
-

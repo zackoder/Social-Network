@@ -1171,7 +1171,7 @@ func CanUserAccessPost(userId int, postId int) (bool, error) {
 
 	default:
 		// Unknown privacy setting, default to no access
-		return false, nil
+		return true, nil
 	}
 }
 

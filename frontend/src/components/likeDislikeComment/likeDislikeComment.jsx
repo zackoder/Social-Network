@@ -43,7 +43,7 @@ export default function LikeDislikeComment({ postId }) {
       }
 
       const data = await res.json();
-        
+
       if (!data || data.length === 0) {
         setHasMore(false);
         return;
@@ -84,7 +84,7 @@ export default function LikeDislikeComment({ postId }) {
       postId: postId,
     };
     formData.append("commentData", JSON.stringify(commentData));
-      // if ()
+    // if ()
     if (image) {
       formData.append("avatar", image);
     }
@@ -103,7 +103,7 @@ export default function LikeDislikeComment({ postId }) {
       if (comments.length === 0) {
         await fetchComments();
       } else {
-        setComments((prev) => [comment,...prev]);
+        setComments((prev) => [comment, ...prev]);
       }
       // setComments((prevComments) => [comment, ...prevComments]);
       setShowComments(true);
@@ -295,12 +295,14 @@ export default function LikeDislikeComment({ postId }) {
                     </span>
                   </div>
                   <div className="comment-content">
-                    <p>{c.content}</p> {c.imagePath && 
-                      <img src={`${host}${c.imagePath}`} 
-                    alt="image" /> 
-                  }
-
+                    <p>{c.content}</p>
+                    {c.imagePath && (
+                      <div className="image-container">
+                        <img src={`${host}${c.imagePath}`} alt="comment image" />
+                      </div>
+                    )}
                   </div>
+
                 </div>
               ))}
               {hasMore && (
