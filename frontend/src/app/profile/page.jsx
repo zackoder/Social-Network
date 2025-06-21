@@ -1,5 +1,5 @@
 "use client";
- 
+
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import ButtonFollow from "@/elements/buttonFollow/buttonFollow";
@@ -60,17 +60,19 @@ export default function ProfilePage() {
         // throw new Error("Failed to fetch posts");
       }
       const data = await response.json();
-      if (data !== null && data.message === "this profile is private") {
+      if (data === null || data.message === "this profile is private") {
         setPosts([]);
         return;
-      }  
-      console.log('befoore entring the condition' ,hasMore);
-      if (posts.length <= offset &&data === null ) {
-        console.log('im here in the condition',hasMore);
-        setHasMore(false); // No more posts available
-        return;
       }
-      setPosts((prev) => [...prev, ...data]);
+      console.log('befoore entring the condition', hasMore);
+      if (posts.length <= offset && data === null) {
+        console.log('im here in the condition', hasMore);
+        setHasMore(false); // No more posts available
+        return [];
+      }
+      if (posts && data.length > 0) {
+        setPosts((prev) => [...prev, ...data]);
+      }
       setOffset((prev) => prev + LIMIT);
     } catch (err) {
       console.error("Fetch error:", err);
@@ -125,7 +127,7 @@ export default function ProfilePage() {
         const followingData = await following.json();
         setFollowing(Array.isArray(followingData) ? followingData : []);
       }
-    
+
       // console.log("followers.ok", following);
     } catch (error) {
       // console.error("Error in profile data fetch:", error);
@@ -133,9 +135,9 @@ export default function ProfilePage() {
     } finally {
       setIsLoading(false);
     }
- 
+
   };
-  
+
 
   const handlePrivacyToggle = async () => {
     try {
@@ -164,7 +166,7 @@ export default function ProfilePage() {
     setShowModal(true);
   };
 
-  
+
   const showFollowing = () => {
     setModalContent({
       title: "Following",
@@ -172,15 +174,15 @@ export default function ProfilePage() {
     });
     setShowModal(true);
   };
-  
+
   if (isLoading) {
     return <div className={styles.container}>Loading...</div>;
   }
-  
+
   if (!profile) {
     return <div className={styles.container}>Profile not found</div>;
   }
-  
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -190,8 +192,8 @@ export default function ProfilePage() {
               className={styles.image}
               src={`http://${profile.avatar}`}
               alt={`${profile.firstName} ${profile.lastName}`}
-              // fill={true}
-              />
+            // fill={true}
+            />
           </div>
           <div className={styles.name}>
             <h3>
@@ -239,17 +241,15 @@ export default function ProfilePage() {
 
       <div className={styles.tabs}>
         <div
-          className={`${styles.tab} ${
-            activeTab === "posts" ? styles.active : ""
-          }`}
+          className={`${styles.tab} ${activeTab === "posts" ? styles.active : ""
+            }`}
           onClick={() => setActiveTab("posts")}
         >
           Posts
         </div>
         <div
-          className={`${styles.tab} ${
-            activeTab === "about" ? styles.active : ""
-          }`}
+          className={`${styles.tab} ${activeTab === "about" ? styles.active : ""
+            }`}
           onClick={() => setActiveTab("about")}
         >
           About
@@ -261,8 +261,8 @@ export default function ProfilePage() {
         {activeTab === "posts" &&
           (posts && posts.length > 0 ? (
             <>
-                <Post posts={posts} />
-              {hasMore ?(
+              <Post posts={posts} />
+              {hasMore ? (
                 <button onClick={debouncedFetchPosts} disabled={loading}>
                   {loading ? "Loading..." : "Load More"}
                 </button>
@@ -341,7 +341,7 @@ export default function ProfilePage() {
                 {modalContent.data.map((user) => (
                   <li key={user.id} className={styles.userItem}>
                     <img
-                      className={styles.userAvatar}                      
+                      className={styles.userAvatar}
                       src={`${host}${user.avatar}`}
                       alt={`${user.firstName} ${user.lastName}`}
                       width={40}

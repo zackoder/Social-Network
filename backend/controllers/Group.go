@@ -389,7 +389,7 @@ func GetPostsGroupe(w http.ResponseWriter, r *http.Request, userId int) {
 	}
 	Posts, err := models.GetPostsFromDatabase(Groupe_id.Groupe_id)
 	fmt.Println(err)
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		utils.WriteJSON(w, map[string]string{"error": "Internal Server Error."}, http.StatusInternalServerError)
 		return
 	}

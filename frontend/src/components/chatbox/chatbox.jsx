@@ -27,6 +27,7 @@ export default function ChatBox({ contact, onClickClose }) {
   const limit = 20;
   const [userId, setUserId] = useState(null);
   const token = getCookie("token");
+  const [error, seterror] = useState("")
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -58,6 +59,9 @@ export default function ChatBox({ contact, onClickClose }) {
           (data.sender_id === userId && data.receiver_id === contact.id)
         ) {
           setMessages((prev) => [...prev, data]);
+        }
+        if (data.error) {
+          seterror(data.error)
         }
       } catch (err) {
         console.log("Failed to parse message:", event.data);
@@ -238,6 +242,7 @@ export default function ChatBox({ contact, onClickClose }) {
       </div>
 
       <div className={styles.readmessages} ref={scrollContainerRef}>
+
         {messages.map((msg, index) => (
           <div
             key={index}
@@ -288,6 +293,9 @@ export default function ChatBox({ contact, onClickClose }) {
             )}
           </div>
         ))}
+        {error &&
+          <p className={styles.msgerror} >{error}</p>
+        }
         <div ref={bottomRef} />
       </div>
 
@@ -338,7 +346,7 @@ export default function ChatBox({ contact, onClickClose }) {
           </div>
         </form>
       </div>
-    </div>
+    </div >
   );
 }
 

@@ -28,7 +28,6 @@ func NotiResp(w http.ResponseWriter, r *http.Request, userId int) {
 		return
 	}
 	resp := noti.Message
-	println("im the resp", noti.Message)
 	models.SelectOneNoti(&noti)
 	if resp == "rejected" || resp == "accepted" {
 		if resp == "rejected" {
@@ -52,6 +51,8 @@ func NotiResp(w http.ResponseWriter, r *http.Request, userId int) {
 					log.Println("inserting member error", err)
 					return
 				}
+			} else {
+				Manager.StoreGroups([]int{noti.Actor_id}, noti.Target_id)
 			}
 		} else if noti.Message == "follow request" {
 			err := models.InsertFollow(noti.Actor_id, strconv.Itoa(noti.Target_id))
@@ -68,6 +69,8 @@ func NotiResp(w http.ResponseWriter, r *http.Request, userId int) {
 					log.Println("inserting member error", err)
 					return
 				}
+			} else {
+				Manager.StoreGroups([]int{noti.Actor_id}, noti.Sender_id)
 			}
 		}
 		models.DeleteNoti(noti.Id)

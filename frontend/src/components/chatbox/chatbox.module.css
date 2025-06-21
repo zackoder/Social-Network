@@ -32,7 +32,8 @@
     border-radius: 50%;
     position: relative;
 }
-.close{
+
+.close {
     position: absolute;
     top: 10px;
     right: 20px;
@@ -40,7 +41,8 @@
     cursor: pointer;
     transition: color .2s ease-in-out;
 }
-.close:hover{
+
+.close:hover {
     color: #f00;
 }
 
@@ -56,44 +58,52 @@
     overflow: scroll;
     overflow-x: hidden;
 }
+
 .readmessages .me,
-.readmessages .sender{
+.readmessages .sender {
     display: flex;
     align-items: start;
     gap: 10px;
     margin-bottom: 15px;
 }
-.readmessages .me{
+
+.readmessages .me {
     justify-content: end;
 }
-.readmessages .sender{
+
+.readmessages .sender {
     justify-content: start;
 }
-.profileImage{
+
+.profileImage {
     width: 40px;
     aspect-ratio: 1/1;
     border-radius: 50%;
     position: relative;
 }
+
 .readmessages .sender .message {
     margin-left: 10px;
 }
-.readmessages .message p{
+
+.readmessages .message p {
     width: 100%;
     padding: 10px;
     border-radius: 25px;
     color: #111;
     font-size: 14px;
 }
-.readmessages .message span{
+
+.readmessages .message span {
     font-size: 12px;
     color: #111;
 }
-.readmessages .me .message p{
+
+.readmessages .me .message p {
     background-color: #78e08f;
 }
 
-.readmessages .sender .message p{
+.readmessages .sender .message p {
     background-color: #82ccdd;
 }
 
@@ -124,14 +134,16 @@
     border: none;
     cursor: pointer;
 }
-.emojiButton{
+
+.emojiButton {
     background-color: transparent;
     border: none;
     font-size: 25px;
     margin-right: 5px;
     cursor: pointer;
 }
-.elementsSend{
+
+.elementsSend {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -142,10 +154,11 @@
     border-bottom-left-radius: 8px;
 }
 
-.hiddenInput{
+.hiddenInput {
     display: none;
 }
-.elementsSend input[type="text"]{
+
+.elementsSend input[type="text"] {
     width: 80%;
     outline: none;
     border: none;
@@ -157,14 +170,17 @@
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
 }
-.elementsSend input[type="file"]{
-    width: 10%;
-}
-.elementsSend input[type="submit"]{
+
+.elementsSend input[type="file"] {
     width: 10%;
 }
 
-.uploadLabel, .labelSend{
+.elementsSend input[type="submit"] {
+    width: 10%;
+}
+
+.uploadLabel,
+.labelSend {
     width: 10%;
     cursor: pointer;
     display: flex;
@@ -178,32 +194,37 @@
     border: none;
 }
 
-.labelSend{
+.labelSend {
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
 }
 
 
-.iconUpload{
+.iconUpload {
     font-size: 25px;
     transition: color .2s ease-in-out;
 }
-.iconUpload:hover{
+
+.iconUpload:hover {
     color: #01694ec9;
 }
 
-.iconSend{
+.iconSend {
     font-size: 100px;
     width: 2em;
     color: #01694e;
     transition: color .2s ease-in-out;
 }
 
-.iconSend:hover{
+.iconSend:hover {
     color: #01694ec9;
 }
 
-.imageMessage{
+.imageMessage {
     border-radius: 4px;
     display: block;
+}
+
+.msgerror {
+    color: black;
 }

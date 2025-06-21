@@ -100,8 +100,7 @@ export default function Post_Groups({ post, id }) {
       });
 
       if (!response.ok) {
-        console.error("faild to fetch");
-        return [];
+        return []
       }
 
       const data = await response.json();

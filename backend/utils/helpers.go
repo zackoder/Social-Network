@@ -103,6 +103,7 @@ func CheckName(name string) bool {
 // 	return true
 // }
 
+
 func CheckGender(gender string) bool {
 	gender = strings.ToLower(gender)
 	genders := []string{"male", "female"}
@@ -116,4 +117,3 @@ func CheckNickName(nickname string) bool {
 	}
 	return re.MatchString(nickname)
 }
-
