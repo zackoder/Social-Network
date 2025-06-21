@@ -8,5 +8,6 @@ CREATE TABLE
         imagePath TEXT,
         group_id INTEGER,
         createdAt INTEGER,
+        groupe_id INTEGER, 
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE CASCADE
     );

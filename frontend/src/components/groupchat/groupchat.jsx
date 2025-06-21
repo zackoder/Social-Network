@@ -5,34 +5,35 @@ import { useEffect, useState } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
 
 export function displayChatbox() {
-  const button = document.querySelector(".soutitre");
+  // const button = document.querySelector(".soutitre");
   const container = document.querySelector(".chatcontainer");
   // const formSubmit = document.querySelector(".submitForm");
 
-  button?.addEventListener("click", () => {
-    if (container?.classList.contains("showw")) {
-      container.classList.remove("showw");
-      container.classList.add("hide");
-      // formSubmit?.classList.add("hide");
+  // button?.addEventListener("click", () => {
+  if (container?.classList.contains("showw")) {
+    container.classList.remove("showw");
+    container.classList.add("hide");
+    // formSubmit?.classList.add("hide");
 
-      // After animation ends, hide the element
-      // button.addEventListener(
-      //   "click",
-      //   () => {
-      //     if (container?.classList.contains("hide")) {
-      //       container.style.display = "none";
-      //       // formSubmit.style.display = "none";
-      //     }
-      //   },
+    // After animation ends, hide the element
+    // button.addEventListener(
+    //   "click",
+    //   () => {
+    //     if (container?.classList.contains("hide")) {
+    //       // formSubmit.style.display = "none";
+    //     }
+    //   },
 
-      // );
-    } else {
-      container.classList.remove("hide");
-      container.classList.add("showw");
-      // formSubmit?.classList.add("showw");
-      container.style.display = "block";
-    }
-  });
+    // );
+    // container.classList.add("showw");
+    // container.style.display = "none";
+  } else {
+    container.classList.remove("hide");
+    container.classList.add("showw");
+    // formSubmit?.classList.add("showw");
+    container.style.display = "block";
+  }
+  // });
 }
 
 export default function GroupChat({ groupData }) {
@@ -41,6 +42,7 @@ export default function GroupChat({ groupData }) {
   const [messages, setmessages] = useState([]);
   const [newmessage, setmessage] = useState("");
   const [image, setImage] = useState(null);
+  const [IsOpen, setIsOpen] = useState(true)
   // const user_id = parseInt(localStorage.getItem("user-id"));
 
   const handleImageChange = (e) => {
@@ -48,6 +50,24 @@ export default function GroupChat({ groupData }) {
     if (file) setImage(file);
     e.target.value = "";
   };
+
+  function displayChatbox() {
+    const container = document.querySelector(".chatcontainer");
+
+    if (IsOpen) {
+      container.style.display = "block";
+      container.classList.remove("hide");
+      container.classList.add("showw");
+    } else {
+      container.classList.remove("showw");
+      container.classList.add("hide");
+
+      container.addEventListener("animationend", function handler() {
+        container.style.display = "none";
+        container.removeEventListener("animationend", handler);
+      });
+    }
+  }
 
   useEffect(() => {
     async function fetchdata() {
@@ -116,7 +136,10 @@ export default function GroupChat({ groupData }) {
 
   return (
     <>
-      <button className="soutitre" onClick={displayChatbox}>
+      <button className="soutitre" onClick={() => {
+        setIsOpen(!IsOpen)
+        displayChatbox()
+      }}>
         <p className="titleGroup">Group chat</p>
       </button>
       <div className="chatcontainer">
@@ -177,10 +200,10 @@ export default function GroupChat({ groupData }) {
               onChange={handleImageChange}
               className="hiddenInput"
             />
-            <label htmlFor="uploadGroupImage" className="uploadLabel">
-              <FaCloudUploadAlt className="iconUpload" />
+            <label htmlFor="uploadGroupImage" className="uploadLabelGrp">
+              <FaCloudUploadAlt className="iconUploadGrp" />
             </label>
-            <button type="submit" className="submit">
+            <button type="submit" className="submitGroupChat">
               submit
             </button>
           </div>

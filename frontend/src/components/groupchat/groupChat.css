@@ -62,7 +62,7 @@
 
 .hide {
   animation: slideOut 1s forwards;
-  display: none;
+  /* display: none; */
 }
 
 @keyframes display {
@@ -168,7 +168,7 @@
   gap: 5px;
 }
 
-.buttons .submit {
+.buttons .submitGroupChat {
   padding: 5px;
   background-color: var(--color-primary);
   color: #fff;
@@ -182,7 +182,7 @@
   cursor: pointer;
   transition: all 0.5s ease-in-out;
 }
-.buttons .submit:hover {
+.buttons .submitGroupChat:hover {
   /* background-color: #01694ec9; */
   background-color: var(--color-primary-hover);
 }
@@ -191,17 +191,17 @@
   display: none;
 }
 
-.buttons .uploadLabel {
+.buttons .uploadLabelGrp {
   width: 10%;
   cursor: pointer;
   color: var(--color-primary);
   border: none;
 }
 
-.buttons .iconUpload {
+.buttons .iconUploadGrp {
   font-size: 30px;
   transition: color 0.2s ease-in-out;
 }
-.buttons .iconUpload:hover {
+.buttons .iconUploadGrp:hover {
   color: var(--color-primary-hover);
 }

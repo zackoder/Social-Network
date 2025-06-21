@@ -24,11 +24,11 @@ export default function ChatBox({ contact, onClickClose }) {
   const bottomRef = useRef(null);
   const scrollContainerRef = useRef(null);
   const [offset, setOffset] = useState(0);
-  const limit = 20;
+  const limit = 10;
   const [userId, setUserId] = useState(null);
   const token = getCookie("token");
   const [error, seterror] = useState("")
-
+  let offsetval = 0
   useEffect(() => {
     const fetchUserId = async () => {
       const response = await fetch(`${host}/userData`, {
@@ -59,6 +59,9 @@ export default function ChatBox({ contact, onClickClose }) {
           (data.sender_id === userId && data.receiver_id === contact.id)
         ) {
           setMessages((prev) => [...prev, data]);
+          // offsetval++
+          // console.log(offsetval);
+          setOffset((prevOffset) => prevOffset + 1)
         }
         if (data.error) {
           seterror(data.error)
@@ -72,7 +75,12 @@ export default function ChatBox({ contact, onClickClose }) {
     return () => socket.removeEventListener("message", handleMessage);
   }, [contact.id, userId]);
 
+  const loadingRef = useRef(false);
+  const offsetRef = useRef(0);
   const fetchMessages = async (offsetValue = 0) => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
+
     const container = scrollContainerRef.current;
     const previousScrollHeight = container?.scrollHeight || 0;
 
@@ -93,7 +101,11 @@ export default function ChatBox({ contact, onClickClose }) {
 
       if (Array.isArray(data) && data.length > 0) {
         setMessages((prev) => [...data.reverse(), ...prev]);
-        setOffset(offsetValue + limit);
+        // setOffset(offsetValue + limit);
+        offsetRef.current = offsetValue + limit;
+        console.log("offset value change", offset);
+        console.log("value offsetValue + limit ", offsetValue + limit);
+
 
         setTimeout(() => {
           const newScrollHeight = container?.scrollHeight || 0;
@@ -104,20 +116,25 @@ export default function ChatBox({ contact, onClickClose }) {
       }
     } catch (err) {
       console.log("Error fetching messages", err);
+    } finally {
+      loadingRef.current = false;
     }
   };
 
   useEffect(() => {
     setMessages([]);
-    setOffset(0);
+    // setOffset(0);
     fetchMessages(0);
+    offsetRef.current = 0;
   }, [contact.id]);
 
   const handleScroll = (e) => {
-    if (e.target.scrollTop === 0) {
-      fetchMessages(offset);
+    if (e.target.scrollTop === 0 && !loadingRef.current) {
+      console.log("Fetching with offset:", offsetRef.current);
+      fetchMessages(offsetRef.current);
     }
   };
+
 
   useEffect(() => {
     const container = scrollContainerRef.current;
