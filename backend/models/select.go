@@ -356,7 +356,7 @@ func GetPuclicPosts(userID, limit, offset int) ([]utils.Post, error) {
 
 func GetAllowedPosts(profileOwnerID, viewerID, limit, offset int) ([]utils.Post, error) {
 	query := `
-	SELECT DISTINCT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt
+	SELECT DISTINCT p.id, p.post_privacy, p.title, p.content, p.user_id, u.first_name, p.imagePath, p.createdAt  , u.avatar
 	FROM posts p
 	JOIN users u ON p.user_id = u.id
 	LEFT JOIN friends ppv ON p.id = ppv.post_id
@@ -378,7 +378,7 @@ func GetAllowedPosts(profileOwnerID, viewerID, limit, offset int) ([]utils.Post,
 	var posts []utils.Post
 	for rows.Next() {
 		var post utils.Post
-		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt)
+		err := rows.Scan(&post.Id, &post.Privacy, &post.Title, &post.Content, &post.Poster_id, &post.Poster_name, &post.Image, &post.CreatedAt, &post.Avatar)
 		if err != nil {
 			fmt.Println("here im ", err)
 			return nil, err
