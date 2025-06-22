@@ -1,23 +1,21 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useState, useCallback, use } from "react";
 import ButtonFollow from "@/elements/buttonFollow/buttonFollow";
 import styles from "./profile.module.css";
-import Image from "next/image";
 import Post from "@/components/post/post";
 import { FaLock, FaLockOpen } from "react-icons/fa";
 import { isAuthenticated } from "../page";
 import { debounce } from "@/utils/debounce";
 
-export default function ProfilePage() {
+export default function ProfilePage({ searchParams }) {
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const LIMIT = 10;
 
-  const searchParams = useSearchParams();
-  const profileId = searchParams.get("id");
+  const { id } = use(searchParams)
+  const profileId = id
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
   const [followers, setFollowers] = useState([]);

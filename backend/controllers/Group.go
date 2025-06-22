@@ -54,7 +54,7 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request, user_id int) {
 		return
 	}
 	// models.InsserMemmberInGroupe(groupe_id, Groupe.CreatorId, "creator")
-
+	Manager.StoreGroups([]int{Groupe.Id}, user_id)
 	utils.WriteJSON(w, Groupe, http.StatusOK)
 	return
 }
