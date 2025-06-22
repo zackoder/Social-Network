@@ -6,8 +6,7 @@ CREATE TABLE
         content TEXT NOT NULL,
         user_id INTEGER NOT NULL,
         imagePath TEXT,
-        group_id INTEGER,
         createdAt INTEGER,
-        groupe_id INTEGER, 
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE CASCADE
+        groupe_id INTEGER,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE FOREIGN KEY (groupe_id) REFERENCES groups (id) ON DELETE CASCADE
     );
