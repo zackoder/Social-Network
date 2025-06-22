@@ -15,48 +15,50 @@ func QueryPosts(limit, offset, user_id int) []utils.Post {
 	// host := r.Host
 	var posts []utils.Post
 	queryPosts := `
-		SELECT
-    p.id,
-    p.post_privacy,
-    p.title,
-    p.content,
-    p.user_id,
-    u.first_name,
-    p.imagePath,
-    p.createdAt,
-    u.avatar
-FROM
-    posts p
-    JOIN users u ON p.user_id = u.id
-    LEFT JOIN friends ppv ON p.id = ppv.post_id
-    LEFT JOIN followers f on f.follower_id = ?
-    AND f.followed_id = u.id
-WHERE
-    (
-        p.post_privacy = 'public'
-        AND u.privacy = 'private'
-        AND followed_id is not null
-    )
-    OR (
-        (
-            p.post_privacy = 'almostPrivate'
-            AND followed_id is not null
-        )
-    )
-    OR (
-        (
-            p.post_privacy = 'private'
-            AND ppv.friend_id = ?
+	SELECT
+    	p.id,
+    	p.post_privacy,
+    	p.title,
+    	p.content,
+    	p.user_id,
+    	u.first_name,
+    	p.imagePath,
+    	p.createdAt,
+    	u.avatar
+	FROM
+	    posts p
+	    JOIN users u ON p.user_id = u.id
+	    LEFT JOIN friends ppv ON p.id = ppv.post_id
+	    LEFT JOIN followers f on f.follower_id = ?
+	    AND f.followed_id = u.id
+	WHERE
+		(
+			p.post_privacy = 'public'
+			AND u.privacy = 'private'
+			AND followed_id is not null
+		)
+		OR (
+			p.post_privacy = 'almostPrivate'
+			AND followed_id is not null
+		)
+		OR (
+			p.post_privacy = 'private'
+			AND ppv.friend_id = ?
 			AND f.followed_id IS NOT NULL
-        )
-    )
-    OR p.user_id = ?
-    AND p.post_privacy <> ''
-GROUP BY
-    p.id
-ORDER BY
-    p.id DESC
-			LIMIT ? OFFSET ?;
+		)
+		OR (
+			p.post_privacy = 'public'
+			AND u.privacy = 'public'
+		)
+		OR (
+			p.user_id = ?
+			AND p.post_privacy <> ''
+		)
+	GROUP BY
+	    p.id
+	ORDER BY
+	    p.id DESC
+	LIMIT ? OFFSET ?;
 	`
 
 	rows, err := Db.Query(queryPosts, user_id, user_id, user_id, limit, offset)

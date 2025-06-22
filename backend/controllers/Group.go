@@ -15,6 +15,7 @@ import (
 )
 
 func Creat_groupe(w http.ResponseWriter, r *http.Request, user_id int) {
+	log.Println("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
 	if r.Method != http.MethodPost {
 		utils.WriteJSON(w, map[string]string{"error": "Method Not Allowd"}, http.StatusMethodNotAllowed)
 		return
@@ -56,7 +57,6 @@ func Creat_groupe(w http.ResponseWriter, r *http.Request, user_id int) {
 	// models.InsserMemmberInGroupe(groupe_id, Groupe.CreatorId, "creator")
 	Manager.StoreGroups([]int{Groupe.Id}, user_id)
 	utils.WriteJSON(w, Groupe, http.StatusOK)
-	return
 }
 
 func Join_Group(w http.ResponseWriter, r *http.Request, user_id int) {
@@ -437,6 +437,7 @@ func GetUserIdByCookie(r *http.Request) (int, error) {
 }
 
 func GetGroup(w http.ResponseWriter, r *http.Request, user_id int) {
+	log.Println("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
 	group_id, err := strconv.Atoi(r.URL.Query().Get("groupId"))
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "invalid data"}, http.StatusNotFound)
@@ -447,7 +448,7 @@ func GetGroup(w http.ResponseWriter, r *http.Request, user_id int) {
 		return
 	}
 	group, err := models.GetOneGroup(group_id)
-
+	log.Println("afin almlawi")
 	group.Id = group_id
 	if err != nil {
 		if err == sql.ErrNoRows {

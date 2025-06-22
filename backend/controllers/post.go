@@ -49,7 +49,7 @@ func AddPost(w http.ResponseWriter, r *http.Request, userId int) {
 
 	post.Image = filepath
 
-	fmt.Println(post.Poster_id)
+	fmt.Println("hello there ", post)
 	post.Id, err = models.InsertPost(post)
 	if err != nil {
 		utils.RemoveIMG(filepath)
