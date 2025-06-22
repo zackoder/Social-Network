@@ -4,37 +4,37 @@ import "./groupChat.css";
 import { useEffect, useState } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
 
-export function displayChatbox() {
-  // const button = document.querySelector(".soutitre");
-  const container = document.querySelector(".chatcontainer");
-  // const formSubmit = document.querySelector(".submitForm");
+// export function displayChatbox() {
+//   // const button = document.querySelector(".soutitre");
+//   const container = document.querySelector(".chatcontainer");
+//   // const formSubmit = document.querySelector(".submitForm");
 
-  // button?.addEventListener("click", () => {
-  if (container?.classList.contains("showw")) {
-    container.classList.remove("showw");
-    container.classList.add("hide");
-    // formSubmit?.classList.add("hide");
+//   // button?.addEventListener("click", () => {
+//   if (container?.classList.contains("showw")) {
+//     container.classList.remove("showw");
+//     container.classList.add("hide");
+//     // formSubmit?.classList.add("hide");
 
-    // After animation ends, hide the element
-    // button.addEventListener(
-    //   "click",
-    //   () => {
-    //     if (container?.classList.contains("hide")) {
-    //       // formSubmit.style.display = "none";
-    //     }
-    //   },
+//     // After animation ends, hide the element
+//     // button.addEventListener(
+//     //   "click",
+//     //   () => {
+//     //     if (container?.classList.contains("hide")) {
+//     //       // formSubmit.style.display = "none";
+//     //     }
+//     //   },
 
-    // );
-    // container.classList.add("showw");
-    // container.style.display = "none";
-  } else {
-    container.classList.remove("hide");
-    container.classList.add("showw");
-    // formSubmit?.classList.add("showw");
-    container.style.display = "block";
-  }
-  // });
-}
+//     // );
+//     // container.classList.add("showw");
+//     // container.style.display = "none";
+//   } else {
+//     container.classList.remove("hide");
+//     container.classList.add("showw");
+//     // formSubmit?.classList.add("showw");
+//     container.style.display = "block";
+//   }
+//   // });
+// }
 
 export default function GroupChat({ groupData }) {
   const host = process.env.NEXT_PUBLIC_HOST;
@@ -60,7 +60,7 @@ export default function GroupChat({ groupData }) {
       container.classList.add("showw");
     } else {
       container.classList.remove("showw");
-      // container.classList.add("hide");
+      container.classList.add("hide");
 
       container.addEventListener("animationend", function handler() {
         container.style.display = "none";
