@@ -60,7 +60,7 @@ export default function GroupChat({ groupData }) {
       container.classList.add("showw");
     } else {
       container.classList.remove("showw");
-      container.classList.add("hide");
+      // container.classList.add("hide");
 
       container.addEventListener("animationend", function handler() {
         container.style.display = "none";
