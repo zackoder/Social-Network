@@ -1,0 +1,16 @@
+<<<<<<< HEAD
+frontend/node_modules
+frontend/.next
+*.env
+ 
+frontend/.fresh.yaml
+backend/.fresh.yaml
+backend/tmp/runner-build
+=======
+ 
+frontend/node_modules
+frontend/.next
+backend/tmp/runner-build    
+*.env
+.fresh.yaml
+>>>>>>> origin/waliddev1

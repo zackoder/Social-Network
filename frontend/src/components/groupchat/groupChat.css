@@ -1,0 +1,207 @@
+.soutitre {
+  position: relative;
+  top: 1%;
+  left: 15%;
+  width: 80%;
+  text-align: center;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  padding: 10px;
+  border-radius: 4px;
+  transition: all 0.5s ease-in-out;
+  cursor: pointer;
+  font-size: 22px;
+  font-weight: 800;
+  text-transform: capitalize;
+  border: none;
+}
+@media(max-width: 605px){
+  .titleGroup {
+    font-size: 15px;
+    left: 8%;
+  }
+ 
+
+}
+@media(max-width: 443px){
+  .titleGroup {
+    position: relative;
+    font-size: 10px;
+    left: 8%;
+  }
+  .soutitre { 
+    left:8%;
+    
+  }
+
+}
+.soutitre:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.chatcontainer {
+  position: relative;
+  /* left: 15%; */
+  right: 105%;
+  /* width: 200%;
+  max-width: 800px;
+  height: 80vh; */
+  margin-top: 20px;
+  background-color: #222;
+  padding: 20px 0;
+  border-radius: 8px;
+  display: none;
+  z-index: 999;
+  /* animation: invisibility 1s forwards; */
+}
+
+.showw {
+  display: block;
+  animation: display 1s forwards;
+}
+
+.hide {
+  animation: slideOut 1s forwards;
+  /* display: none; */
+}
+
+@keyframes display {
+  from {
+    right: -55%;
+    width: 150%;
+    max-width: 0;
+    height: 80vh;
+  }
+  to {
+    right: 55%;
+    width: 150%;
+    max-width: 800px;
+    height: 80vh;
+  }
+}
+@keyframes slideOut {
+  from {
+    right: 55%;
+    width: 150%;
+    max-width: 800px;
+    height: 80vh;
+  }
+  to {
+    right: -55%;
+    width: 150%;
+    max-width: 0;
+    height: 80vh;
+    display: none;
+  }
+}
+
+.msgsContainer {
+  height: 85%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.msgsContainer .message {
+  padding: 10px;
+  margin-bottom: 5px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #777;
+  border-radius: 4px;
+  margin: 10px 20px;
+}
+.msgsContainer .message .infoMsg {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.msgsContainer .message .infoMsg .avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 100%;
+}
+
+.msgsContainer .message .content {
+  font-size: 22px;
+  margin-left: 25px;
+  word-break: break-all;
+}
+
+.empty {
+  align-self: center;
+  color: gray;
+}
+
+.msgsContainer p {
+  padding: 8px;
+  border: 1px solid #222;
+  width: 80%;
+  word-break: break-all;
+  margin: 5px auto;
+  border-radius: 20px;
+}
+
+.submitForm {
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
+  margin: 20px auto;
+}
+.submitForm input[type="text"] {
+  padding: 8px;
+  background-color: #fff;
+  outline: none;
+  border: 1px solid #222;
+  color: #222;
+  border-radius: 4px;
+  width: 82%;
+  margin: 10px 5%;
+}
+.buttons {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  margin-left: 5%;
+  gap: 5px;
+}
+
+.buttons .submitGroupChat {
+  padding: 5px;
+  background-color: var(--color-primary);
+  color: #fff;
+  outline: none;
+  border: 1px solid var(--color-primary);
+  border-radius: 4px;
+  font-size: 16px;
+  text-transform: capitalize;
+  width: 70%;
+  /* margin: 0 5%; */
+  cursor: pointer;
+  transition: all 0.5s ease-in-out;
+}
+.buttons .submitGroupChat:hover {
+  /* background-color: #01694ec9; */
+  background-color: var(--color-primary-hover);
+}
+
+.buttons .hiddenInput {
+  display: none;
+}
+
+.buttons .uploadLabelGrp {
+  width: 10%;
+  cursor: pointer;
+  color: var(--color-primary);
+  border: none;
+}
+
+.buttons .iconUploadGrp {
+  font-size: 30px;
+  transition: color 0.2s ease-in-out;
+}
+.buttons .iconUploadGrp:hover {
+  color: var(--color-primary-hover);
+}

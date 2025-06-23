@@ -1,0 +1,22 @@
+-- database: ./social_network.db
+-- Use the ▷ button in the top right corner to run the entire file.
+SELECT
+    *
+FROM
+    users;
+
+SELECT DISTINCT
+    u.first_name,
+    u.avatar,
+    u.id
+FROM
+    users u
+    INNER JOIN followers f ON f.followed_id = 1
+    AND f.follower_id = u.id
+    -- LEFT JOIN groups g ON gm.user_id = u.id
+    LEFT JOIN group_members gm on gm.group_id = 1
+    AND gm.user_id IS NULL
+WHERE
+    u.id <> 1;
+
+SELECT * FROM followers WHERE followed_id = 17;

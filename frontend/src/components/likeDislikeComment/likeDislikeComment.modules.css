@@ -1,0 +1,204 @@
+.reactionContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 50%;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  /*position: relative;*/
+}
+
+.buttons button {
+  cursor: pointer;
+}
+
+.buttons button span {
+  position: relative;
+  top: -2px;
+  /* left: 0; */
+}
+
+.formComment {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+}
+
+.formComment .uploadImage,
+.formComment .submit {
+  display: none;
+}
+
+.formComment .uploadIcon,
+.formComment .submitIcon {
+  font-size: 30px;
+  cursor: pointer;
+  color: var(--color-primary);
+  transition: color 0.5s ease-in-out;
+}
+
+.formComment .submitIcon {
+  font-size: 25px;
+}
+
+.formComment .uploadIcon:hover,
+.formComment .submitIcon:hover {
+  color: var(--color-primary-hover);
+}
+
+.show {
+  background-color: transparent;
+  /* border: 1px solid var(--color-primary); */
+  border: 1px solid #fff;
+  outline: none;
+  cursor: pointer;
+  padding: 10px 20px;
+  border-radius: 8px;
+  margin-top: 15px;
+  transition: all .2s ease-in-out;
+}
+
+.show:hover {
+  background-color: #222;
+}
+
+/* .reactionContainer{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 50%;
+}
+
+.like{
+    display: flex;
+    justify-content: start;
+}
+
+.dislike{
+    display: flex;
+    justify-content: end;
+}
+
+.button{
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    position: relative;
+}
+
+.button span{
+    position: absolute;
+    top: -2px;
+} */
+
+/* button {
+    marginTop: '0px';
+    marginLeft: '5px';
+    width: '10%';
+    padding: '14px 0';
+    backgroundColor: 'var(--color-primary)';
+    color: 'white';
+    fontWeight: 'bold';
+    border: 'none';
+    borderRadius: '4px';
+    cursor: 'pointer';
+} */
+
+
+
+
+/* css by ayoub , to be changed later  by sii walid  */
+.comments-container {
+  animation: fadeIn 0.3s ease-in-out;
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.comment-image {
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+  border-radius: 50%;
+  margin-right: 10px;
+  flex-shrink: 0;
+  border: 2px solid #444;
+  box-shadow: 0 0 4px rgba(0, 170, 255, 0.4);
+}
+
+.comment {
+  background-color: #1e1e1e;
+  border: 1px solid #3a3a3a;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+  transition: background-color 0.3s ease;
+}
+
+.comment:hover {
+  background-color: #333;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.comment-author {
+  font-weight: bold;
+  color: #00aaff;
+}
+
+.comment-date {
+  font-size: 12px;
+  color: #888;
+}
+ 
+.comment-content {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+}
+
+.image-container {
+  margin-top: 10px;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.image-container img {
+  max-width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

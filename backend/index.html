@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h2>WebSocket Test</h2>
+    <style>
+      body {
+        background-color: gray;
+      }
+    </style>
+    <textarea id="log" rows="10" cols="50" readonly></textarea><br />
+
+    <form class="msgform">
+      <input type="text" id="msgInput" placeholder="Type a message..." />
+      <input type="file" />
+      <button type="submit">Send</button>
+    </form>
+    <br /><br />
+    <form class="groupform">
+      <input type="text" id="groupInput" placeholder="Type a message..." />
+      <input type="file" />
+      <button type="submit">Send</button>
+    </form>
+    <button class="closeconn">close</button>
+    <script>
+      async function creategroups() {
+        try {
+          for (let i = 0; i < 10; i++) {
+            let res = await fetch("/creategroup", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                description: "hello there",
+                title: `hi${i}`,
+                cretorid: i + 1,
+              }),
+            });
+
+            let data = await res.json(); // <-- call it with ()
+            console.log(data);
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+      console.log(
+        JSON.stringify({
+          privacy: "private",
+          title: "hello there",
+          friends: [1, 2, 3, 4, 5, 6, 7],
+          content: "test1",
+        })
+      );
+
+      // creategroups();
+
+      const params = window.location.search.slice(1).split("&");
+      console.log(params);
+      const searchparams = {};
+      for (let i = 0; i < params.length; i++) {
+        let [key, value] = params[i].split("=");
+        searchparams[key] = value;
+      }
+
+      console.log(searchparams);
+      let socket = null;
+
+      console.log("before", socket);
+
+      socket = new WebSocket(`ws://localhost:8080/ws`);
+
+      console.log("after", socket);
+
+      const closebutton = document.querySelector(".closeconn");
+      const form = document.querySelector(".msgform");
+      const groupform = document.querySelector(".groupform");
+
+      closebutton.addEventListener("click", (e) => {
+        socket.close();
+      });
+
+      const data1 = {
+        type: "message",
+        sender_id: parseInt(searchparams.id),
+        reciever_id: parseInt(searchparams.reciever_id),
+      };
+
+      const data2 = {
+        type: "message",
+        sender_id: parseInt(searchparams.id),
+        group_id: parseInt(searchparams.group_id),
+      };
+
+      sendmessage(form, data1);
+      sendmessage(groupform, data2);
+      function sendmessage(form, data) {
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+
+          try {
+            data.content = form.children[0].value;
+            const avatar = form.children[1].files[0];
+
+            if (!data.content && !avatar) return;
+
+            if (avatar) {
+              const reader = new FileReader();
+
+              reader.onload = () => {
+                try {
+                  const arrayBuffer = reader.result;
+                  data.type = "image";
+                  data.filename = avatar.name;
+                  data.mime = avatar.type;
+
+                  const meta = JSON.stringify(data) + "::";
+
+                  const encoder = new TextEncoder();
+                  const metaBuffer = encoder.encode(meta);
+
+                  const combined = new Uint8Array(
+                    metaBuffer.length + arrayBuffer.byteLength
+                  );
+                  combined.set(metaBuffer, 0);
+                  combined.set(new Uint8Array(arrayBuffer), metaBuffer.length);
+
+                  socket.send(combined.buffer);
+                } catch (innerErr) {
+                  console.error("Error preparing/sending image:", innerErr);
+                }
+              };
+
+              reader.onerror = () => {
+                console.error("FileReader failed:", reader.error);
+              };
+
+              reader.readAsArrayBuffer(avatar);
+            } else if (data.content) {
+              console.log(socket);
+              socket.send(JSON.stringify(data));
+            }
+          } catch (err) {
+            console.error("Unexpected error in submit handler:", err);
+          }
+        });
+      }
+
+      socket.onmessage = (event) => {
+        console.log("Received:", JSON.parse(event.data));
+      };
+      socket.onclose = (e) => {
+        console.log("socket closed from the front");
+        socket = null;
+      };
+    </script>
+  </body>
+</html>

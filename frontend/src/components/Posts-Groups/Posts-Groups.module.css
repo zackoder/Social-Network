@@ -1,0 +1,169 @@
+.divclass{
+    height: 401px;
+    width: 100%;
+    padding: 5px;
+    overflow: auto;
+}
+.poste {
+  background-color: #181515;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 0 0 20px 0;
+  padding: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: auto;
+  
+}
+
+.poste:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  
+}
+.imageG{
+  width: 180px;
+  height: 130px;
+}
+
+.containerHeader {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+}
+
+.imageContainer {
+  margin-right: 12px;
+}
+
+.imageContainer img {
+  border-radius: 50%;
+  border: 2px solid #eee;
+  object-fit: cover;
+}
+
+.header h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+  color: #fff;
+}
+
+.content h3 {
+  font-size: 1.5rem;
+  margin: 10px 0 5px;
+  color: #335d86;
+}
+
+.content p {
+  font-size: 1rem;
+  color: #f7f1f1;
+  line-height: 1.6;
+}
+
+.imagePost {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.imagePost img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.reaction {
+  margin-top: 15px;
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+  display: flex;
+  justify-content: space-around;
+}
+/***********popup**************************/
+
+.Createvent {
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+  text-align: center;
+  color: #333;
+}
+
+
+.input2,
+.input3,
+.input4 {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-family: inherit;
+  margin-bottom: 1rem;
+  transition: border 0.3s;
+  color: #b7b0b0;
+}
+
+.input2:focus,
+.input3:focus,
+.input4:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.button {
+  width: 100%;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+.addEventButtone {
+  position: relative;
+  display: block;
+  margin: -1px auto; /* ✅ centre horizontalement */
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 126px;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+}
+
+.addEventButtone:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+@media (max-width: 689px){
+  .addEventButtone {
+  padding: 10px 30px;
+  }
+
+}
+
+.divbutton{
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content:center;
+}

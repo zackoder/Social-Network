@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  backend:
+    container_name: social-network-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    volumes:
+      - backend-data:/app/data  # If you need persistent data
+
+  frontend:
+    container_name: social-network-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - NEXT_PUBLIC_HOST=http://backend:8080
+    restart: unless-stopped
+    # Remove the volumes and working_dir - let Dockerfile handle it
+
+volumes:
+  backend-data:
+    name: social-network-backend-data

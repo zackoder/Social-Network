@@ -1,0 +1,113 @@
+.postContainer {
+    margin-bottom: 50px;
+    border: 2px solid #222;
+    padding: 20px;
+    border-radius: 4px;
+}
+
+.identityProfile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 80px;
+}
+
+.imageProfile {
+    width: 50px;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    /* background-color: var(--color-primary); */
+}
+
+.nameProfile {
+    margin-left: 10px;
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+}
+
+.nameProfile .name-privacy {
+    margin-right: 10px;
+}
+
+/* .contactPrivate{
+    margin-left: 20px;
+} */
+
+.nameProfile h3 {
+    margin-bottom: 5px;
+}
+
+.friends {
+    outline: none;
+}
+
+.title input {
+    font-size: 17px;
+    font-weight: 400px;
+    border: none;
+    outline: 0;
+    border-bottom: 1px solid #222;
+    padding: 10px;
+    background-color: #333;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    width: 90%;
+    margin-left: 5%;
+    /* display: flex;
+    justify-content: center; */
+}
+
+.uploadImage {
+    margin: 15px 5%;
+}
+
+.uploadImage input {
+    /* background-color: #333; */
+}
+
+select {
+    outline: none;
+    border: none;
+    width: 200px;
+    height: 30px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.submit {
+    background-color: transparent;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 15px 50px;
+    margin-left: 5%;
+    cursor: pointer;
+    transition: all .5s ease-in-out;
+}
+
+.submit:hover {
+    background-color: #333;
+    color: #f1f1f1;
+}
+
+.hiddenInput {
+    display: none;
+}
+
+.iconUpload {
+    width: 100px;
+    height: 50px;
+    cursor: pointer;
+    color: var(--color-primary);
+}
+
+.PostError {
+    width: 100%;
+    color: rgb(238, 63, 63);
+    margin-bottom: 10px;
+}
+
+.PostError p {
+    width: 90%;
+    margin: 0 auto;
+}
