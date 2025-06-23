@@ -437,7 +437,6 @@ func GetUserIdByCookie(r *http.Request) (int, error) {
 }
 
 func GetGroup(w http.ResponseWriter, r *http.Request, user_id int) {
-	log.Println("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
 	group_id, err := strconv.Atoi(r.URL.Query().Get("groupId"))
 	if err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "invalid data"}, http.StatusNotFound)
@@ -448,11 +447,9 @@ func GetGroup(w http.ResponseWriter, r *http.Request, user_id int) {
 		return
 	}
 	group, err := models.GetOneGroup(group_id)
-	log.Println("afin almlawi")
 	group.Id = group_id
 	if err != nil {
 		if err == sql.ErrNoRows {
-			fmt.Println("hhhhh khawi")
 			utils.WriteJSON(w, map[string]string{"error": "This group does not exist!"}, http.StatusBadRequest)
 		} else {
 			utils.WriteJSON(w, map[string]string{"error": "Internal Server Error"}, http.StatusInternalServerError)
@@ -460,6 +457,5 @@ func GetGroup(w http.ResponseWriter, r *http.Request, user_id int) {
 		}
 		return
 	}
-	log.Println(group_id, "userid", group)
 	utils.WriteJSON(w, group, 200)
 }

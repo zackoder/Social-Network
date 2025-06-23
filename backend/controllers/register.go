@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -44,8 +45,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	if filePath == "" {
 		regesterreq.Avatar = "/defaultIMG/defaulte.jpg"
-		fmt.Println("file path", regesterreq.Avatar)
-
 	}
 	if regesterreq.NickName == "" {
 		regesterreq.NickName = nil
@@ -64,6 +63,8 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		}
 		regesterreq.Password = hashedPss
 		regesterreq.ID, err = models.InsertUser(regesterreq)
+		log.Println("-------------------------------------")
+
 		if err != nil {
 			if strings.Contains(err.Error(), "users.email") {
 				utils.WriteJSON(w, map[string]string{"error": "Email has already been taken."}, http.StatusNotAcceptable)
@@ -76,9 +77,13 @@ func Register(w http.ResponseWriter, r *http.Request) {
 				err := os.Remove(filePath)
 				fmt.Println("removing error:", err)
 			}
+			log.Println("errrrrrrr", err)
 			return
 		}
 		utils.WriteJSON(w, map[string]string{"success": "ok"}, http.StatusOK)
+		return
+	} else {
+		utils.WriteJSON(w, map[string]string{"error": "invalid "}, http.StatusBadRequest)
 		return
 	}
 }
