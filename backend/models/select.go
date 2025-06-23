@@ -1265,23 +1265,23 @@ func GetUserReactionForPost(userId, postId int) (*utils.Reaction, error) {
 }
 
 // GetUserById retrieves a user by their ID
-func GetUserById(userId int) (*utils.User, error) {
+func GetUserById(userId int) (*utils.Regester, error) {
 	query := `
 		SELECT id, first_name, last_name, nickname, email, avatar, AboutMe, privacy 
 		FROM users 
 		WHERE id = ?
 	`
 
-	var user utils.User
+	var user utils.Regester
 	err := Db.QueryRow(query, userId).Scan(
 		&user.ID,
 		&user.FirstName,
 		&user.LastName,
-		&user.Nickname,
+		&user.NickName,
 		&user.Email,
 		&user.Avatar,
-		&user.AboutMe,
-		&user.Privacy,
+		&user.About_Me,
+		&user.Pravecy,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {

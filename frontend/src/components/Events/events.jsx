@@ -30,6 +30,11 @@ export function Events({ id }) {
       alert("Please choose a date in the future!");
       return;
     }
+    
+    if (participationStatus ==null){
+       alert("Are you goin to leave or not?");
+       return 
+ }
 
     console.log(
       "___________________________________----------------",
@@ -63,6 +68,7 @@ export function Events({ id }) {
     setEventDatetime("");
     setShowPopup(false);
     GetEvents();
+    setParticipationStatus(null);
   };
 
   const handleResponse = async (responseValue, eventId) => {

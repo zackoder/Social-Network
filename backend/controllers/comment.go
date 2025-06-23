@@ -19,7 +19,7 @@ type UserProfileInfo struct {
 }
 
 // GetUserAvatarAndUserName retrieves the avatar URL and full name for a user by ID
-func GetUserAvatarAndUserName(userId int) *utils.User {
+func GetUserAvatarAndUserName(userId int) *utils.Regester {
 	user, err := models.GetUserById(userId)
 	if err != nil {
 		log.Println(err)
@@ -48,17 +48,16 @@ func AddComment(w http.ResponseWriter, r *http.Request, userID int) {
 		fmt.Println("Upload Image error:", err)
 		return
 	}
-	 
+
 	var comment utils.Comment
 	if err := json.Unmarshal([]byte(postData), &comment); err != nil {
 		utils.WriteJSON(w, map[string]string{"error": "Invalid request data"}, http.StatusBadRequest)
 		return
 	}
-	 
-	comment.ImagePath = filepath
- 
 
-	if strings.TrimSpace(comment.Content) == "" && filepath == ""{
+	comment.ImagePath = filepath
+
+	if strings.TrimSpace(comment.Content) == "" && filepath == "" {
 		utils.WriteJSON(w, map[string]string{"error": "Empty Message"}, http.StatusBadRequest)
 		return
 	}
@@ -104,9 +103,6 @@ func AddComment(w http.ResponseWriter, r *http.Request, userID int) {
 	userdata := GetUserAvatarAndUserName(userID)
 	comment.UserAvatar = user.Avatar
 	comment.UserName = fmt.Sprintf("%s %s", userdata.FirstName, userdata.LastName)
-
-
-
 
 	utils.WriteJSON(w, comment, http.StatusOK)
 }
