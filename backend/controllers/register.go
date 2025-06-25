@@ -63,7 +63,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		}
 		regesterreq.Password = hashedPss
 		regesterreq.ID, err = models.InsertUser(regesterreq)
-		log.Println("-------------------------------------")
 
 		if err != nil {
 			if strings.Contains(err.Error(), "users.email") {

@@ -88,5 +88,5 @@ func main() {
 	mux.HandleFunc("GET /api/getallusers", midleware.AuthMiddleware(controllers.GetAllUsers))
 	fmt.Println("Server is running on port http://localhost:8080")
 
-	http.ListenAndServe(":8080", midleware.WithCORS(mux))
+	http.ListenAndServe("0.0.0.0:8080", midleware.WithCORS(mux))
 }

@@ -84,8 +84,6 @@ export default function Post_Groups({ post, id }) {
   }
 
   async function GetData() {
-
-
     const host = process.env.NEXT_PUBLIC_HOST;
 
     try {

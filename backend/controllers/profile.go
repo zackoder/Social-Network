@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -61,7 +60,6 @@ func UserData(w http.ResponseWriter, r *http.Request, user_id int) {
 		utils.WriteJSON(w, map[string]string{"error": "Not allowed"}, http.StatusMethodNotAllowed)
 		return
 	}
-	log.Println("____________________________________________", user_id)
 	var userD utils.UserD
 	user, err := models.GetUserById(user_id)
 	if err != nil {

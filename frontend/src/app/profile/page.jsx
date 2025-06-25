@@ -14,8 +14,8 @@ export default function ProfilePage({ searchParams }) {
   const [loading, setLoading] = useState(false);
   const LIMIT = 10;
 
-  const { id } = use(searchParams)
-  const profileId = id
+  const { id } = use(searchParams);
+  const profileId = id;
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
   const [followers, setFollowers] = useState([]);
@@ -32,9 +32,16 @@ export default function ProfilePage({ searchParams }) {
 
   useEffect(() => {
     if (profileId) {
-      fetchProfileData();
+      setOffset(0);
+      setPosts([]);
     }
   }, [profileId]);
+
+  useEffect(() => {
+    if (profileId && offset === 0) {
+      fetchProfileData();
+    }
+  }, [profileId, offset]);
 
   const debouncedFetchPosts = useCallback(debounce(fetchProfileposts, 300), [
     offset,
@@ -59,12 +66,12 @@ export default function ProfilePage({ searchParams }) {
       }
       const data = await response.json();
       if (data === null || data.message === "this profile is private") {
-        setPosts([]);
+        if (posts.length === 0) setPosts([]);
         return;
       }
-      console.log('befoore entring the condition', hasMore);
+      console.log("befoore entring the condition", hasMore);
       if (posts.length <= offset && data === null) {
-        console.log('im here in the condition', hasMore);
+        console.log("im here in the condition", hasMore);
         setHasMore(false); // No more posts available
         return [];
       }
@@ -133,9 +140,7 @@ export default function ProfilePage({ searchParams }) {
     } finally {
       setIsLoading(false);
     }
-
   };
-
 
   const handlePrivacyToggle = async () => {
     try {
@@ -164,7 +169,6 @@ export default function ProfilePage({ searchParams }) {
     setShowModal(true);
   };
 
-
   const showFollowing = () => {
     setModalContent({
       title: "Following",
@@ -190,7 +194,7 @@ export default function ProfilePage({ searchParams }) {
               className={styles.image}
               src={`http://${profile.avatar}`}
               alt={`${profile.firstName} ${profile.lastName}`}
-            // fill={true}
+              // fill={true}
             />
           </div>
           <div className={styles.name}>
@@ -239,15 +243,17 @@ export default function ProfilePage({ searchParams }) {
 
       <div className={styles.tabs}>
         <div
-          className={`${styles.tab} ${activeTab === "posts" ? styles.active : ""
-            }`}
+          className={`${styles.tab} ${
+            activeTab === "posts" ? styles.active : ""
+          }`}
           onClick={() => setActiveTab("posts")}
         >
           Posts
         </div>
         <div
-          className={`${styles.tab} ${activeTab === "about" ? styles.active : ""
-            }`}
+          className={`${styles.tab} ${
+            activeTab === "about" ? styles.active : ""
+          }`}
           onClick={() => setActiveTab("about")}
         >
           About
@@ -255,7 +261,6 @@ export default function ProfilePage({ searchParams }) {
       </div>
 
       <main>
-
         {activeTab === "posts" &&
           (posts && posts.length > 0 ? (
             <>

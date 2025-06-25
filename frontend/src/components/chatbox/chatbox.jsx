@@ -13,8 +13,11 @@ const host = process.env.NEXT_PUBLIC_HOST;
 function getCookie(name) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`${name}=`);
+  // console.log("------------------------------", parts.pop().split(";").shift());
   if (parts.length === 2) return parts.pop().split(";").shift();
 }
+const oldToken = getCookie("token");
+console.log("--------------", oldToken);
 
 export default function ChatBox({ contact, onClickClose }) {
   const [message, setMessage] = useState("");
@@ -26,8 +29,8 @@ export default function ChatBox({ contact, onClickClose }) {
   const [offset, setOffset] = useState(0);
   const limit = 10;
   const [userId, setUserId] = useState(null);
-  const token = getCookie("token");
-  const [error, seterror] = useState("")
+
+  const [error, seterror] = useState("");
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -49,22 +52,17 @@ export default function ChatBox({ contact, onClickClose }) {
 
     const handleMessage = (event) => {
       try {
-        const data =
-          typeof event.data === "string"
-            ? JSON.parse(event.data)
-            : parseBinaryMessage(event.data);
+        const data = JSON.parse(event.data);
 
         if (
           (data.sender_id === contact.id && data.receiver_id === userId) ||
           (data.sender_id === userId && data.receiver_id === contact.id)
         ) {
           setMessages((prev) => [...prev, data]);
-          // offsetval++
-          // console.log(offsetval);
-          setOffset((prevOffset) => prevOffset + 1)
+          setOffset((prevOffset) => prevOffset + 1);
         }
         if (data.error) {
-          seterror(data.error)
+          seterror(data.error);
         }
       } catch (err) {
         console.log("Failed to parse message:", event.data);
@@ -103,7 +101,7 @@ export default function ChatBox({ contact, onClickClose }) {
         setMessages((prev) => [...data.reverse(), ...prev]);
         // setOffset(offsetValue + limit);
         offsetRef.current = offsetValue + limit;
-        
+
         setTimeout(() => {
           const newScrollHeight = container?.scrollHeight || 0;
           if (container) {
@@ -126,12 +124,12 @@ export default function ChatBox({ contact, onClickClose }) {
   }, [contact.id]);
 
   const handleScroll = (e) => {
-    if (e.target.scrollTop === 0 ) { //&& !loadingRef.current
+    if (e.target.scrollTop === 0) {
+      //&& !loadingRef.current
       // console.log("Fetching with offset:", offsetRef.current);
       fetchMessages(offsetRef.current);
     }
   };
-
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -147,6 +145,11 @@ export default function ChatBox({ contact, onClickClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const token = getCookie("token");
+    if (token !== oldToken) {
+      window.location.reload();
+      return;
+    }
     if (!message.trim() && image === null) return;
 
     if (image) {
@@ -256,7 +259,6 @@ export default function ChatBox({ contact, onClickClose }) {
       </div>
 
       <div className={styles.readmessages} ref={scrollContainerRef}>
-
         {messages.map((msg, index) => (
           <div
             key={index}
@@ -307,9 +309,7 @@ export default function ChatBox({ contact, onClickClose }) {
             )}
           </div>
         ))}
-        {error &&
-          <p className={styles.msgerror} >{error}</p>
-        }
+        {error && <p className={styles.msgerror}>{error}</p>}
         <div ref={bottomRef} />
       </div>
 
@@ -360,7 +360,7 @@ export default function ChatBox({ contact, onClickClose }) {
           </div>
         </form>
       </div>
-    </div >
+    </div>
   );
 }
 

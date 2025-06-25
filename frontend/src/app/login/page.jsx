@@ -14,12 +14,13 @@ export default function Login() {
   useEffect(() => {
     (async function () {
       const resp = await fetch(`${host}/userData`, {
-        credentials: "include"
-      })
-      if (resp.ok) router.push("/");
-    })()
-  }, [])
-
+        credentials: "include",
+      });
+      if (resp.ok) {
+        router.push("/");
+      }
+    })();
+  }, []);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -69,10 +70,9 @@ export default function Login() {
       console.log(formData);
       console.log(data);
 
-
       if (response.ok) {
         // Redirect to home page on successful login
-        window.location.reload()
+        window.location.reload();
         // router.push("/");
       } else {
         setError(data.error || "Invalid email or password");

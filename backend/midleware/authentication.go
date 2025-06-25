@@ -2,6 +2,7 @@ package midleware
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 	"sync"
 	"time"
@@ -62,14 +63,16 @@ func AuthMiddleware(next customHandler) http.HandlerFunc {
 		if err != nil {
 			if err == http.ErrNoCookie {
 				utils.WriteJSON(w, map[string]string{"error": "Unauthorized"}, http.StatusUnauthorized)
+				fmt.Println("auth error ", err)
 				return
 			} else if err == sql.ErrNoRows {
 				http.SetCookie(w, &http.Cookie{
-					Name:    "token",
-					Path:    "/",
-					Value:   "",
+					Name:  "token",
+					Path:  "/",
+					Value: "",
 				})
 				utils.WriteJSON(w, map[string]string{"error": "Unauthorized"}, http.StatusUnauthorized)
+				fmt.Println("cookie error ", err)
 				return
 			} else {
 				utils.WriteJSON(w, map[string]string{"error": http.StatusText(http.StatusInternalServerError)}, http.StatusInternalServerError)
@@ -80,14 +83,11 @@ func AuthMiddleware(next customHandler) http.HandlerFunc {
 	})
 }
 
-
- 
-
 func ValidUser(r *http.Request) (int, error) {
-		cookie, err := r.Cookie("token")
-		if err != nil {
-			return 0, err
-		}
+	cookie, err := r.Cookie("token")
+	if err != nil {
+		return 0, err
+	}
 	userId, err := models.Get_session(cookie.Value)
 	if err != nil {
 		return 0, err
@@ -96,16 +96,16 @@ func ValidUser(r *http.Request) (int, error) {
 }
 
 func WithCORS(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000") 
-        w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, UPDATE")
-        w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-        w.Header().Set("Access-Control-Allow-Credentials", "true")
-        // Handle preflight
-        if r.Method == "OPTIONS" {
-            w.WriteHeader(http.StatusOK)
-            return
-        }
-        next.ServeHTTP(w, r)
-    })
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "http://0.0.0.0:3000")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, UPDATE")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		// Handle preflight
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }

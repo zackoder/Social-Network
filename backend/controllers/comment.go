@@ -63,7 +63,6 @@ func AddComment(w http.ResponseWriter, r *http.Request, userID int) {
 	}
 	// Set the user ID from the session
 	comment.UserId = userID
-	fmt.Println("comment", comment.UserId, comment.Content, comment.PostId)
 	// Check if post exists
 	postExists, err := models.PostExists(comment.PostId)
 	if err != nil || !postExists {

@@ -154,7 +154,6 @@ func CheckPostPrivacy(post string) (string, error) {
 ///////////////////////////login///////////////////////////////////////////
 
 func ValidCredential(userData *utils.User) error {
-	fmt.Println("i was here")
 	query := `SELECT id, password FROM users WHERE nickname = ? OR email = ?;`
 	err := Db.QueryRow(query, userData.Email, userData.Email).Scan(&userData.ID, &userData.Password)
 	if err != nil {
@@ -164,9 +163,7 @@ func ValidCredential(userData *utils.User) error {
 }
 
 func GetActiveSession(userData *utils.User) (bool, error) {
-	fmt.Println("i was here ")
 	var exists bool
-
 	query := `SELECT EXISTS(SELECT 1 FROM sessions WHERE user_id = ? );`
 	err := Db.QueryRow(query, userData.ID).Scan(&exists)
 	if err != nil {
@@ -1133,52 +1130,79 @@ func GetCommentsByPostId(postId, limit, offset int) ([]utils.Comment, error) {
 
 func CanUserAccessPost(userId int, postId int) (bool, error) {
 	// Query to get the post's privacy and poster id
-	var privacy string
-	var posterId int
-	query := `SELECT post_privacy, user_id FROM posts WHERE id = ?`
-	err := Db.QueryRow(query, postId).Scan(&privacy, &posterId)
+	var canComment bool
+	// var posterId int
+
+	query := `
+	SELECT
+    	EXISTS (
+        	SELECT
+        	    1
+        	FROM
+        	    posts p
+        	    LEFT JOIN followers f ON f.follower_id = ?
+        	    AND f.followed_id = p.user_id
+        	    LEFT JOIN friends ppv ON ppv.friend_id = ?
+        	    AND ppv.post_id = p.id
+        	WHERE
+        	    (
+        	        p.user_id = ?
+        	        OR p.post_privacy = 'public'
+        	        OR (
+        	            p.post_privacy = 'almostPrivate'
+        	            AND f.followed_id IS NOT NULL
+        	        )
+        	        OR (
+        	            p.post_privacy = 'private'
+        	            AND f.followed_id IS NOT NULL
+        	            AND ppv.friend_id IS NOT NULL
+        	        )
+        	    )
+        	    AND p.id = ?
+    );`
+	err := Db.QueryRow(query, userId, userId, userId, postId).Scan(&canComment)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return false, fmt.Errorf("Post not found")
 		}
 		return false, err
 	}
+	return canComment, nil
+	// // If user is the post owner, they can always access it
+	// if userId == posterId {
+	// 	return true, nil
+	// }
 
-	// If user is the post owner, they can always access it
-	if userId == posterId {
-		return true, nil
-	}
+	// // Check privacy settings
+	// switch privacy {
+	// case "public":
+	// 	// Anyone can access public posts
+	// 	return true, nil
 
-	// Check privacy settings
-	switch privacy {
-	case "public":
-		// Anyone can access public posts
-		return true, nil
+	// case "almostPrivet":
+	// 	// Check if the user is a follower of the post creator
+	// 	isFollower, err := IsUserFollowing(userId, posterId)
+	// 	if err != nil {
+	// 		return false, err
+	// 	}
+	// 	return isFollower, nil
 
-	case "almostPrivet":
-		// Check if the user is a follower of the post creator
-		isFollower, err := IsUserFollowing(userId, posterId)
-		if err != nil {
-			return false, err
-		}
-		return isFollower, nil
+	// case "private":
+	// 	// Check if the user is specifically allowed to see this post
+	// 	// This would require checking a table that stores which friends can see private posts
+	// 	// For now, we'll check if they're mentioned in the friends list for this post
+	// 	var count int
+	// 	query = `SELECT COUNT(*) FROM post_friends WHERE post_id = ? AND user_id = ?`
+	// 	err := Db.QueryRow(query, postId, userId).Scan(&count)
+	// 	if err != nil {
+	// 		return false, err
+	// 	}
+	// 	return count > 0, nil
 
-	case "private":
-		// Check if the user is specifically allowed to see this post
-		// This would require checking a table that stores which friends can see private posts
-		// For now, we'll check if they're mentioned in the friends list for this post
-		var count int
-		query = `SELECT COUNT(*) FROM post_friends WHERE post_id = ? AND user_id = ?`
-		err := Db.QueryRow(query, postId, userId).Scan(&count)
-		if err != nil {
-			return false, err
-		}
-		return count > 0, nil
-
-	default:
-		// Unknown privacy setting, default to no access
-		return true, nil
-	}
+	// default:
+	// 	// Unknown privacy setting, default to no access
+	// 	return true, nil
+	// }
 }
 
 // IsUserFollowing checks if userA is following userB

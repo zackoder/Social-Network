@@ -42,13 +42,6 @@ func (m *Manager) GetClient(id int) []*Client {
 	return client
 }
 
-func (m *Manager) CheckGroupMembers(id int) bool {
-	m.RLock()
-	defer m.RUnlock()
-	_, exists := m.UsersList[id]
-	return exists
-}
-
 func (m *Manager) AddClient(client *Client) {
 	m.Lock()
 	defer m.Unlock()

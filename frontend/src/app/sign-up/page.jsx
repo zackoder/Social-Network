@@ -21,21 +21,20 @@ export default function Signup() {
   const [avatar, setAvatar] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
- 
+
   const host = process.env.NEXT_PUBLIC_HOST;
 
   useEffect(() => {
     (async function () {
       const resp = await fetch(`${host}/userData`, {
-        credentials: "include"
-      })
+        credentials: "include",
+      });
       if (resp.ok) router.push("/");
-    })()
-  }, [])
+    })();
+  }, []);
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  
   const validate = () => {
     if (formData.firstName.length > 20)
       return "First name must be under 10 characters.";
@@ -100,7 +99,9 @@ export default function Signup() {
         setError(data.error || "Failed to register. Please try again.");
         return;
       }
-      console.log(new Date().getFullYear() - new Date(formData.age).getFullYear())
+      console.log(
+        new Date().getFullYear() - new Date(formData.age).getFullYear()
+      );
       // Reset form and redirect
       setFormData({
         email: "",
@@ -114,7 +115,7 @@ export default function Signup() {
         gender: "male",
       });
       setAvatar(null);
-      // window.location.reload()
+      // window.location.reload();
       router.push("/login");
     } catch (err) {
       setError("Failed to register. Please try again.");

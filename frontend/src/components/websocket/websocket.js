@@ -1,4 +1,3 @@
-
 export let socket;
 export let websocketConnection = null;
 
@@ -8,7 +7,7 @@ export function Websocket() {
   }
   websocketConnection = new Promise((resolve, reject) => {
     // Create WebSocket connection.
-    socket = new WebSocket("ws://localhost:8080/ws");
+    socket = new WebSocket("ws://0.0.0.0:8080/ws");
 
     // Connection opened
     socket.addEventListener("open", (event) => {
@@ -29,8 +28,6 @@ export function Websocket() {
       console.log("WebSocket error", err);
       reject(err);
     });
-
-    });
-    return websocketConnection;
-
+  });
+  return websocketConnection;
 }

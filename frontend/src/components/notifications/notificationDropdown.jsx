@@ -71,7 +71,6 @@ export default function NotificationDropdown({ isOpen }) {
           body: JSON.stringify(responseData),
           credentials: "include",
         });
-        console.log("response -------", responseData);
 
         if (!response.ok) {
           console.log("Failed to send notification");

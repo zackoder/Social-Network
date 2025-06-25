@@ -16,7 +16,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, "invalid input data", http.StatusBadRequest)
 		return
 	}
-
 	// if len(userData.Email) < 5 || len(userData.Password) < 5 || len(userData.Email) > 250 || len(userData.Password) > 64 {
 	// 	utils.WriteJSON(w, map[string]string{"error": "invalid username/password/email"}, http.StatusBadRequest)
 	// 	return
@@ -52,6 +51,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "internaInternal Server Error"}, http.StatusInternalServerError)
 		return
 	}
+
 	userData.SessionId, err = utils.GenerateSessionID()
 	if err != nil {
 		fmt.Println(err)
@@ -65,7 +65,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSON(w, map[string]string{"error": "internaInternal Server Error"}, http.StatusInternalServerError)
 		return
 	}
-	
+
 	http.SetCookie(w, &http.Cookie{
 		Name:  "token",
 		Path:  "/",

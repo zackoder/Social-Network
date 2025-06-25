@@ -36,10 +36,7 @@ export function Events({ id }) {
        return 
  }
 
-    console.log(
-      "___________________________________----------------",
-      eventT.getTime()
-    );
+
     const response = await fetch(`${host}/CreatEvent`, {
       method: "POST",
       credentials: "include",
