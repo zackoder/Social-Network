@@ -4,7 +4,7 @@ import CreatePost from "../createPost/createPost";
 import { debounce } from "@/utils/debounce";
 import Post from "../post/post";
 import { isAuthenticated } from "@/app/page";
-import styles from "@/app/page.module.css"
+import styles from "@/app/page.module.css";
 
 export default function PostSystem() {
   const host = process.env.NEXT_PUBLIC_HOST;
@@ -41,7 +41,7 @@ export default function PostSystem() {
         setHasMore(false); // No more posts available
         return;
       }
-      setPosts((prev) => [...prev,...data]);
+      setPosts((prev) => [...prev, ...data]);
       setOffset((prev) => prev + LIMIT);
     } catch (err) {
       console.error("Fetch error:", err);
@@ -56,12 +56,13 @@ export default function PostSystem() {
       setPosts([newPost]);
     } else {
       setPosts((prev) => [newPost, ...prev]);
+      setOffset(offset + 1);
     }
   };
 
   useEffect(() => {
     fetchAllPosts();
-    return () => setPosts([])
+    return () => setPosts([]);
   }, []);
 
   const debouncedFetchPosts = useCallback(debounce(fetchAllPosts, 300), [
@@ -75,13 +76,15 @@ export default function PostSystem() {
       <CreatePost onPostCreated={addNewPost} />
       <Post id={posts.uuid} posts={posts} />
       {hasMore ? (
-        <button onClick={debouncedFetchPosts} className={styles.btnLoadMore} disabled={loading}>
+        <button
+          onClick={debouncedFetchPosts}
+          className={styles.btnLoadMore}
+          disabled={loading}
+        >
           {loading ? "Loading..." : "Load More"}
         </button>
       ) : (
-        <button  >
-          {"there are no more posts"}
-        </button>
+        <button>{"there are no more posts"}</button>
       )}
     </>
   );

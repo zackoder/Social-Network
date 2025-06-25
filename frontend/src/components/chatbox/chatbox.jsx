@@ -10,14 +10,13 @@ import { isAuthenticated } from "@/app/page";
 
 const host = process.env.NEXT_PUBLIC_HOST;
 
-function getCookie(name) {
+export function getCookie(name) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`${name}=`);
   // console.log("------------------------------", parts.pop().split(";").shift());
   if (parts.length === 2) return parts.pop().split(";").shift();
 }
-const oldToken = getCookie("token");
-console.log("--------------", oldToken);
+export const oldToken = getCookie("token");
 
 export default function ChatBox({ contact, onClickClose }) {
   const [message, setMessage] = useState("");

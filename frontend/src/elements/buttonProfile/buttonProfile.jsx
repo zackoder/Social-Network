@@ -11,27 +11,22 @@ export default function ButtonProfile() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
-  const host = process.env.NEXT_PUBLIC_HOST
+  const host = process.env.NEXT_PUBLIC_HOST;
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch(
-          `${host}/userData`,
-          {
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`${host}/userData`, {
+          credentials: "include",
+        });
         const data = await response.json();
         console.log(data);
-        
 
         if (!response.ok) {
-          // If response is 401 Unauthorized, redirect to login
-          isAuthenticated(response.status, data.error)
+          isAuthenticated(response.status, data.error);
         }
-        
+
         // Handle different response content types
-      
+
         // if (!data || Object.keys(data).length === 0) {
         //   console.error("Empty user data received");
         //   throw new Error("Invalid user data");
@@ -39,7 +34,7 @@ export default function ButtonProfile() {
 
         // Check multiple possible ID field names
         const userId = data.id;
-        
+
         localStorage.setItem("user-id", userId);
         if (!userId) {
           console.warn("User data does not contain ID field:", data);
@@ -47,7 +42,6 @@ export default function ButtonProfile() {
         setUserData(data);
       } catch (err) {
         console.log(err);
-        
       } finally {
         setIsLoading(false);
       }

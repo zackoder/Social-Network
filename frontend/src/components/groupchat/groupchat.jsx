@@ -1,40 +1,9 @@
 "use client";
+import { getCookie, oldToken } from "../chatbox/chatbox";
 import { socket, Websocket } from "../websocket/websocket";
 import "./groupChat.css";
 import { useEffect, useState } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
-
-// export function displayChatbox() {
-//   // const button = document.querySelector(".soutitre");
-//   const container = document.querySelector(".chatcontainer");
-//   // const formSubmit = document.querySelector(".submitForm");
-
-//   // button?.addEventListener("click", () => {
-//   if (container?.classList.contains("showw")) {
-//     container.classList.remove("showw");
-//     container.classList.add("hide");
-//     // formSubmit?.classList.add("hide");
-
-//     // After animation ends, hide the element
-//     // button.addEventListener(
-//     //   "click",
-//     //   () => {
-//     //     if (container?.classList.contains("hide")) {
-//     //       // formSubmit.style.display = "none";
-//     //     }
-//     //   },
-
-//     // );
-//     // container.classList.add("showw");
-//     // container.style.display = "none";
-//   } else {
-//     container.classList.remove("hide");
-//     container.classList.add("showw");
-//     // formSubmit?.classList.add("showw");
-//     container.style.display = "block";
-//   }
-//   // });
-// }
 
 export default function GroupChat({ groupData }) {
   const host = process.env.NEXT_PUBLIC_HOST;
@@ -42,7 +11,7 @@ export default function GroupChat({ groupData }) {
   const [messages, setmessages] = useState([]);
   const [newmessage, setmessage] = useState("");
   const [image, setImage] = useState(null);
-  const [IsOpen, setIsOpen] = useState(true)
+  const [IsOpen, setIsOpen] = useState(true);
   // const user_id = parseInt(localStorage.getItem("user-id"));
 
   const handleImageChange = (e) => {
@@ -85,6 +54,10 @@ export default function GroupChat({ groupData }) {
 
   function handleMessage(e) {
     e.preventDefault();
+    if (oldToken !== getCookie("token")) {
+      window.location.reload();
+      return;
+    }
     const content = e.target.children[0].value.trim();
 
     if (!content && image === null) return;
@@ -136,10 +109,13 @@ export default function GroupChat({ groupData }) {
 
   return (
     <>
-      <button className="soutitre" onClick={() => {
-        setIsOpen(!IsOpen)
-        displayChatbox()
-      }}>
+      <button
+        className="soutitre"
+        onClick={() => {
+          setIsOpen(!IsOpen);
+          displayChatbox();
+        }}
+      >
         <p className="titleGroup">Group chat</p>
       </button>
       <div className="chatcontainer">
@@ -168,7 +144,7 @@ export default function GroupChat({ groupData }) {
                             alt="Image"
                             width={250} // Set appropriate dimensions
                             height={250}
-                          // className={styles.imageGroupChat}
+                            // className={styles.imageGroupChat}
                           />
                         ) : (
                           ""
