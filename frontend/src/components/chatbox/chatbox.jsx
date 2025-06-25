@@ -11,10 +11,12 @@ import { isAuthenticated } from "@/app/page";
 const host = process.env.NEXT_PUBLIC_HOST;
 
 export function getCookie(name) {
+  if (typeof document === 'undefined') return null;
   const value = `; ${document.cookie}`;
   const parts = value.split(`${name}=`);
   // console.log("------------------------------", parts.pop().split(";").shift());
   if (parts.length === 2) return parts.pop().split(";").shift();
+  return null;
 }
 export const oldToken = getCookie("token");
 

@@ -74,6 +74,7 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request, userId int) {
 			return
 		}
 		utils.WriteJSON(w, publicPosts, 200)
+
 		return
 	}
 
@@ -87,7 +88,6 @@ func GetProfilePosts(w http.ResponseWriter, r *http.Request, userId int) {
 			utils.WriteJSON(w, map[string]string{"error": "Failed to fetch posts01"}, http.StatusInternalServerError)
 			return
 		}
-		// fmt.Println(posts)
 		utils.WriteJSON(w, posts, 200)
 	} else {
 		utils.WriteJSON(w, map[string]string{"message": "this profile is private"}, 200)

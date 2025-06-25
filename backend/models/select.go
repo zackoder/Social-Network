@@ -103,8 +103,8 @@ func GetProfilePost(user_id, limit, offset int) ([]utils.Post, error) {
 		    posts p
 		    JOIN users u ON p.user_id = u.id
 		WHERE p.user_id = ?
-		ORDER BY p.createdAt DESC
-		LIMIT ? OFFSET ? 			
+		ORDER BY p.id DESC
+		LIMIT ? OFFSET ?		
 		`
 	rows, err := Db.Query(query, user_id, limit, offset)
 	if err != nil {
